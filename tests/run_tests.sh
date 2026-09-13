@@ -116,6 +116,14 @@ execute_all_suites() {
   node tests/challenger_m1_theme_stress.js || fails=$((fails + 1))
 
   echo ""
+  echo -e "${BOLD}${CYAN}--- Suite 2b: Milestone M1 Challenger 2 Invariants & Edge Cases (Node) ---${RESET}"
+  node tests/challenger2_m1_edge_cases.js || fails=$((fails + 1))
+
+  echo ""
+  echo -e "${BOLD}${CYAN}--- Suite 2c: Milestone M1 Challenger 1 Triple-Tap & Burst Stress (Node) ---${RESET}"
+  node tests/challenger_m1_triple_tap_stress.js || fails=$((fails + 1))
+
+  echo ""
   echo -e "${BOLD}${CYAN}--- Suite 3: Milestone M2 Procedural Web Audio Engine (Node) ---${RESET}"
   node tests/test_m2_audio_engine.js || fails=$((fails + 1))
 

@@ -68,34 +68,43 @@ function record(name, pass, details = '') {
 
 function startStaticServer() {
   return new Promise((resolve, reject) => {
-    const server = http.createServer((req, res) => {
-      let reqPath = req.url.split('?')[0];
-      if (reqPath === '/' || reqPath === '') reqPath = '/index.html';
-      const filePath = path.join(PROJECT_ROOT, reqPath);
+    const tryListen = (retriesLeft) => {
+      const server = http.createServer((req, res) => {
+        let reqPath = req.url.split('?')[0];
+        if (reqPath === '/' || reqPath === '') reqPath = '/index.html';
+        const filePath = path.join(PROJECT_ROOT, reqPath);
 
-      if (!filePath.startsWith(PROJECT_ROOT)) {
-        res.writeHead(403);
-        res.end('Forbidden');
-        return;
-      }
-
-      fs.readFile(filePath, (err, data) => {
-        if (err) {
-          res.writeHead(404);
-          res.end('Not Found');
+        if (!filePath.startsWith(PROJECT_ROOT)) {
+          res.writeHead(403);
+          res.end('Forbidden');
           return;
         }
-        const ext = path.extname(filePath);
-        res.writeHead(200, {
-          'Content-Type': MIME_TYPES[ext] || 'text/plain',
-          'Cache-Control': 'no-cache'
-        });
-        res.end(data);
-      });
-    });
 
-    server.listen(PORT, '127.0.0.1', () => resolve(server));
-    server.on('error', reject);
+        fs.readFile(filePath, (err, data) => {
+          if (err) {
+            res.writeHead(404);
+            res.end('Not Found');
+            return;
+          }
+          const ext = path.extname(filePath);
+          res.writeHead(200, {
+            'Content-Type': MIME_TYPES[ext] || 'text/plain',
+            'Cache-Control': 'no-cache'
+          });
+          res.end(data);
+        });
+      });
+
+      server.listen(PORT, '127.0.0.1', () => resolve(server));
+      server.on('error', (err) => {
+        if (err.code === 'EADDRINUSE' && retriesLeft > 0) {
+          setTimeout(() => tryListen(retriesLeft - 1), 1000);
+        } else {
+          reject(err);
+        }
+      });
+    };
+    tryListen(15);
   });
 }
 

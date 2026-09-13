@@ -648,7 +648,16 @@
     const pauseIcon = document.getElementById('audio-pause-icon');
 
     if (window.ClownAudio && typeof window.ClownAudio.togglePlay === 'function') {
-      window.ClownAudio.togglePlay();
+      try {
+        const toggleResult = window.ClownAudio.togglePlay();
+        if (toggleResult && typeof toggleResult.catch === 'function') {
+          toggleResult.catch((err) => {
+            console.warn('[ClownAudio] togglePlay error:', err);
+          });
+        }
+      } catch (err) {
+        console.warn('[ClownAudio] togglePlay synchronous error:', err);
+      }
       return;
     }
 
@@ -694,7 +703,11 @@
   }
 
   // --- Initialization Routine ---
+  let isInitialized = false;
   function init() {
+    if (isInitialized) return;
+    isInitialized = true;
+
     // 1. Restore & Apply Theme
     const initialTheme = getStoredTheme();
     applyTheme(initialTheme);
@@ -729,6 +742,13 @@
 
     // 5. Attach Global Keydown Listener
     window.addEventListener('keydown', handleKeydown);
+
+    // 6. Synchronize theme across browser tabs
+    window.addEventListener('storage', (e) => {
+      if (e.key === STORAGE_KEY && e.newValue && THEMES.includes(e.newValue)) {
+        applyTheme(e.newValue);
+      }
+    });
   }
 
   if (typeof document !== 'undefined') {
