@@ -279,20 +279,21 @@
       keywords: 'services cluster labs nodes endpoints'
     },
     {
-      id: 'nav-stack',
-      title: 'Jump: Developer Stack & Workbench',
+      id: 'nav-hero',
+      title: 'Jump: Return to Top',
       category: 'Navigation',
-      desc: 'View Neovim, Go, Rust, TypeScript, Cloudflare, Linux',
-      action: () => scrollToSection('stack'),
-      keywords: 'stack tools neovim rust go linux typescript cloudflare'
+      desc: 'Scroll back to the top of Clownhouse',
+      action: () => scrollToSection('hero'),
+      keywords: 'home hero top brand start'
     },
     {
-      id: 'nav-activity',
-      title: 'Jump: Activity & Momentum Telemetry',
-      category: 'Navigation',
-      desc: 'View commit cadence sparklines and edge metrics',
-      action: () => scrollToSection('activity'),
-      keywords: 'momentum activity commits telemetry uptime sparklines'
+      id: 'link-github',
+      title: 'Source: GitHub Repository',
+      category: 'Source Code',
+      desc: 'View clownhouse.io repository on GitHub',
+      url: 'https://github.com/studio2201/clownhouse.io',
+      external: true,
+      keywords: 'github repo source code git studio2201'
     },
     {
       id: 'act-theme',

@@ -419,58 +419,36 @@ code, pre, kbd {
 }
 
 .hero-title {
-  font-size: clamp(2.75rem, 8vw, 5.5rem);
+  font-size: clamp(3rem, 9vw, 6rem);
   font-weight: 800;
-  line-height: 0.92;
+  line-height: 0.95;
   letter-spacing: -0.04em;
   color: var(--text-primary);
 }
 
-.hero-tld {
+.hero-dot {
   color: var(--accent);
+}
+
+.hero-byline {
   font-family: var(--font-mono);
-  font-weight: 700;
+  font-size: 1.125rem;
+  color: var(--text-muted);
+  letter-spacing: -0.01em;
+}
+
+.hero-author {
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 .hero-tagline {
-  font-size: 1.125rem;
+  font-size: 1.15rem;
   font-weight: 400;
   line-height: 1.6;
   letter-spacing: -0.01em;
   color: var(--text-secondary);
-}
-
-.hero-description {
-  font-size: 0.9375rem;
-  line-height: 1.65;
-  color: var(--text-muted);
-  max-width: 780px;
-}
-
-.hero-telemetry-strip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 1.75rem;
-  padding: 0.85rem 1.1rem;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--card-radius);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-}
-
-.telemetry-item {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.telemetry-label {
-  color: var(--text-muted);
-}
-
-.telemetry-value {
-  color: var(--accent);
+  max-width: 620px;
 }
 
 .hero-actions {
@@ -533,16 +511,6 @@ code, pre, kbd {
   max-width: 720px;
 }
 
-.section-badge {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 0.5rem;
-}
-
 .section-title {
   font-size: clamp(1.6rem, 3.5vw, 2.25rem);
   font-weight: 700;
@@ -558,20 +526,26 @@ code, pre, kbd {
   line-height: 1.55;
 }
 
-/* --- Editorial Cards Baseline --- */
+/* --- Editorial Project Cards --- */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
 .editorial-card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--card-radius);
-  padding: 1.75rem;
+  padding: 2rem 1.75rem;
   display: flex;
   flex-direction: column;
   transition: border-color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .editorial-card:hover {
-  border-color: var(--border-hover);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  border-color: var(--accent);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
   transform: translateY(-2px);
 }
 
@@ -579,57 +553,51 @@ code, pre, kbd {
   margin-bottom: 1rem;
 }
 
-.card-badge {
+.card-kicker {
+  display: inline-block;
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
 }
 
 .card-title {
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text-primary);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.35rem;
 }
 
 .card-tagline {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-secondary);
+  line-height: 1.4;
 }
 
 .card-copy {
   font-size: 0.875rem;
-  line-height: 1.6;
+  line-height: 1.65;
   color: var(--text-muted);
-  margin-bottom: 1.25rem;
-}
-
-.card-copy code {
-  font-size: 0.8125rem;
-  padding: 0.15rem 0.35rem;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  color: var(--text-primary);
+  margin-bottom: 1.5rem;
 }
 
 .status-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-bottom: 1.25rem;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
 }
 
 .tag {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
-  padding: 0.2rem 0.5rem;
-  background-color: var(--bg-secondary);
+  padding: 0.2rem 0.55rem;
+  background-color: var(--bg-surface-2);
   border: 1px solid var(--border);
   border-radius: 3px;
   color: var(--text-secondary);
@@ -646,9 +614,9 @@ code, pre, kbd {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  height: 34px;
-  padding: 0 0.85rem;
-  border-radius: 4px;
+  height: 36px;
+  padding: 0 1rem;
+  border-radius: var(--pill-radius);
   font-size: 0.75rem;
   font-family: var(--font-mono);
   font-weight: 500;
@@ -663,12 +631,13 @@ code, pre, kbd {
 }
 
 .primary-btn:hover {
-  opacity: 0.9;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent) 30%, transparent);
+  opacity: 0.92;
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--accent) 35%, transparent);
+  transform: translateY(-1px);
 }
 
 .secondary-btn {
-  background-color: var(--bg-secondary);
+  background-color: var(--bg-surface-2);
   border: 1px solid var(--border);
   color: var(--text-secondary);
 }
@@ -678,66 +647,9 @@ code, pre, kbd {
   color: var(--text-primary);
 }
 
-/* --- Featured Projects Grid --- */
-.projects-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
-
 .project-card {
   height: 100%;
 }
-
-/* Terminal, Gauge & Waveform Preview Blocks */
-.terminal-preview, .telemetry-gauge, .waveform-preview {
-  background-color: var(--field-bg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  margin-bottom: 1.25rem;
-  overflow: hidden;
-  font-family: var(--font-mono);
-}
-
-.terminal-header, .gauge-header, .waveform-header {
-  padding: 0.5rem 0.75rem;
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: 0.6875rem;
-  color: var(--text-muted);
-}
-
-.terminal-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-.terminal-dot.red { background-color: #f7768e; }
-.terminal-dot.yellow { background-color: #e0af68; }
-.terminal-dot.green { background-color: #9ece6a; }
-
-.terminal-body, .gauge-body, .waveform-body {
-  padding: 0.85rem;
-  font-size: 0.75rem;
-  line-height: 1.45;
-  color: var(--text-secondary);
-  overflow-x: auto;
-}
-
-.terminal-body code {
-  font-family: inherit;
-  white-space: pre;
-}
-
-.terminal-body .comment { color: var(--text-muted); }
-.terminal-body .keyword { color: #bb9af7; }
-.terminal-body .func { color: #7aa2f7; }
-.terminal-body .type { color: #2ac3de; }
-.terminal-body .string { color: #9ece6a; }
 
 /* --- Labs & Cluster Services Section --- */
 .services-grid {
@@ -754,15 +666,8 @@ code, pre, kbd {
   margin-bottom: 0.75rem;
 }
 
-.service-badge {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  color: var(--accent);
-  margin-bottom: 0.35rem;
-}
-
 .service-title {
-  font-size: 1.15rem;
+  font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text-primary);
@@ -805,146 +710,6 @@ code, pre, kbd {
 .service-btn {
   margin-top: auto;
   width: fit-content;
-}
-
-/* --- Developer Stack Grid --- */
-.stack-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
-}
-
-.stack-card {
-  display: flex;
-  gap: 1.1rem;
-  padding: 1.35rem;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--card-radius);
-  transition: border-color var(--transition-fast), background-color var(--transition-fast);
-}
-
-.stack-card:hover {
-  border-color: var(--border-hover);
-  background-color: var(--bg-surface-2);
-}
-
-.stack-icon-wrap {
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  border-radius: 6px;
-  background-color: var(--bg-secondary);
-  border: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.stack-glyph {
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.stack-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.stack-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.stack-role {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  color: var(--accent);
-  letter-spacing: 0.04em;
-}
-
-.stack-desc {
-  font-size: 0.8125rem;
-  line-height: 1.5;
-  color: var(--text-muted);
-  margin-top: 0.35rem;
-}
-
-/* --- Activity & Momentum Telemetry --- */
-.momentum-terminal {
-  background-color: var(--field-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--card-radius);
-  overflow: hidden;
-  margin-bottom: 2rem;
-}
-
-.momentum-terminal-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.65rem 1rem;
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-.momentum-status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: var(--accent);
-  box-shadow: 0 0 6px var(--accent);
-}
-
-.momentum-code {
-  padding: 1.25rem;
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  line-height: 1.5;
-  color: var(--text-primary);
-  overflow-x: auto;
-}
-
-.telemetry-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
-}
-
-.telemetry-card {
-  padding: 1.25rem;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--card-radius);
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.telemetry-metric {
-  font-family: var(--font-mono);
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: -0.02em;
-}
-
-.telemetry-card .telemetry-label {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.telemetry-sub {
-  font-size: 0.75rem;
-  color: var(--text-muted);
 }
 
 /* --- Site Footer --- */
@@ -1324,14 +1089,6 @@ code, pre, kbd {
     gap: 1.25rem;
   }
 
-  .stack-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .telemetry-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .footer-top {
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
@@ -1363,14 +1120,6 @@ code, pre, kbd {
 
   .action-pill {
     justify-content: center;
-  }
-
-  .stack-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .telemetry-grid {
-    grid-template-columns: 1fr;
   }
 
   .footer-top {

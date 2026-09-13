@@ -27,17 +27,6 @@ Engineered with the minimalist editorial aesthetic, high-contrast typography, an
 
 ---
 
-## 🛠️ Developer Workbench & Stack
-
-- **Neovim** — Modal editing cockpit extended with Lua, native LSP diagnostics, and Treesitter AST parsing.
-- **Go** — High-concurrency network daemons, telemetry collectors, and microservices.
-- **Rust** — Memory-safe systems programming and zero-cost WASM modules (`openOODA`, `necrometer`).
-- **TypeScript** — Strongly typed interfaces, MCP tool servers, and reactive client state machines.
-- **Cloudflare** — Global Anycast edge network, edge workers, TLS 1.3 encryption, and resilient DNS.
-- **Linux** — POSIX kernel foundation, cgroups, eBPF telemetry, and workstation substrate.
-
----
-
 ## 🎨 Omarchy Theme Engine
 
 clownhouse.io features 7 bespoke color palettes extracted directly from Omarchy design tokens:

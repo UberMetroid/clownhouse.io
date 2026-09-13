@@ -192,15 +192,15 @@ class TestM1InPageAnchorResolution(unittest.TestCase):
         cls.parser.feed(cls.html_content)
 
     def test_required_dispatch_anchors_exist_in_dom(self):
-        """Assert #projects, #services, #stack, #activity, #hero, #cluster, #momentum exist as DOM IDs."""
-        required_anchors = ["projects", "services", "stack", "activity", "hero", "cluster", "momentum"]
+        """Assert #projects, #services, #hero, #cluster exist as DOM IDs."""
+        required_anchors = ["projects", "services", "hero", "cluster"]
         for anchor in required_anchors:
             self.assertIn(anchor, self.parser.ids, f"Required DOM anchor #{anchor} is missing from index.html")
 
     def test_all_in_page_href_links_resolve(self):
         """Assert EVERY href='#...' in index.html resolves to an existing DOM ID."""
         fragment_links = [l["href"] for l in self.parser.links if l["href"] and l["href"].startswith("#")]
-        self.assertGreaterEqual(len(fragment_links), 5, "Expected in-page navigation anchors")
+        self.assertGreaterEqual(len(fragment_links), 3, "Expected in-page navigation anchors")
         for href in fragment_links:
             target_id = href[1:]
             self.assertIn(
@@ -217,7 +217,7 @@ class TestM1InPageAnchorResolution(unittest.TestCase):
     def test_landmark_sections_structure(self):
         """Assert primary landmark sections have appropriate semantic tags and IDs."""
         landmarks = {"site-header": "header", "hero": "section", "projects": "section",
-                     "services": "section", "stack": "section", "activity": "section", "site-footer": "footer"}
+                     "services": "section", "site-footer": "footer"}
         for el_id, expected_tag in landmarks.items():
             found = False
             for tag, attrs in self.parser.tags:

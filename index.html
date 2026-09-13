@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1a1b26" id="theme-color-meta">
-  <title>CLOWNHOUSE // Software Laboratory &amp; Systems Testbed</title>
-  <meta name="description" content="Personal software laboratory, agentic systems testbed, and underground frequencies by Jeryd. Featuring openOODA.org, necrometer.dev, and bumtrips.com.">
+  <title>CLOWNHOUSE // Jeryd</title>
+  <meta name="description" content="Personal software laboratory &amp; project hub by Jeryd. Featuring openOODA.org, necrometer.dev, and bumtrips.com.">
 
   <!-- Favicon & Stylesheet -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
@@ -27,19 +27,14 @@
         "sameAs": [
           "https://github.com/UberMetroid",
           "https://github.com/openOODA"
-        ],
-        "jobTitle": "Systems Architect & Software Lab Researcher",
-        "worksFor": {
-          "@type": "Organization",
-          "name": "Studio 2201"
-        }
+        ]
       },
       {
         "@type": "WebSite",
         "@id": "https://clownhouse.io/#website",
         "url": "https://clownhouse.io",
         "name": "CLOWNHOUSE.IO",
-        "description": "Software laboratory, agentic systems & underground frequencies by Jeryd.",
+        "description": "Personal software laboratory & projects by Jeryd.",
         "author": {
           "@id": "https://clownhouse.io/#jeryd"
         },
@@ -88,8 +83,6 @@
       <nav class="header-nav" aria-label="Primary Navigation">
         <a href="#projects" class="nav-anchor">Projects</a>
         <a href="#services" class="nav-anchor">Cluster</a>
-        <a href="#stack" class="nav-anchor">Stack</a>
-        <a href="#activity" class="nav-anchor">Activity</a>
       </nav>
 
       <div class="header-right">
@@ -132,37 +125,17 @@
     <!-- Hero Section -->
     <section id="hero" class="hero-section">
       <div class="hero-container">
-        <div class="hero-status-strip">
-          <span class="status-indicator"></span>
-          <span class="status-text">SOFTWARE LABORATORY // NODE CLW-2201 ACTIVE</span>
-        </div>
-
         <h1 class="hero-title">
-          CLOWNHOUSE<span class="hero-tld">.IO</span>
+          CLOWNHOUSE<span class="hero-dot">.</span>
         </h1>
 
+        <p class="hero-byline">
+          by <span class="hero-author">Jeryd</span>
+        </p>
+
         <p class="hero-tagline">
-          Software laboratory, agentic systems &amp; underground frequencies by Jeryd
+          Personal projects, software &amp; underground frequencies.
         </p>
-
-        <p class="hero-description">
-          Welcome to Clownhouse.io — the personal software laboratory, agentic systems testbed, and audio frequency outpost of Jeryd. Here sovereign AI architectures collide with high-performance systems programming, developer observability, and unfiltered counter-culture broadcasts.
-        </p>
-
-        <div class="hero-telemetry-strip">
-          <div class="telemetry-item">
-            <span class="telemetry-label">LOCATION:</span>
-            <span class="telemetry-value">Studio 2201 // Melbourne, AU</span>
-          </div>
-          <div class="telemetry-item">
-            <span class="telemetry-label">RUNTIME:</span>
-            <span class="telemetry-value">Static Web Standard (Zero-Dependency)</span>
-          </div>
-          <div class="telemetry-item">
-            <span class="telemetry-label">HOSTING:</span>
-            <span class="telemetry-value">Cloudflare Anycast Edge</span>
-          </div>
-        </div>
 
         <div class="hero-actions">
           <a href="https://openooda.org" class="action-pill primary-pill" target="_blank" rel="noopener noreferrer">
@@ -178,7 +151,7 @@
             <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
           </a>
           <button id="hero-palette-btn" class="action-pill palette-pill" aria-label="Open Command Palette">
-            <span>⌘K Command Palette</span>
+            <span>⌘K Search</span>
           </button>
         </div>
       </div>
@@ -188,47 +161,27 @@
     <section id="projects" class="section projects-section">
       <div class="section-container">
         <div class="section-header">
-          <div class="section-badge">FEATURED PROJECTS // SOVEREIGN SYSTEMS &amp; RESEARCH</div>
-          <h2 class="section-title">Core Architectures</h2>
-          <p class="section-subtitle">Autonomous agent loops, codebase observability matrices, and analog audio transmissions.</p>
+          <h2 class="section-title">Projects</h2>
+          <p class="section-subtitle">Things I'm actively building and experimenting with.</p>
         </div>
 
         <div class="projects-grid">
           <!-- Card 1: openOODA.org -->
           <article id="featured-openooda" class="editorial-card project-card">
             <div class="card-header">
-              <div class="card-badge">Sovereign Systems Language // Agentic Architecture</div>
+              <span class="card-kicker">Autonomous Systems</span>
               <h3 class="card-title">openOODA.org</h3>
-              <p class="card-tagline">Autonomous Agentic Architecture &amp; OODA Loop Systems</p>
+              <p class="card-tagline">Autonomous Agentic Architecture &amp; Sovereign Systems Language</p>
             </div>
 
             <p class="card-copy">
-              openOODA is a capability-secure systems language and deterministic runtime designed specifically for the age of sovereign AI agents. Processes are born with zero ambient authority: every effect—from network socket allocation to filesystem modification—requires an explicit, unforgeable capability token (<code>&amp;NetCap</code>, <code>&amp;TcpCap</code>, <code>&amp;FsCap</code>). Featuring an autonomous Observe → Orient → Decide → Act hardware loop, openOODA guarantees empirical replayability, IEEE 754 precision, and mathematically verifiable effect boundaries.
+              A capability-secure systems language and deterministic runtime built for autonomous AI agent loops. Zero ambient authority with explicit, unforgeable capability tokens and verifiable effect boundaries.
             </p>
 
             <div class="status-tags">
-              <span class="tag">[v0.4.2-alpha]</span>
-              <span class="tag">[Capability-Secure]</span>
-              <span class="tag">[Deterministic OODA]</span>
-              <span class="tag">[Zero Ambient Authority]</span>
-              <span class="tag">[Rust / LLVM]</span>
-            </div>
-
-            <!-- Terminal Snippet Micro-Block -->
-            <div class="terminal-preview" aria-label="openOODA Code Sample">
-              <div class="terminal-header">
-                <span class="terminal-dot red"></span>
-                <span class="terminal-dot yellow"></span>
-                <span class="terminal-dot green"></span>
-                <span class="terminal-title">agent_dispatch.oo</span>
-              </div>
-              <pre class="terminal-body"><code><span class="comment">// Sealed effect requiring explicit unforgeable capability token</span>
-<span class="keyword">import</span> <span class="string">"std/net/http.oo"</span>;
-
-<span class="keyword">pub fn</span> <span class="func">dispatch_agent</span>(net: &amp;<span class="type">TcpCap</span>, token: &amp;<span class="type">AuthCap</span>) -&gt; <span class="type">Result</span>&lt;<span class="type">Trace</span>, <span class="type">Error</span>&gt; {
-    <span class="keyword">let</span> response = <span class="func">http_get</span>(net, <span class="string">"https://openooda.org/agent.bin"</span>)?;
-    ooda::<span class="func">verify_sealed_loop</span>(token, response)
-}</code></pre>
+              <span class="tag">Autonomous Agents</span>
+              <span class="tag">Capability Security</span>
+              <span class="tag">Deterministic Loop</span>
             </div>
 
             <div class="card-actions">
@@ -237,7 +190,7 @@
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
               </a>
               <a href="https://github.com/openOODA" class="card-btn secondary-btn" target="_blank" rel="noopener noreferrer" aria-label="View openOODA GitHub Repository">
-                <span>GitHub Repository</span>
+                <span>GitHub</span>
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
               </a>
             </div>
@@ -246,43 +199,24 @@
           <!-- Card 2: necrometer.dev -->
           <article id="featured-necrometer" class="editorial-card project-card">
             <div class="card-header">
-              <div class="card-badge">Developer Observability // Mortality Metrics</div>
+              <span class="card-kicker">Developer Observability</span>
               <h3 class="card-title">necrometer.dev</h3>
               <p class="card-tagline">Developer Telemetry, Metrics &amp; Observability Matrix</p>
             </div>
 
             <p class="card-copy">
-              How dead is your code? The Necrometer is a precision developer telemetry instrument that calculates codebase decay, PR stagnation, and commit halflives. Built with a zero-server architecture, it compiles a custom Rust engine directly to WebAssembly (<code>necrometer_bg.wasm</code>) to exhume GitHub repository health client-side. Generates automated SVG mortality badges that carve themselves daily via GitHub Actions workflows and exposes a structured agent rite for automated repository triage.
+              How dead is your code? A precision developer telemetry instrument calculating codebase decay, PR stagnation, and commit lifecycles via a zero-server client-side architecture.
             </p>
 
             <div class="status-tags">
-              <span class="tag">[Rust / WASM Engine]</span>
-              <span class="tag">[Zero-Server Client-Side]</span>
-              <span class="tag">[GitHub Telemetry]</span>
-              <span class="tag">[Automated README Carving]</span>
-              <span class="tag">[Agents.md Protocol]</span>
-            </div>
-
-            <!-- Sensor Gauge & Corpse Ticker Preview -->
-            <div class="telemetry-gauge" aria-label="Necrometer Sensor Readout">
-              <div class="gauge-header">
-                <span class="gauge-icon">💀</span>
-                <span class="gauge-title">NECROMETER MK I // SENSOR READOUT</span>
-              </div>
-              <pre class="gauge-body"><code>┌────────────────────────────────────────────────────────┐
-│ SUBJECT: studio2201/clownhouse.io                      │
-│ MORTALITY: 0.2% [HALE] ··· CADENCE: ACTIVE             │
-│ HALFLIFE: 840 DAYS ··· LAST EXHUMED: TODAY             │
-└────────────────────────────────────────────────────────┘</code></pre>
+              <span class="tag">Codebase Telemetry</span>
+              <span class="tag">Observability</span>
+              <span class="tag">Zero-Server</span>
             </div>
 
             <div class="card-actions">
               <a href="https://necrometer.dev" class="card-btn primary-btn" target="_blank" rel="noopener noreferrer" aria-label="Launch necrometer.dev in new window">
                 <span>Exhume Metrics</span>
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-              </a>
-              <a href="https://necrometer.dev/agents.md" class="card-btn secondary-btn" target="_blank" rel="noopener noreferrer" aria-label="View Agent Rite Specification">
-                <span>Agent Rite Spec</span>
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
               </a>
             </div>
@@ -291,31 +225,19 @@
           <!-- Card 3: bumtrips.com -->
           <article id="featured-bumtrips" class="editorial-card project-card">
             <div class="card-header">
-              <div class="card-badge">Underground Audio // Field Recordings &amp; Psychedelia</div>
+              <span class="card-kicker">Underground Audio</span>
               <h3 class="card-title">bumtrips.com</h3>
               <p class="card-tagline">Beatniks, Bumtrips &amp; Bullshit — Underground Audio &amp; Counter-Culture</p>
             </div>
 
             <p class="card-copy">
-              A field-recorded auditory odyssey through literature, consciousness, mysticism, and counterculture. Beatniks, Bumtrips &amp; Bullshit rolls the microphone whenever spontaneous conversations plunge into art, dreams, paranoia, and the rhythms of thought. With over 226 transmissions field-recorded across North Africa, Cairo, and beyond, the broadcast is accompanied by procedural analog drones and syndicated across all major decentralized and global podcast networks.
+              An auditory journey through literature, consciousness, and counter-culture. Field recordings, unfiltered conversations, and experimental audio frequencies.
             </p>
 
             <div class="status-tags">
-              <span class="tag">[226+ Transmissions]</span>
-              <span class="tag">[Binaural Field Audio]</span>
-              <span class="tag">[Analog Drone / 432Hz]</span>
-              <span class="tag">[Autonomous Webcraft]</span>
-              <span class="tag">[Raw RSS Syndication]</span>
-            </div>
-
-            <!-- Transmission Waveform Micro-Block -->
-            <div class="waveform-preview" aria-label="Transmission Waveform Preview">
-              <div class="waveform-header">
-                <span class="waveform-icon">♫</span>
-                <span class="waveform-title">TRANSMISSION № 226: "Bottled At The Source"</span>
-              </div>
-              <pre class="waveform-body"><code>[01:03:14] █ ▃ ▅ ▇ █ ▅ ▃ ▆ █ ▇ ▅ ▃ ▂ ▄ ▅ ▇ █ ▆ ▄ ▃ 432Hz STEREO
-RECENT: № 225 "The Suns Out Boys!" ··· № 224 "Night in North Africa"</code></pre>
+              <span class="tag">Field Audio</span>
+              <span class="tag">Counter-Culture</span>
+              <span class="tag">Transmissions</span>
             </div>
 
             <div class="card-actions">
@@ -323,8 +245,8 @@ RECENT: № 225 "The Suns Out Boys!" ··· № 224 "Night in North Africa"</cod
                 <span>Listen to Transmissions</span>
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
               </a>
-              <a href="https://anchor.fm/s/4431c4ac/podcast/rss" class="card-btn secondary-btn" target="_blank" rel="noopener noreferrer" aria-label="Raw Podcast RSS Feed">
-                <span>Podcast RSS</span>
+              <a href="https://anchor.fm/s/4431c4ac/podcast/rss" class="card-btn secondary-btn" target="_blank" rel="noopener noreferrer" aria-label="Podcast RSS Feed">
+                <span>RSS Feed</span>
                 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
               </a>
             </div>
@@ -338,21 +260,20 @@ RECENT: № 225 "The Suns Out Boys!" ··· № 224 "Night in North Africa"</cod
       <span id="cluster" class="anchor-target" aria-hidden="true"></span>
       <div class="section-container">
         <div class="section-header">
-          <div class="section-badge">LABS &amp; CLUSTER SERVICES // NODE DIRECTORY</div>
-          <h2 class="section-title">Active Cluster Endpoints</h2>
-          <p class="section-subtitle">Decentralized services, compute nodes, and direct communication ingress.</p>
+          <h2 class="section-title">Cluster &amp; Services</h2>
+          <p class="section-subtitle">Active subdomains and endpoints.</p>
         </div>
 
         <div class="services-grid">
           <!-- Service Card 1: reactle.clownhouse.io -->
           <article id="service-reactle" class="editorial-card service-card">
             <div class="service-header">
-              <div class="service-badge">[Subdomain Service] · [Frontend Lab] · [Edge Cached]</div>
-              <h3 class="service-title">Reactle Game Terminal</h3>
-              <p class="service-subhead">Retro 1980s Cryptic Word Puzzle</p>
+              <span class="card-kicker">Subdomain</span>
+              <h3 class="service-title">Reactle</h3>
+              <p class="service-subhead">Wordle-Style Word Game</p>
             </div>
             <p class="service-description">
-              A lightweight, zero-telemetry Wordle-inspired word guessing game running a custom React state engine. Clean, responsive, and tuned for daily terminal linguistic calibration.
+              A clean, lightweight terminal-style word guessing game.
             </p>
             <div class="service-meta">
               <span class="meta-label">ENDPOINT:</span>
@@ -367,12 +288,12 @@ RECENT: № 225 "The Suns Out Boys!" ··· № 224 "Night in North Africa"</cod
           <!-- Service Card 2: giggle.clownhouse.io -->
           <article id="service-giggle" class="editorial-card service-card">
             <div class="service-header">
-              <div class="service-badge">[Cluster Node] · [SearXNG Compute] · [0 Trackers]</div>
-              <h3 class="service-title">Giggle Compute Node</h3>
-              <p class="service-subhead">Privacy-Respecting SearXNG Metasearch Engine</p>
+              <span class="card-kicker">Subdomain</span>
+              <h3 class="service-title">Giggle</h3>
+              <p class="service-subhead">Private Metasearch Node</p>
             </div>
             <p class="service-description">
-              A dedicated cluster compute node hosting SearXNG. Strips tracking beacons, user profiling, and ad network cookies to deliver unbiased, multi-engine research aggregation for autonomous agents and private lab browsing.
+              Dedicated SearXNG privacy metasearch instance with zero tracking.
             </p>
             <div class="service-meta">
               <span class="meta-label">ENDPOINT:</span>
@@ -387,159 +308,21 @@ RECENT: № 225 "The Suns Out Boys!" ··· № 224 "Night in North Africa"</cod
           <!-- Service Card 3: jeryd@clownhouse.io -->
           <article id="service-email" class="editorial-card service-card">
             <div class="service-header">
-              <div class="service-badge">[Direct Route] · [Encrypted Ingress] · [PGP Ready]</div>
-              <h3 class="service-title">Direct Ingress Line</h3>
-              <p class="service-subhead">Cloudflare High-Speed Routed Email Ingress</p>
+              <span class="card-kicker">Contact</span>
+              <h3 class="service-title">Email</h3>
+              <p class="service-subhead">Direct Ingress</p>
             </div>
             <p class="service-description">
-              Direct cryptographic communication channel to Jeryd. Hardened against spam and telemetry via Cloudflare Email Routing with strict SPF/DKIM validation and zero mail server overhead.
+              Direct email communication via Cloudflare Email Routing.
             </p>
             <div class="service-meta">
               <span class="meta-label">ENDPOINT:</span>
               <span class="meta-value">jeryd@clownhouse.io</span>
             </div>
             <a href="mailto:jeryd@clownhouse.io" class="card-btn primary-btn service-btn">
-              <span>Transmit Dispatch ✉</span>
+              <span>Send Email ✉</span>
             </a>
           </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- Developer Stack & Workbench Grid Section -->
-    <section id="stack" class="section stack-section">
-      <div class="section-container">
-        <div class="section-header">
-          <div class="section-badge">DEVELOPER WORKBENCH // TOOLING &amp; PRIMITIVES</div>
-          <h2 class="section-title">Engineering Stack</h2>
-          <p class="section-subtitle">The low-level systems, compilers, and cloud edge fabric powering the laboratory.</p>
-        </div>
-
-        <div class="stack-grid">
-          <!-- Stack 1: Neovim -->
-          <div id="stack-neovim" class="stack-card">
-            <div class="stack-icon-wrap">
-              <span class="stack-glyph">NV</span>
-            </div>
-            <div class="stack-info">
-              <h3 class="stack-title">Neovim</h3>
-              <span class="stack-role">Editor &amp; Cockpit</span>
-              <p class="stack-desc">Modal text editor extended with Lua, native LSP diagnostics, Treesitter AST parsing, and instantaneous millisecond load times.</p>
-            </div>
-          </div>
-
-          <!-- Stack 2: Go -->
-          <div id="stack-go" class="stack-card">
-            <div class="stack-icon-wrap">
-              <span class="stack-glyph">GO</span>
-            </div>
-            <div class="stack-info">
-              <h3 class="stack-title">Go</h3>
-              <span class="stack-role">Network Systems</span>
-              <p class="stack-desc">Statically typed, concurrent language featuring lightweight goroutines and CSP channel pipelines for high-throughput network daemons.</p>
-            </div>
-          </div>
-
-          <!-- Stack 3: Rust -->
-          <div id="stack-rust" class="stack-card">
-            <div class="stack-icon-wrap">
-              <span class="stack-glyph">RS</span>
-            </div>
-            <div class="stack-info">
-              <h3 class="stack-title">Rust</h3>
-              <span class="stack-role">Systems &amp; WASM</span>
-              <p class="stack-desc">Memory-safe systems programming without garbage collection; powers the openOODA capability runtime and necrometer WebAssembly core.</p>
-            </div>
-          </div>
-
-          <!-- Stack 4: TypeScript -->
-          <div id="stack-typescript" class="stack-card">
-            <div class="stack-icon-wrap">
-              <span class="stack-glyph">TS</span>
-            </div>
-            <div class="stack-info">
-              <h3 class="stack-title">TypeScript</h3>
-              <span class="stack-role">Typed Interfaces</span>
-              <p class="stack-desc">Strongly typed superset enforcing strict type contracts, schema safety, and resilient APIs across web clients and MCP servers.</p>
-            </div>
-          </div>
-
-          <!-- Stack 5: Cloudflare -->
-          <div id="stack-cloudflare" class="stack-card">
-            <div class="stack-icon-wrap">
-              <span class="stack-glyph">CF</span>
-            </div>
-            <div class="stack-info">
-              <h3 class="stack-title">Cloudflare</h3>
-              <span class="stack-role">Edge Mesh &amp; DNS</span>
-              <p class="stack-desc">Global Anycast edge network providing sub-15ms latency, TLS 1.3 encryption, DDoS mitigation, and zero-telemetry email routing.</p>
-            </div>
-          </div>
-
-          <!-- Stack 6: Linux -->
-          <div id="stack-linux" class="stack-card">
-            <div class="stack-icon-wrap">
-              <span class="stack-glyph">LX</span>
-            </div>
-            <div class="stack-info">
-              <h3 class="stack-title">Linux</h3>
-              <span class="stack-role">Operating Foundation</span>
-              <p class="stack-desc">UNIX-like POSIX kernel substrate featuring cgroups, eBPF observability, systemd daemons, and terminal-first productivity.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Activity & Momentum Section -->
-    <section id="activity" class="section activity-section">
-      <span id="momentum" class="anchor-target" aria-hidden="true"></span>
-      <div class="section-container">
-        <div class="section-header">
-          <div class="section-badge">TELEMETRY // CADENCE &amp; OBSERVABILITY</div>
-          <h2 class="section-title">Activity &amp; System Momentum</h2>
-          <p class="section-subtitle">Normalized 12-week commit cadence and live distributed edge telemetry.</p>
-        </div>
-
-        <div class="momentum-terminal">
-          <div class="momentum-terminal-header">
-            <span class="momentum-status-dot"></span>
-            <span class="momentum-terminal-title">CLOWNHOUSE LABS // PROJECT MOMENTUM &amp; CADENCE TELEMETRY</span>
-          </div>
-          <pre class="momentum-code"><code>┌────────────────────────────────────────────────────────────────────────┐
-│ CLOWNHOUSE LABS // PROJECT MOMENTUM &amp; CADENCE TELEMETRY                │
-├────────────────────────────────────────────────────────────────────────┤
-│ openOODA.org   [SYS]   ▆▇██▇▆▅▆▇████▇▆▅▆▇█  98.4% CADENCE // 142 COMMITS │
-│ necrometer.dev [WASM]  ▃▄▅▆▇▇▆▅▄▃▄▅▆▇▇██▇▆  94.1% CADENCE //  68 COMMITS │
-│ bumtrips.com   [AUD]   ▄▅▅▆▇▆▅▄▅▆▇██▇▆▅▆▇█  96.8% CADENCE // 226 EPISODES│
-│ clownhouse.io  [HUB]   ▂▃▄▅▆▇████▇▆▅▄▃▂ ▂▃  99.9% UPTIME  //  34 COMMITS │
-├────────────────────────────────────────────────────────────────────────┤
-│ CADENCE SPECTRUM:  ▂▃▄▅▆▇█ [NORMALIZED 12-WEEK COMMIT DENSITY]         │
-└────────────────────────────────────────────────────────────────────────┘</code></pre>
-        </div>
-
-        <!-- Live Telemetry Metric Grid -->
-        <div class="telemetry-grid">
-          <div class="telemetry-card">
-            <span class="telemetry-metric">99.98%</span>
-            <span class="telemetry-label">Edge Availability</span>
-            <span class="telemetry-sub">Cloudflare Anycast Mesh</span>
-          </div>
-          <div class="telemetry-card">
-            <span class="telemetry-metric">6 ACTIVE</span>
-            <span class="telemetry-label">Agentic Loops</span>
-            <span class="telemetry-sub">Autonomous Continuous Cycles</span>
-          </div>
-          <div class="telemetry-card">
-            <span class="telemetry-metric">14ms</span>
-            <span class="telemetry-label">Edge Latency</span>
-            <span class="telemetry-sub">Melbourne / Sydney Edge</span>
-          </div>
-          <div class="telemetry-card">
-            <span class="telemetry-metric">0 DEPENDENCIES</span>
-            <span class="telemetry-label">Code Purity</span>
-            <span class="telemetry-sub">100% Vanilla HTML5 / CSS3 / ES6</span>
-          </div>
         </div>
       </div>
     </section>
@@ -551,8 +334,8 @@ RECENT: № 225 "The Suns Out Boys!" ··· № 224 "Night in North Africa"</cod
       <div class="footer-top">
         <div class="footer-brand">
           <div class="footer-title">CLOWNHOUSE.IO</div>
-          <p class="footer-bio">Personal software laboratory, sovereign systems testbed, and underground frequencies by Jeryd.</p>
-          <div class="footer-attribution">&copy; 2026 CLOWNHOUSE.IO // Studio 2201 — Built by Jeryd</div>
+          <p class="footer-bio">Projects &amp; experiments by Jeryd.</p>
+          <div class="footer-attribution">&copy; 2026 CLOWNHOUSE.IO — Built by Jeryd</div>
         </div>
 
         <div class="footer-links-col">
@@ -570,20 +353,20 @@ RECENT: № 225 "The Suns Out Boys!" ··· № 224 "Night in North Africa"</cod
         </div>
 
         <div class="footer-links-col">
-          <span class="footer-col-title">SOURCES &amp; FEEDS</span>
+          <span class="footer-col-title">LINKS</span>
           <a href="https://github.com/UberMetroid" target="_blank" rel="noopener noreferrer">GitHub (@UberMetroid)</a>
-          <a href="https://github.com/studio2201/clownhouse.io" target="_blank" rel="noopener noreferrer">Source Repository</a>
-          <a href="https://anchor.fm/s/4431c4ac/podcast/rss" target="_blank" rel="noopener noreferrer">Podcast RSS Feed</a>
+          <a href="https://github.com/studio2201/clownhouse.io" target="_blank" rel="noopener noreferrer">Repository</a>
+          <a href="https://anchor.fm/s/4431c4ac/podcast/rss" target="_blank" rel="noopener noreferrer">Podcast RSS</a>
         </div>
       </div>
 
       <div class="footer-bottom">
         <div class="footer-shortcuts">
-          <span class="shortcut-item"><kbd>T</kbd> Cycle Theme</span>
+          <span class="shortcut-item"><kbd>T</kbd> Theme</span>
           <span class="shortcut-divider">·</span>
-          <span class="shortcut-item"><kbd>⌘K</kbd> / <kbd>Ctrl+K</kbd> Command Palette</span>
+          <span class="shortcut-item"><kbd>⌘K</kbd> Search</span>
           <span class="shortcut-divider">·</span>
-          <span class="shortcut-item"><kbd>ESC</kbd> Close Dialogs</span>
+          <span class="shortcut-item"><kbd>Space</kbd> Audio</span>
         </div>
         <div class="footer-edge-meta">
           Served via Cloudflare Anycast · Pure Static HTML5 / CSS3 / ES6
