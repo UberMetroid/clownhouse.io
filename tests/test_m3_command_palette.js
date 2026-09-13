@@ -189,6 +189,7 @@ async function runPaletteSuite(runIndex) {
   assert(hasItem('theme-vanta'), 'Catalog contains Vantablack theme');
   assert(hasItem('act-audio'), 'Catalog contains audio toggle action');
   assert(hasItem('act-theme-random'), 'Catalog contains random theme action');
+  assert(hasItem('track-chrono-corridors'), 'Catalog contains Chrono Trigger Corridors of Time track');
   assert(hasItem('track-fix-everything'), 'Catalog contains We Can Fix Everything soundtrack');
   assert(hasItem('track-lab01'), 'Catalog contains LAB-01 Carrier Drift track');
   assert(hasItem('track-lab02'), 'Catalog contains LAB-02 Cybernetic Drone track');

@@ -283,18 +283,24 @@ async function runTestSuite(runIndex) {
   // 2. Track Catalog Metadata Accuracy
   console.log('\n--- 2. Track Catalog Metadata ---');
   const expectedTrack = {
-    id: 'fix-everything',
-    title: 'We Can Fix Everything',
-    artist: 'Kevin Koontz',
-    freq: 'Kevin Koontz'
+    id: 'corridors-of-time',
+    title: 'Corridors of Time',
+    artist: 'Yasunori Mitsuda',
+    freq: 'Chrono Trigger · Kingdom of Zeal'
   };
 
   const act = audio.TRACKS[0];
   assert(act && act.id === expectedTrack.id, `Track 0 ID is "${expectedTrack.id}"`);
   assert(act && act.title === expectedTrack.title, `Track 0 title is "${expectedTrack.title}"`);
   assert(act && act.artist === expectedTrack.artist, `Track 0 artist is "${expectedTrack.artist}"`);
-  assert(act && act.src === 'music/kevin_koontz-we_can_fix_everything.mp3', 'Track 0 src points to Kevin Koontz MP3');
-  assert(act && act.art === 'music/kevin_koontz-we_can_fix_everything.webp', 'Track 0 art points to Kevin Koontz WebP');
+  assert(act && act.src === 'music/chrono_trigger-corridors_of_time.mp3', 'Track 0 src points to Chrono Trigger Corridors of Time MP3');
+  assert(act && act.art === 'music/chrono_trigger.webp', 'Track 0 art points to Chrono Trigger WebP');
+
+  // Verify track 1 is Wind Scene
+  const track1 = audio.TRACKS[1];
+  assert(track1 && track1.id === 'wind-scene', 'Track 1 ID is "wind-scene"');
+  assert(track1 && track1.title === 'Wind Scene', 'Track 1 title is "Wind Scene"');
+  assert(track1 && track1.src === 'music/chrono_trigger-wind_scene.mp3', 'Track 1 src points to Chrono Trigger Wind Scene MP3');
 
   // 3. Volume Clamping & Numerical Boundary Fuzzing
   console.log('\n--- 3. Volume Boundary Clamping ---');
@@ -321,10 +327,13 @@ async function runTestSuite(runIndex) {
   assert(audio.getState().trackIndex === 0, 'setTrack(0) sets trackIndex to 0');
 
   audio.nextTrack();
-  assert(audio.getState().trackIndex === 0, 'nextTrack() wraps modulo cleanly to 0');
+  assert(audio.getState().trackIndex === 1, 'nextTrack() advances to 1 (Wind Scene)');
+
+  audio.nextTrack();
+  assert(audio.getState().trackIndex === 0, 'nextTrack() wraps modulo cleanly to 0 (Corridors of Time)');
 
   audio.prevTrack();
-  assert(audio.getState().trackIndex === 0, 'prevTrack() wraps modulo cleanly to 0');
+  assert(audio.getState().trackIndex === 1, 'prevTrack() wraps modulo cleanly from 0 to 1');
 
   audio.setTrack(99);
   assert(audio.getState().trackIndex === 0, 'setTrack(99) out-of-bounds falls back to 0');

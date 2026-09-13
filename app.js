@@ -453,6 +453,32 @@
       keywords: 'next track skip frequency cycle ambient'
     },
     {
+      id: 'track-chrono-corridors',
+      title: 'Track: Corridors of Time — Chrono Trigger',
+      category: 'Audio Track',
+      desc: 'Chrono Trigger Kingdom of Zeal theme by Yasunori Mitsuda',
+      action: () => {
+        if (window.ClownAudio && typeof window.ClownAudio.setTrack === 'function') {
+          window.ClownAudio.setTrack(0);
+          window.ClownAudio.play();
+        }
+      },
+      keywords: 'chrono trigger corridors of time zeal palace yasunori mitsuda ost snes 12000 bc'
+    },
+    {
+      id: 'track-chrono-wind',
+      title: 'Track: Wind Scene — Chrono Trigger',
+      category: 'Audio Track',
+      desc: 'Chrono Trigger Middle Ages theme (600 A.D.) by Yasunori Mitsuda',
+      action: () => {
+        if (window.ClownAudio && typeof window.ClownAudio.setTrack === 'function') {
+          window.ClownAudio.setTrack(1);
+          window.ClownAudio.play();
+        }
+      },
+      keywords: 'chrono trigger wind scene yearnings of the wind 600 ad yasunori mitsuda ost snes'
+    },
+    {
       id: 'track-fix-everything',
       title: 'Track: We Can Fix Everything — Kevin Koontz',
       category: 'Audio Track',

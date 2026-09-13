@@ -26,13 +26,22 @@
   // --- Track Catalog Specification ---
   const TRACKS = Object.freeze([
     {
-      id: 'fix-everything',
-      title: 'We Can Fix Everything',
-      artist: 'Kevin Koontz',
-      freq: 'Kevin Koontz',
-      src: 'music/kevin_koontz-we_can_fix_everything.mp3',
-      art: 'music/kevin_koontz-we_can_fix_everything.webp',
-      desc: 'We Can Fix Everything by Kevin Koontz — Omarchy Original Soundtrack'
+      id: 'corridors-of-time',
+      title: 'Corridors of Time',
+      artist: 'Yasunori Mitsuda',
+      freq: 'Chrono Trigger · Kingdom of Zeal',
+      src: 'music/chrono_trigger-corridors_of_time.mp3',
+      art: 'music/chrono_trigger.webp',
+      desc: 'Corridors of Time (Kingdom of Zeal) from Chrono Trigger by Yasunori Mitsuda'
+    },
+    {
+      id: 'wind-scene',
+      title: 'Wind Scene',
+      artist: 'Yasunori Mitsuda',
+      freq: 'Chrono Trigger · 600 A.D.',
+      src: 'music/chrono_trigger-wind_scene.mp3',
+      art: 'music/chrono_trigger.webp',
+      desc: 'Wind Scene (Yearnings of the Wind) from Chrono Trigger by Yasunori Mitsuda'
     }
   ]);
 
