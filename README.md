@@ -1,32 +1,69 @@
-# clownhouse.io // 1982 Microsystems Hub
+# CLOWNHOUSE.IO // Software Laboratory
 
-Welcome to **clownhouse.io**, an authentic 1982 retro-computing terminal hub and edge gateway connecting the decentralized projects of Studio 2201.
+Welcome to **clownhouse.io** — the personal software laboratory, sovereign agentic systems testbed, and underground audio frequency outpost of **Jeryd** ([@UberMetroid](https://github.com/UberMetroid)).
 
-## 🕹️ 1982 CRT Interface Features
-- **Authentic Retro CRT Experience**: Scanline overlay, curvature vignette, subtle interlace phosphor glow, and power LED indicator.
-- **Microcomputer Palettes**:
-  - **Commodore 64 (1982 Default)**: Classic cobalt blue background (`#352879`), pastel lavender border (`#6c5eb5`), light blue typography (`#7a98e8`).
-  - **P1 Green Phosphor**: Vintage monochrome terminal (IBM 5151 / DEC VT100).
-  - **Amber Phosphor**: Warm early-80s monochrome monitor.
-  - **Tron Neon (1982)**: Cyber-grid cyan and neon magenta aesthetic.
-- **Web Audio 8-Bit Synthesizer**: Custom square-wave and triangle-wave sound effects simulating the Commodore 64 MOS 6581 SID sound chip (keystroke blips, command chirps, arpeggio launch chimes, and boot sequences).
-- **Interactive BASIC Terminal**:
-  - Type `HELP` or `?` for command listing.
-  - Type `10`, `20`, or `30` to launch primary destinations.
-  - Type `THEME <NAME>` to dynamically switch phosphor palettes.
-  - Type `SCANLINES ON/OFF` to toggle CRT scanlines.
-  - Type `SOUND ON/OFF` to toggle audio synthesis.
-  - Type `SYS 64738` to initiate a warm reboot.
-
-## 🌐 Primary Mainframe Destinations
-1. **[openOODA.org](https://openooda.org)**: Autonomous Agentic Architecture & OODA Loop Systems.
-2. **[Necrometer.dev](https://necrometer.dev)**: Developer Telemetry, Metrics & System Observability.
-3. **[Bumtrips.com](https://bumtrips.com)**: Beatniks, Bumtrips & Bullshit — Underground Audio & Counter-Culture.
-
-## 🎪 Clownhouse Cluster Services
-- **Reactle**: `https://reactle.clownhouse.io` (1980s Cryptic Word Guessing Terminal)
-- **Giggle**: `https://giggle.clownhouse.io` (Cluster Node)
-- **Email**: `jeryd@clownhouse.io` (Cloudflare High-Speed Routed Inbound Mail)
+Engineered with the minimalist editorial aesthetic, high-contrast typography, and responsive card layouts of [omarchy.org](https://omarchy.org).
 
 ---
-&copy; 1982 Studio2201 // Powered by GitHub Pages & Cloudflare Edge.
+
+## 🏛️ Core Projects
+
+- **[openOODA.org](https://openooda.org)** — *Autonomous Agentic Architecture & Sovereign Systems Language*  
+  A capability-secure systems language (`&NetCap`, `&TcpCap`, `&FsCap`) and deterministic runtime built for autonomous AI agents. Deterministic Observe-Orient-Decide-Act loops with zero ambient authority.
+
+- **[necrometer.dev](https://necrometer.dev)** — *Developer Telemetry, Metrics & Observability Matrix*  
+  Zero-server codebase mortality instrument powered by a custom Rust engine compiled directly to WebAssembly (`necrometer_bg.wasm`). Exhumes GitHub decay, PR stagnation, and carves automated SVG badges.
+
+- **[bumtrips.com](https://bumtrips.com)** — *Beatniks, Bumtrips & Bullshit — Underground Audio & Counter-Culture*  
+  Over 226 transmissions of binaural field audio, analog drones, consciousness research, and counter-culture literature field-recorded across North Africa, Cairo, and beyond.
+
+---
+
+## 🎪 Cluster Services & Labs
+
+- **[reactle.clownhouse.io](https://reactle.clownhouse.io)** — Retro 1980s daily cryptic word puzzle game.
+- **[giggle.clownhouse.io](https://giggle.clownhouse.io)** — Privacy-respecting SearXNG metasearch compute node (zero trackers, unbiased aggregation).
+- **[jeryd@clownhouse.io](mailto:jeryd@clownhouse.io)** — Direct cryptographic inbound mail line routed through Cloudflare Anycast Edge.
+
+---
+
+## 🛠️ Developer Workbench & Stack
+
+- **Neovim** — Modal editing cockpit extended with Lua, native LSP diagnostics, and Treesitter AST parsing.
+- **Go** — High-concurrency network daemons, telemetry collectors, and microservices.
+- **Rust** — Memory-safe systems programming and zero-cost WASM modules (`openOODA`, `necrometer`).
+- **TypeScript** — Strongly typed interfaces, MCP tool servers, and reactive client state machines.
+- **Cloudflare** — Global Anycast edge network, edge workers, TLS 1.3 encryption, and resilient DNS.
+- **Linux** — POSIX kernel foundation, cgroups, eBPF telemetry, and workstation substrate.
+
+---
+
+## 🎨 Omarchy Theme Engine
+
+clownhouse.io features 7 bespoke color palettes extracted directly from Omarchy design tokens:
+
+| Theme | Type | Background | Accent | Description |
+|---|---|---|---|---|
+| **Tokyo Night** | Dark | `#1a1b26` | `#9ece6a` | Default neon-infused dark terminal palette |
+| **Catppuccin** | Dark | `#1e1e2e` | `#89b4fa` | Soothing mocha pastel dark theme |
+| **Gruvbox** | Dark | `#282828` | `#7daea3` | Warm retro groove with earthy contrast |
+| **Nord** | Dark | `#2e3440` | `#81a1c1` | Arctic, north-bluish clean aesthetic |
+| **Rosé Pine** | Light | `#faf4ed` | `#56949f` | Warm paper light mode with pine accents |
+| **Ethereal** | Dark | `#060b1e` | `#7d82d9` | Deep cosmic indigo with amber highlights |
+| **Vantablack** | Dark | `#000000` | `#8d8d8d` | Pure pitch-black OLED monochrome |
+
+### Keyboard Shortcuts
+- **`T`** — Cycle through all 7 theme palettes in real time (persisted in `localStorage`).
+- **`⌘K` / `Ctrl+K`** or **`/`** — Open the Command Palette to search projects, services, and actions.
+
+---
+
+## 🚀 Architecture & Deployment
+
+- **Pure Static Stack**: 100% Vanilla HTML5, CSS3, and ES6 JavaScript. Zero build tools, zero external runtime dependencies.
+- **Zero Binary Audio Assets**: Procedural client-side Web Audio API synthesis for ambient frequency generation.
+- **Hosting**: GitHub Pages deployed from branch `main` at root `/` behind Cloudflare Anycast Edge proxy.
+
+---
+
+&copy; 2026 CLOWNHOUSE.IO // Studio 2201 — Built by Jeryd.

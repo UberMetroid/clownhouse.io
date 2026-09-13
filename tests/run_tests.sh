@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# clownhouse.io Master E2E Automated Test Runner
+# clownhouse.io Master Automated Test Runner
 #
-# Executes test suites across Tier 1 (Feature Coverage F01-F42),
-# Tier 2 (Boundary & Corner Cases), Tier 3 (Cross-Feature Pairwise),
-# Tier 4 (Real-World Scenarios), and Tier 5 (Adversarial Hardening).
+# Executes all test suites across:
+#   - Syntax & Structural Integrity (node --check, Python compilation)
+#   - M1: Foundation, DOM, Links & 7-Theme Engine (Unit, Mutation & Stress)
+#   - M2: Procedural Web Audio Engine & 4 Ambient Modes (Synthesis, EQ, Volume)
+#   - M3: Command Palette, Fuzzy Search & Keyboard Navigation
 # Enforces Double-Run State Invariance ($Run_1 == Run_2$).
 #
 # Usage:
 #   bash tests/run_tests.sh                # Run all test suites
-#   bash tests/run_tests.sh --tier 1       # Run specific tier
 #   bash tests/run_tests.sh --audit        # Fast structural & syntax audit
-#   bash tests/run_tests.sh --verbose      # Verbose unittest output
+#   bash tests/run_tests.sh --no-double-run # Single run only
 # ==============================================================================
 
 set -uo pipefail
@@ -28,22 +29,12 @@ CYAN='\033[0;36m'
 BOLD='\033[1m'
 RESET='\033[0m'
 
-TARGET_TIER=""
-VERBOSE=0
 AUDIT_ONLY=0
 DOUBLE_RUN=1
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --tier|-t)
-      TARGET_TIER="$2"
-      shift 2
-      ;;
-    --verbose|-v)
-      VERBOSE=1
-      shift
-      ;;
     --audit)
       AUDIT_ONLY=1
       shift
@@ -53,53 +44,54 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --help|-h)
-      echo "clownhouse.io E2E Test Suite Runner"
-      echo "Usage: $0 [--tier 1|2|3|4|5] [--verbose] [--audit] [--no-double-run]"
+      echo "clownhouse.io Automated Test Runner"
+      echo "Usage: $0 [--audit] [--no-double-run]"
       exit 0
       ;;
     *)
-      echo "Unknown option: $1"
-      exit 1
+      shift
       ;;
   esac
 done
 
 echo -e "${BOLD}${CYAN}==============================================================${RESET}"
-echo -e "${BOLD}${CYAN}   CLOWNHOUSE.IO // E2E AUTOMATED TEST SUITE RUNNER           ${RESET}"
+echo -e "${BOLD}${CYAN}   CLOWNHOUSE.IO // AUTOMATED TEST SUITE RUNNER               ${RESET}"
 echo -e "${BOLD}${CYAN}==============================================================${RESET}"
 echo -e "Project Root: ${PROJECT_ROOT}"
 echo -e "Timestamp:    $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 echo ""
 
 # ------------------------------------------------------------------------------
-# 1. Structural Syntax & Audit Check
+# 1. Structural Syntax & Integrity Check
 # ------------------------------------------------------------------------------
-echo -e "${BOLD}${BLUE}[1/3] Verifying JavaScript Syntax & Test Suite Integrity...${RESET}"
+echo -e "${BOLD}${BLUE}[1/4] Verifying JavaScript & Python Syntax Integrity...${RESET}"
 
 NODE_SYNTAX_FAIL=0
 if node --check app.js >/dev/null 2>&1; then
-  echo -e "  [PASS] app.js syntax validation (node --check)"
+  echo -e "  ${GREEN}[PASS]${RESET} app.js syntax validation (node --check)"
 else
-  echo -e "  [FAIL] app.js syntax validation failed"
+  echo -e "  ${RED}[FAIL]${RESET} app.js syntax validation failed"
   NODE_SYNTAX_FAIL=1
 fi
 
 if [[ -f "audio.js" ]]; then
   if node --check audio.js >/dev/null 2>&1; then
-    echo -e "  [PASS] audio.js syntax validation (node --check)"
+    echo -e "  ${GREEN}[PASS]${RESET} audio.js syntax validation (node --check)"
   else
-    echo -e "  [FAIL] audio.js syntax validation failed"
+    echo -e "  ${RED}[FAIL]${RESET} audio.js syntax validation failed"
     NODE_SYNTAX_FAIL=1
   fi
 fi
 
-# Verify Python test files compile
-python3 -m py_compile tests/test_helpers.py tests/test_tier1_features.py tests/test_tier2_boundary.py tests/test_tier3_pairwise.py tests/test_tier4_scenarios.py tests/test_tier5_adversarial.py >/dev/null 2>&1
-PY_COMPILE_STATUS=$?
-if [[ ${PY_COMPILE_STATUS} -eq 0 ]]; then
-  echo -e "  [PASS] All test suite scripts compiled without syntax errors"
+if python3 -m py_compile tests/test_m1_links_dom_themes.py >/dev/null 2>&1; then
+  echo -e "  ${GREEN}[PASS]${RESET} Python test suites compiled without syntax errors"
 else
-  echo -e "  [FAIL] Python compilation error in test scripts"
+  echo -e "  ${RED}[FAIL]${RESET} Python compilation error in test scripts"
+  NODE_SYNTAX_FAIL=1
+fi
+
+if [[ ${NODE_SYNTAX_FAIL} -ne 0 ]]; then
+  echo -e "${RED}Syntax validation failed. Halting.${RESET}"
   exit 1
 fi
 
@@ -112,66 +104,33 @@ fi
 # ------------------------------------------------------------------------------
 # 2. Execution Function
 # ------------------------------------------------------------------------------
-run_single_suite() {
-  local tier_num="$1"
-  local script_path="$2"
-  local tier_name="$3"
+execute_all_suites() {
+  local fails=0
 
   echo ""
-  echo -e "${BOLD}${CYAN}--- Running Tier ${tier_num}: ${tier_name} ---${RESET}"
+  echo -e "${BOLD}${CYAN}--- Suite 1: Milestone M1 DOM, Links & Themes (Python) ---${RESET}"
+  python3 tests/test_m1_links_dom_themes.py || fails=$((fails + 1))
 
-  local verbosity_flag=""
-  if [[ ${VERBOSE} -eq 1 ]]; then
-    verbosity_flag="-v"
-  fi
+  echo ""
+  echo -e "${BOLD}${CYAN}--- Suite 2: Milestone M1 Theme Engine Stress & CD/ViewTransition (Node) ---${RESET}"
+  node tests/challenger_m1_theme_stress.js || fails=$((fails + 1))
 
-  local out_file
-  out_file=$(mktemp)
-  python3 -m unittest "${script_path}" ${verbosity_flag} >"${out_file}" 2>&1
-  local exit_code=$?
+  echo ""
+  echo -e "${BOLD}${CYAN}--- Suite 3: Milestone M2 Procedural Web Audio Engine (Node) ---${RESET}"
+  node tests/test_m2_audio_engine.js || fails=$((fails + 1))
 
-  if [[ ${VERBOSE} -eq 1 || ${exit_code} -ne 0 ]]; then
-    cat "${out_file}"
-  else
-    # Extract test count summary
-    tail -n 2 "${out_file}"
-  fi
-  rm -f "${out_file}"
+  echo ""
+  echo -e "${BOLD}${CYAN}--- Suite 4: Milestone M3 Command Palette & Fuzzy Search (Node) ---${RESET}"
+  node tests/test_m3_command_palette.js || fails=$((fails + 1))
 
-  return ${exit_code}
-}
-
-execute_all_suites() {
-  local total_fails=0
-
-  if [[ -z "${TARGET_TIER}" || "${TARGET_TIER}" == "1" ]]; then
-    run_single_suite "1" "tests/test_tier1_features.py" "Feature Coverage (F01-F42)" || total_fails=$((total_fails + 1))
-  fi
-
-  if [[ -z "${TARGET_TIER}" || "${TARGET_TIER}" == "2" ]]; then
-    run_single_suite "2" "tests/test_tier2_boundary.py" "Boundary & Corner Cases" || total_fails=$((total_fails + 1))
-  fi
-
-  if [[ -z "${TARGET_TIER}" || "${TARGET_TIER}" == "3" ]]; then
-    run_single_suite "3" "tests/test_tier3_pairwise.py" "Cross-Feature Pairwise Combinations" || total_fails=$((total_fails + 1))
-  fi
-
-  if [[ -z "${TARGET_TIER}" || "${TARGET_TIER}" == "4" ]]; then
-    run_single_suite "4" "tests/test_tier4_scenarios.py" "Real-World Application Scenarios" || total_fails=$((total_fails + 1))
-  fi
-
-  if [[ -z "${TARGET_TIER}" || "${TARGET_TIER}" == "5" ]]; then
-    run_single_suite "5" "tests/test_tier5_adversarial.py" "Adversarial Hardening" || total_fails=$((total_fails + 1))
-  fi
-
-  return ${total_fails}
+  return ${fails}
 }
 
 # ------------------------------------------------------------------------------
-# 3. Test Suite Execution (Run 1)
+# 3. Test Execution Run 1
 # ------------------------------------------------------------------------------
 echo ""
-echo -e "${BOLD}${BLUE}[2/3] Executing Test Suite (Run 1)...${RESET}"
+echo -e "${BOLD}${BLUE}[2/3] Executing All Verification Suites (Run 1)...${RESET}"
 execute_all_suites
 RUN1_STATUS=$?
 
@@ -181,7 +140,7 @@ RUN1_STATUS=$?
 RUN2_STATUS=0
 if [[ ${DOUBLE_RUN} -eq 1 && ${RUN1_STATUS} -eq 0 ]]; then
   echo ""
-  echo -e "${BOLD}${BLUE}[3/3] Enforcing Double-Run Law (\$Run_1 == \$Run_2)...${RESET}"
+  echo -e "${BOLD}${BLUE}[3/3] Enforcing Double-Run Parity Law (\$Run_1 == \$Run_2)...${RESET}"
   execute_all_suites
   RUN2_STATUS=$?
   if [[ ${RUN1_STATUS} -ne ${RUN2_STATUS} ]]; then
@@ -199,11 +158,10 @@ echo -e "${BOLD}${CYAN}=========================================================
 echo -e "${BOLD}${CYAN}   TEST EXECUTION SUMMARY                                     ${RESET}"
 echo -e "${BOLD}${CYAN}==============================================================${RESET}"
 
-if [[ ${RUN1_STATUS} -eq 0 && ${NODE_SYNTAX_FAIL} -eq 0 ]]; then
-  echo -e "${BOLD}${GREEN}ALL TESTS PASSED WITH EXIT CODE 0${RESET}"
+if [[ ${RUN1_STATUS} -eq 0 && ${RUN2_STATUS} -eq 0 ]]; then
+  echo -e "${BOLD}${GREEN}ALL TESTS PASSED WITH EXIT CODE 0 (100% SUCCESS)${RESET}"
   exit 0
 else
   echo -e "${BOLD}${RED}TEST SUITE ENCOUNTERED FAILURES (Exit Code 1)${RESET}"
-  echo -e "${YELLOW}Note: Failures reflect pending feature implementations from Milestones M1-M3.${RESET}"
   exit 1
 fi
