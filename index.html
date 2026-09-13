@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLOWNHOUSE.IO // 1982 MICROSYSTEMS</title>
+  <meta name="description" content="clownhouse.io - 1982 Microcomputer Hub connecting OpenOODA, Necrometer, Bumtrips, and Clownhouse cluster nodes.">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="c64">
+  <!-- CRT Monitor Container -->
+  <div class="crt-monitor-case">
+    <!-- Monitor Bezel Header -->
+    <header class="bezel-top">
+      <div class="brand-badge">
+        <span class="badge-accent">■</span> CLOWNHOUSE-64 <span class="badge-sub">PERSONAL COMPUTER // 1982</span>
+      </div>
+      <div class="bezel-controls">
+        <div class="control-group">
+          <label for="theme-select" class="bezel-label">PALETTE:</label>
+          <select id="theme-select" class="bezel-select" aria-label="Screen Color Palette">
+            <option value="c64" selected>COMMODORE 64 (1982)</option>
+            <option value="green">P1 GREEN PHOSPHOR</option>
+            <option value="amber">AMBER PHOSPHOR</option>
+            <option value="tron">TRON NEON (1982)</option>
+          </select>
+        </div>
+        <button id="scanline-toggle" class="bezel-btn" title="Toggle CRT Scanline Overlay" aria-pressed="true">
+          SCANLINES: <span class="btn-state">ON</span>
+        </button>
+        <button id="sound-toggle" class="bezel-btn" title="Toggle 8-bit Sound FX" aria-pressed="false">
+          SOUND: <span class="btn-state">MUTED</span>
+        </button>
+        <div class="power-indicator">
+          <span class="led-light" aria-hidden="true"></span>
+          <span class="led-label">POWER</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- CRT Screen Outer Wrapper (Curvature & Vignette) -->
+    <main class="crt-screen-wrapper">
+      <div class="crt-glass">
+        <!-- Scanlines & Shadow Mask Overlay -->
+        <div class="crt-scanlines" id="crt-overlay" aria-hidden="true"></div>
+        <div class="crt-vignette" aria-hidden="true"></div>
+
+        <!-- Terminal / Content Area -->
+        <div class="screen-content" id="terminal-screen" tabindex="0" role="region" aria-label="Interactive 1982 Terminal">
+          
+          <!-- Boot Sequence Banner -->
+          <div class="boot-banner">
+            <pre class="banner-text">
+**** CLOWNHOUSE 64 BASIC V2.1 (1982) ****
+64K RAM SYSTEM  38911 BASIC BYTES FREE
+
+READY.
+<span class="highlight-line">LOAD "DIRECTORY",8,1</span>
+SEARCHING FOR DIRECTORY
+LOADING
+READY.
+RUN
+            </pre>
+          </div>
+
+          <!-- ASCII Art Title Banner -->
+          <div class="ascii-logo" aria-hidden="true">
+<pre>
+   ______ __                               __                           _       
+  / ____// /____  _      __ ____   ____   / /_   ____   __  __ _____ ___   (_)____  
+ / /    / // __ \| | /| / // __ \ / __ \ / __ \ / __ \ / / / // ___// _ \ / // __ \ 
+/ /___ / // /_/ /| |/ |/ // / / // / / // / / // /_/ // /_/ /(__  )/  __// // /_/ / 
+\____//_/ \____/ |__/|__//_/ /_//_/ /_//_/ /_/ \____/ \__,_//____/ \___//_/ \____/  
+================================================================================
+</pre>
+          </div>
+
+          <!-- System Introduction -->
+          <section class="section-intro">
+            <p class="prompt-narrative">
+              &gt; CENTRAL GATEWAY // ESTABLISHED 1982 // AUTONOMOUS CLUSTER NODES<br>
+              &gt; SELECT A CATALOG ENTRY OR TYPE DIRECTLY INTO THE BASIC INTERPRETER BELOW.
+            </p>
+          </section>
+
+          <!-- Core Destinations / Catalog -->
+          <section class="catalog-section" aria-label="Primary Catalog Destinations">
+            <div class="catalog-header">
+              <span class="bracket">[</span> DIRECTORY: 3 EXTERNAL MAINFRAME LINKS FOUND <span class="bracket">]</span>
+            </div>
+
+            <div class="directory-list">
+              <!-- Destination 1: openOODA.org -->
+              <article class="dir-entry primary-link" data-index="10">
+                <div class="entry-line">
+                  <span class="line-no">10</span>
+                  <a href="https://openooda.org" class="entry-title" target="_blank" rel="noopener noreferrer">
+                    <span class="bracket">[</span> OPEN-OODA.ORG <span class="bracket">]</span>
+                  </a>
+                  <span class="file-type">PRG</span>
+                  <span class="file-size">1024 BLOCKS</span>
+                </div>
+                <div class="entry-desc">
+                  &gt;&gt; Autonomous Agentic Architecture &amp; Cognitive OODA Loop Protocols.<br>
+                  <span class="entry-meta">URL: https://openooda.org | STATUS: ACTIVE PROXIED</span>
+                </div>
+              </article>
+
+              <!-- Destination 2: necrometer.dev -->
+              <article class="dir-entry primary-link" data-index="20">
+                <div class="entry-line">
+                  <span class="line-no">20</span>
+                  <a href="https://necrometer.dev" class="entry-title" target="_blank" rel="noopener noreferrer">
+                    <span class="bracket">[</span> NECROMETER.DEV <span class="bracket">]</span>
+                  </a>
+                  <span class="file-type">PRG</span>
+                  <span class="file-size">512 BLOCKS</span>
+                </div>
+                <div class="entry-desc">
+                  &gt;&gt; Developer Telemetry, Real-time Metrics &amp; Machine Observability.<br>
+                  <span class="entry-meta">URL: https://necrometer.dev | STATUS: ACTIVE PROXIED</span>
+                </div>
+              </article>
+
+              <!-- Destination 3: bumtrips.com -->
+              <article class="dir-entry primary-link" data-index="30">
+                <div class="entry-line">
+                  <span class="line-no">30</span>
+                  <a href="https://bumtrips.com" class="entry-title" target="_blank" rel="noopener noreferrer">
+                    <span class="bracket">[</span> BUMTRIPS.COM <span class="bracket">]</span>
+                  </a>
+                  <span class="file-type">PRG</span>
+                  <span class="file-size">808 BLOCKS</span>
+                </div>
+                <div class="entry-desc">
+                  &gt;&gt; Beatniks, Bumtrips &amp; Bullshit — Audio, Counter-Culture &amp; High Strangeness.<br>
+                  <span class="entry-meta">URL: https://bumtrips.com | STATUS: ACTIVE PROXIED</span>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <!-- Clownhouse Sub-Services / Cluster Nodes -->
+          <section class="cluster-section" aria-label="Clownhouse Cluster Services">
+            <div class="catalog-header">
+              <span class="bracket">[</span> CLUSTER SERVICES: CLOWNHOUSE ACTIVE ORIGINS <span class="bracket">]</span>
+            </div>
+
+            <div class="directory-list cluster-grid">
+              <article class="dir-entry cluster-link" data-index="40">
+                <div class="entry-line">
+                  <span class="line-no">40</span>
+                  <a href="https://purple.clownhouse.io" class="entry-title" target="_blank" rel="noopener noreferrer">
+                    PURPLE.CLOWNHOUSE.IO
+                  </a>
+                  <span class="file-type">MEDIA</span>
+                </div>
+                <div class="entry-desc">&gt;&gt; Jukebox Stream Engine &amp; Media Vault.</div>
+              </article>
+
+              <article class="dir-entry cluster-link" data-index="50">
+                <div class="entry-line">
+                  <span class="line-no">50</span>
+                  <a href="https://reactle.clownhouse.io" class="entry-title" target="_blank" rel="noopener noreferrer">
+                    REACTLE.CLOWNHOUSE.IO
+                  </a>
+                  <span class="file-type">GAME</span>
+                </div>
+                <div class="entry-desc">&gt;&gt; 1980s Cryptic Word Guessing Terminal.</div>
+              </article>
+
+              <article class="dir-entry cluster-link" data-index="60">
+                <div class="entry-line">
+                  <span class="line-no">60</span>
+                  <a href="https://oracle.clownhouse.io" class="entry-title" target="_blank" rel="noopener noreferrer">
+                    ORACLE.CLOWNHOUSE.IO
+                  </a>
+                  <span class="file-type">SYS</span>
+                </div>
+                <div class="entry-desc">&gt;&gt; Subsystem Gateway &amp; Telemetry Oracle.</div>
+              </article>
+
+              <article class="dir-entry cluster-link" data-index="70">
+                <div class="entry-line">
+                  <span class="line-no">70</span>
+                  <a href="https://giggle.clownhouse.io" class="entry-title" target="_blank" rel="noopener noreferrer">
+                    GIGGLE.CLOWNHOUSE.IO
+                  </a>
+                  <span class="file-type">NODE</span>
+                </div>
+                <div class="entry-desc">&gt;&gt; Primary Cluster Computation Node.</div>
+              </article>
+
+              <article class="dir-entry cluster-link" data-index="80">
+                <div class="entry-line">
+                  <span class="line-no">80</span>
+                  <a href="mailto:jeryd@clownhouse.io" class="entry-title">
+                    JERYD@CLOWNHOUSE.IO
+                  </a>
+                  <span class="file-type">MAIL</span>
+                </div>
+                <div class="entry-desc">&gt;&gt; Cloudflare Routed High-Speed Ingress.</div>
+              </article>
+            </div>
+          </section>
+
+          <!-- Interactive BASIC Terminal Area -->
+          <section class="interactive-terminal" aria-label="Interactive BASIC Console">
+            <div class="terminal-history" id="terminal-history">
+              <div class="history-line comment-line">
+                * TYPE <span class="cmd-pill">HELP</span> FOR COMMANDS, <span class="cmd-pill">10</span>, <span class="cmd-pill">20</span>, OR <span class="cmd-pill">30</span> TO LAUNCH SITES.
+              </div>
+            </div>
+
+            <form id="terminal-form" class="terminal-input-row" autocomplete="off">
+              <span class="prompt-sym">READY.&gt;</span>
+              <input type="text" id="terminal-input" class="retro-input" spellcheck="false" autofocus aria-label="Terminal command input" placeholder="TYPE COMMAND (e.g. HELP, 10, DIR)">
+              <span class="cursor" aria-hidden="true">█</span>
+            </form>
+          </section>
+
+        </div>
+      </div>
+    </main>
+
+    <!-- Monitor Bezel Footer & Spec Sheet -->
+    <footer class="bezel-bottom">
+      <div class="spec-readout">
+        <span class="spec-item">CPU: MOS 6510 (1.023 MHz)</span>
+        <span class="spec-sep">|</span>
+        <span class="spec-item">RAM: 64 KB</span>
+        <span class="spec-sep">|</span>
+        <span class="spec-item">VIDEO: VIC-II 320x200 16-COLOR</span>
+        <span class="spec-sep">|</span>
+        <span class="spec-item">AUDIO: SID 6581 3-VOICE</span>
+        <span class="spec-sep">|</span>
+        <span class="spec-item">&copy; 1982 STUDIO2201 // CLOWNHOUSE.IO</span>
+      </div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
