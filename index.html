@@ -1,223 +1,1894 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="tower-of-power">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CLOWNHOUSE.IO // 1982 MICROSYSTEMS</title>
-  <meta name="description" content="clownhouse.io - 1982 Microcomputer Hub connecting openOODA.org, necrometer.dev, bumtrips.com, and clownhouse.io cluster nodes.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#121216">
+  <title>CLOWNHOUSE.IO // Multi-Concept Theme Showcase</title>
+  <meta name="description" content="clownhouse.io - Bespoke Interactive Theme Showcase featuring Sega Genesis Tower of Power, Metroid Chozo Scan Visor, WRX TR Rally Telemetry, Mega Man X Hunter Base, and Pacific Outpost Hybrid.">
+  <meta name="author" content="Studio 2201">
+
+  <!-- Open Graph & Social Cards -->
+  <meta property="og:title" content="CLOWNHOUSE.IO // Multi-Concept Theme Showcase">
+  <meta property="og:description" content="5 bespoke interactive themes with dynamic real-time hot-swapping and procedural Web Audio synthesis.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://clownhouse.io">
+  <meta property="og:image" content="https://clownhouse.io/favicon.svg">
+
+  <link rel="canonical" href="https://clownhouse.io">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="style.css">
 </head>
-<body data-theme="c64">
-  <!-- CRT Monitor Container -->
-  <div class="crt-monitor-case">
-    <!-- Monitor Bezel Header -->
-    <header class="bezel-top">
-      <div class="brand-badge">
-        <span class="badge-accent">■</span> CLOWNHOUSE.IO-64 <span class="badge-sub">PERSONAL COMPUTER // 1982</span>
+<body data-theme="tower-of-power">
+
+  <!-- Accessible Skip Navigation Link -->
+  <a href="#theme-viewport" class="skip-link">Skip to active theme content</a>
+
+  <!-- Persistent Switcher Bar Docked at Top of Viewport -->
+  <header id="site-header" class="site-header" role="banner">
+    <nav id="theme-switcher-bar" class="switcher-bar theme-switcher-bar" aria-label="Theme and Audio Controls">
+      
+      <!-- Brand & Title Badge -->
+      <div class="switcher-brand">
+        <a href="#theme-tower-of-power" class="brand-link" aria-label="Clownhouse.io Showcase Home">
+          <span class="brand-icon" aria-hidden="true">🤡</span>
+          <span class="brand-text">CLOWNHOUSE<span class="brand-tld">.IO</span></span>
+          <span class="brand-pill">SHOWCASE</span>
+        </a>
+        <span class="switcher-beacon" aria-hidden="true"></span>
       </div>
-      <div class="bezel-controls">
-        <div class="control-group">
-          <label for="theme-select" class="bezel-label">PALETTE:</label>
-          <select id="theme-select" class="bezel-select" aria-label="Screen Color Palette">
-            <option value="c64" selected>COMMODORE 64 (1982)</option>
-            <option value="green">P1 GREEN PHOSPHOR</option>
-            <option value="amber">AMBER PHOSPHOR</option>
-            <option value="tron">TRON NEON (1982)</option>
-          </select>
-        </div>
-        <button id="scanline-toggle" class="bezel-btn" title="Toggle CRT Scanline Overlay" aria-pressed="true">
-          SCANLINES: <span class="btn-state">ON</span>
+
+      <!-- Theme Selector Buttons (Role Tablist) -->
+      <div class="switcher-tabs theme-tabs" role="tablist" aria-label="Theme Selection">
+        <button type="button" 
+                class="switcher-btn theme-tab active" 
+                role="tab" 
+                id="switcher-tower-of-power" 
+                data-theme="tower-of-power" 
+                data-theme-target="tower-of-power" 
+                aria-selected="true" 
+                aria-pressed="true" 
+                aria-controls="theme-tower-of-power" 
+                tabindex="0">
+          <span class="theme-icon" aria-hidden="true">🕹️</span>
+          <span class="theme-info">
+            <span class="theme-title">Tower of Power</span>
+            <span class="theme-sub">16-Bit Genesis</span>
+          </span>
         </button>
-        <button id="sound-toggle" class="bezel-btn" title="Toggle 8-bit Sound FX" aria-pressed="false">
-          SOUND: <span class="btn-state">MUTED</span>
+
+        <button type="button" 
+                class="switcher-btn theme-tab" 
+                role="tab" 
+                id="switcher-chozo-visor" 
+                data-theme="chozo-visor" 
+                data-theme-target="chozo-visor" 
+                aria-selected="false" 
+                aria-pressed="false" 
+                aria-controls="theme-chozo-visor" 
+                tabindex="-1">
+          <span class="theme-icon" aria-hidden="true">👁️</span>
+          <span class="theme-info">
+            <span class="theme-title">Chozo Visor</span>
+            <span class="theme-sub">Scan Visor HUD</span>
+          </span>
         </button>
-        <div class="power-indicator">
-          <span class="led-light" aria-hidden="true"></span>
-          <span class="led-label">POWER</span>
-        </div>
+
+        <button type="button" 
+                class="switcher-btn theme-tab" 
+                role="tab" 
+                id="switcher-wrx-telemetry" 
+                data-theme="wrx-telemetry" 
+                data-theme-target="wrx-telemetry" 
+                aria-selected="false" 
+                aria-pressed="false" 
+                aria-controls="theme-wrx-telemetry" 
+                tabindex="-1">
+          <span class="theme-icon" aria-hidden="true">🏎️</span>
+          <span class="theme-info">
+            <span class="theme-title">WRX Telemetry</span>
+            <span class="theme-sub">TR Rally Gauges</span>
+          </span>
+        </button>
+
+        <button type="button" 
+                class="switcher-btn theme-tab" 
+                role="tab" 
+                id="switcher-hunter-base" 
+                data-theme="hunter-base" 
+                data-theme-target="hunter-base" 
+                aria-selected="false" 
+                aria-pressed="false" 
+                aria-controls="theme-hunter-base" 
+                tabindex="-1">
+          <span class="theme-icon" aria-hidden="true">⚡</span>
+          <span class="theme-info">
+            <span class="theme-title">Hunter Base</span>
+            <span class="theme-sub">Mission Dispatch</span>
+          </span>
+        </button>
+
+        <button type="button" 
+                class="switcher-btn theme-tab" 
+                role="tab" 
+                id="switcher-pacific-outpost" 
+                data-theme="pacific-outpost" 
+                data-theme-target="pacific-outpost" 
+                aria-selected="false" 
+                aria-pressed="false" 
+                aria-controls="theme-pacific-outpost" 
+                tabindex="-1">
+          <span class="theme-icon" aria-hidden="true">🌋</span>
+          <span class="theme-info">
+            <span class="theme-title">Pacific Outpost</span>
+            <span class="theme-sub">Tactical Hybrid</span>
+          </span>
+        </button>
       </div>
-    </header>
 
-    <!-- CRT Screen Outer Wrapper (Curvature & Vignette) -->
-    <main class="crt-screen-wrapper">
-      <div class="crt-glass">
-        <!-- Scanlines & Shadow Mask Overlay -->
-        <div class="crt-scanlines" id="crt-overlay" aria-hidden="true"></div>
-        <div class="crt-vignette" aria-hidden="true"></div>
+      <!-- Audio Mute / Unmute Action Toggle -->
+      <div class="switcher-actions switcher-controls">
+        <button type="button" 
+                id="sound-toggle" 
+                class="sound-toggle-btn sound-toggle" 
+                aria-pressed="false" 
+                title="Toggle Synthesized Sound FX" 
+                aria-label="Toggle Sound Effects">
+          <span class="sound-icon" aria-hidden="true">🔇</span>
+          <span class="sound-indicator" aria-hidden="true"></span>
+          <span class="sound-label">SOUND: <span class="btn-state">MUTED</span></span>
+        </button>
+      </div>
 
-        <!-- Terminal / Content Area -->
-        <div class="screen-content" id="terminal-screen" tabindex="0" role="region" aria-label="Interactive 1982 Terminal">
-          
-          <!-- Boot Sequence Banner -->
-          <div class="boot-banner">
-            <pre class="banner-text">
-**** CLOWNHOUSE.IO BASIC V2.1 (1982) ****
-64K RAM SYSTEM  38911 BASIC BYTES FREE
+    </nav>
+  </header>
 
-READY.
-<span class="highlight-line">LOAD "DIRECTORY",8,1</span>
-SEARCHING FOR DIRECTORY
-LOADING
-READY.
-RUN
-            </pre>
+  <!-- Main Viewport Enclosing 5 Modular Theme Containers -->
+  <main id="theme-viewport" class="theme-viewport" tabindex="-1">
+
+    <!-- ==================================================================== -->
+    <!-- THEME 1: THE TOWER OF POWER (Sega Genesis Model 1 + Sega CD + 32X)   -->
+    <!-- ==================================================================== -->
+    <section id="theme-tower-of-power" 
+             class="theme-container active" 
+             data-theme="tower-of-power" 
+             role="tabpanel" 
+             aria-labelledby="switcher-tower-of-power">
+      
+      <div class="theme-shell top-shell">
+
+        <!-- 32X Mushroom Expansion Module Crown -->
+        <div class="top-stack-crown" aria-hidden="true">
+          <div class="crown-vents">
+            <span class="crown-vent-line"></span>
+            <span class="crown-vent-line"></span>
+            <span class="crown-vent-line"></span>
+          </div>
+          <div class="crown-badge">
+            <span class="crown-brand">SEGA</span>
+            <span class="crown-model">32X</span>
+            <span class="crown-chipset">DUAL SH-2 32-BIT RISC</span>
+          </div>
+          <div class="crown-vents">
+            <span class="crown-vent-line"></span>
+            <span class="crown-vent-line"></span>
+            <span class="crown-vent-line"></span>
+          </div>
+        </div>
+
+        <!-- Hardware Console Header (Genesis Model 1 Chassis) -->
+        <header class="top-header theme-header">
+          <div class="sega-badge-row">
+            <div class="sega-logo-group">
+              <span class="badge-brand">SEGA</span>
+              <span class="badge-system">GENESIS</span>
+              <span class="badge-add-on">+ SEGA CD</span>
+              <span class="badge-mushroom">+ 32X</span>
+            </div>
+            <div class="console-power-cluster">
+              <div class="power-led-bezel" aria-hidden="true">
+                <span class="power-led" aria-hidden="true"></span>
+              </div>
+              <span class="power-text">POWER ACTIVE</span>
+              <span class="stereo-badge">HIGH DEFINITION GRAPHICS // 16-BIT FM</span>
+            </div>
           </div>
 
-          <!-- ASCII Art Title Banner -->
-          <div class="ascii-logo" aria-hidden="true">
-<pre>
-   ______ __                               __                                      _       
-  / ____// /____  _      __ ____   ____   / /_   ____   __  __ _____ ___          (_)____  
- / /    / // __ \| | /| / // __ \ / __ \ / __ \ / __ \ / / / // ___// _ \   __   / // __ \ 
-/ /___ / // /_/ /| |/ |/ // / / // / / // / / // /_/ // /_/ /(__  )/  __/  / /_ / // /_/ / 
-\____//_/ \____/ |__/|__//_/ /_//_/ /_//_/ /_/ \____/ \__,_//____/ \___/  /___//_/ \____/  
-===========================================================================================
-</pre>
-          </div>
-
-          <!-- System Introduction -->
-          <section class="section-intro">
-            <p class="prompt-narrative">
-              &gt; CENTRAL GATEWAY // ESTABLISHED 1982 // AUTONOMOUS CLUSTER NODES<br>
-              &gt; SELECT A CATALOG ENTRY OR TYPE DIRECTLY INTO THE BASIC INTERPRETER BELOW.
-            </p>
-          </section>
-
-          <!-- Core Destinations / Catalog -->
-          <section class="catalog-section" aria-label="Primary Catalog Destinations">
-            <div class="catalog-header">
-              <span class="bracket">[</span> DIRECTORY: 3 EXTERNAL MAINFRAME LINKS FOUND <span class="bracket">]</span>
-            </div>
-
-            <div class="directory-list">
-              <!-- Destination 1: openOODA.org -->
-              <article class="dir-entry primary-link" data-index="10">
-                <div class="entry-line">
-                  <span class="line-no">10</span>
-                  <a href="https://openooda.org" class="entry-title" target="_blank" rel="noopener noreferrer">
-                    <span class="bracket">[</span> openOODA.org <span class="bracket">]</span>
-                  </a>
-                  <span class="file-type">PRG</span>
-                  <span class="file-size">1024 BLOCKS</span>
+          <!-- Model 1 Circular Relief Ring & 16-BIT Embossed Plate Cluster -->
+          <div class="top-disc-console-bar">
+            <!-- Circular High Definition Graphics Lathe-Grooved Ring -->
+            <div class="genesis-disc-plate" aria-hidden="true">
+              <div class="disc-outer-rim">
+                <div class="disc-grooved-field">
+                  <div class="disc-script-wrap">
+                    <span class="disc-script">HIGH DEFINITION GRAPHICS</span>
+                    <span class="disc-script-sub">16-BIT FM SYNTHESIS</span>
+                  </div>
+                  <div class="disc-center-port">
+                    <div class="cart-port-flap"></div>
+                  </div>
                 </div>
-                <div class="entry-desc">
-                  &gt;&gt; Autonomous Agentic Architecture &amp; Cognitive OODA Loop Protocols.<br>
-                  <span class="entry-meta">URL: https://openooda.org | STATUS: ACTIVE PROXIED</span>
-                </div>
-              </article>
-
-              <!-- Destination 2: necrometer.dev -->
-              <article class="dir-entry primary-link" data-index="20">
-                <div class="entry-line">
-                  <span class="line-no">20</span>
-                  <a href="https://necrometer.dev" class="entry-title" target="_blank" rel="noopener noreferrer">
-                    <span class="bracket">[</span> NECROMETER.DEV <span class="bracket">]</span>
-                  </a>
-                  <span class="file-type">PRG</span>
-                  <span class="file-size">512 BLOCKS</span>
-                </div>
-                <div class="entry-desc">
-                  &gt;&gt; Developer Telemetry, Real-time Metrics &amp; Machine Observability.<br>
-                  <span class="entry-meta">URL: https://necrometer.dev | STATUS: ACTIVE PROXIED</span>
-                </div>
-              </article>
-
-              <!-- Destination 3: bumtrips.com -->
-              <article class="dir-entry primary-link" data-index="30">
-                <div class="entry-line">
-                  <span class="line-no">30</span>
-                  <a href="https://bumtrips.com" class="entry-title" target="_blank" rel="noopener noreferrer">
-                    <span class="bracket">[</span> BUMTRIPS.COM <span class="bracket">]</span>
-                  </a>
-                  <span class="file-type">PRG</span>
-                  <span class="file-size">808 BLOCKS</span>
-                </div>
-                <div class="entry-desc">
-                  &gt;&gt; Beatniks, Bumtrips &amp; Bullshit — Audio, Counter-Culture &amp; High Strangeness.<br>
-                  <span class="entry-meta">URL: https://bumtrips.com | STATUS: ACTIVE PROXIED</span>
-                </div>
-              </article>
-            </div>
-          </section>
-
-          <!-- Clownhouse Sub-Services / Cluster Nodes -->
-          <section class="cluster-section" aria-label="Clownhouse Cluster Services">
-            <div class="catalog-header">
-              <span class="bracket">[</span> CLUSTER SERVICES: CLOWNHOUSE ACTIVE ORIGINS <span class="bracket">]</span>
-            </div>
-
-            <div class="directory-list cluster-grid">
-              <article class="dir-entry cluster-link" data-index="40">
-                <div class="entry-line">
-                  <span class="line-no">40</span>
-                  <a href="https://reactle.clownhouse.io" class="entry-title" target="_blank" rel="noopener noreferrer">
-                    REACTLE.CLOWNHOUSE.IO
-                  </a>
-                  <span class="file-type">GAME</span>
-                </div>
-                <div class="entry-desc">&gt;&gt; 1980s Cryptic Word Guessing Terminal.</div>
-              </article>
-
-              <article class="dir-entry cluster-link" data-index="50">
-                <div class="entry-line">
-                  <span class="line-no">50</span>
-                  <a href="https://giggle.clownhouse.io" class="entry-title" target="_blank" rel="noopener noreferrer">
-                    GIGGLE.CLOWNHOUSE.IO
-                  </a>
-                  <span class="file-type">NODE</span>
-                </div>
-                <div class="entry-desc">&gt;&gt; Primary Cluster Computation Node.</div>
-              </article>
-
-              <article class="dir-entry cluster-link" data-index="60">
-                <div class="entry-line">
-                  <span class="line-no">60</span>
-                  <a href="mailto:jeryd@clownhouse.io" class="entry-title">
-                    JERYD@CLOWNHOUSE.IO
-                  </a>
-                  <span class="file-type">MAIL</span>
-                </div>
-                <div class="entry-desc">&gt;&gt; Cloudflare Routed High-Speed Ingress.</div>
-              </article>
-            </div>
-          </section>
-
-          <!-- Interactive BASIC Terminal Area -->
-          <section class="interactive-terminal" aria-label="Interactive BASIC Console">
-            <div class="terminal-history" id="terminal-history">
-              <div class="history-line comment-line">
-                * TYPE <span class="cmd-pill">HELP</span> FOR COMMANDS, <span class="cmd-pill">10</span>, <span class="cmd-pill">20</span>, OR <span class="cmd-pill">30</span> TO LAUNCH SITES.
               </div>
             </div>
 
-            <form id="terminal-form" class="terminal-input-row" autocomplete="off">
-              <span class="prompt-sym">READY.&gt;</span>
-              <input type="text" id="terminal-input" class="retro-input" spellcheck="false" autofocus aria-label="Terminal command input" placeholder="TYPE COMMAND (e.g. HELP, 10, DIR)">
-              <span class="cursor" aria-hidden="true">█</span>
-            </form>
-          </section>
+            <!-- Title & Embossed 16-BIT Metal Badge -->
+            <div class="top-title-cluster">
+              <div class="top-title-row">
+                <h1 class="theme-title top-title">THE TOWER OF POWER</h1>
+                <!-- 16-BIT Embossed Gold Metal Badge -->
+                <div class="badge-16bit-metallic" aria-label="16-Bit Processing Badge">
+                  <span class="badge-16bit-text">16-BIT</span>
+                </div>
+              </div>
+              <p class="theme-subtitle top-subtitle">Sega Genesis Model 1 + Sega CD + 32X Hardware Stack // Pure 16-Bit FM Synthesizer Architecture</p>
+            </div>
+          </div>
 
+          <!-- Ribbed Cooling Louvers / Ventilation Grilles -->
+          <div class="genesis-vents theme-card-vents" aria-hidden="true">
+            <div class="vent-grooves-inner"></div>
+          </div>
+
+          <!-- Console Sub-Controls: Volume Fader Widget & Reset Button -->
+          <div class="top-controls-bar">
+            <div class="medallion-badge sega-medallion" aria-hidden="true">
+              <span class="medallion-text">HIGH DEFINITION GRAPHICS</span>
+            </div>
+
+            <!-- Interactive Volume Slider Widget -->
+            <div class="volume-slider-widget" id="top-volume-slider-widget" aria-label="Headphone Volume Slider">
+              <div class="slider-meta">
+                <label for="top-volume-slider" class="slider-label volume-label">HEADPHONE VOL</label>
+                <div class="slider-val-readout">
+                  <span class="slider-val" id="top-volume-val">7</span>
+                  <span class="slider-max">/10</span>
+                </div>
+              </div>
+              <div class="slider-input-wrapper">
+                <input type="range" 
+                       id="top-volume-slider" 
+                       class="genesis-slider" 
+                       min="0" 
+                       max="10" 
+                       value="7" 
+                       step="1" 
+                       aria-label="Headphone Volume Level">
+              </div>
+              <div class="slider-scale volume-ticks" aria-hidden="true">
+                <span class="slider-tick">0</span>
+                <span class="slider-tick">2</span>
+                <span class="slider-tick">4</span>
+                <span class="slider-tick">6</span>
+                <span class="slider-tick">8</span>
+                <span class="slider-tick">MAX</span>
+              </div>
+            </div>
+
+            <!-- Reset Switch & 3.5mm Headphone Jack Cluster -->
+            <div class="reset-cluster">
+              <div class="phones-jack-mock" aria-hidden="true" title="3.5mm Stereo Headphone Output">
+                <span class="jack-bezel"></span>
+                <span class="jack-label">PHONES</span>
+              </div>
+              <button type="button" class="sega-reset-btn" id="top-reset-btn" title="Simulate Console Reset">RESET</button>
+            </div>
+          </div>
+        </header>
+
+        <!-- Cartridge Slot Bay (Universal Links Matrix) -->
+        <div class="cartridge-bay">
+          <div class="bay-header">
+            <div class="bay-header-left">
+              <span class="bay-icon" aria-hidden="true">📼</span>
+              <span class="bay-title">CARTRIDGE INTERFACE BAY // INSERT MODULE TO EXECUTE</span>
+            </div>
+            <span class="bay-slots">6 ACTIVE SLOTS LOADED</span>
+          </div>
+
+          <div class="cartridge-grid theme-link-grid">
+            <!-- Cartridge 1: openOODA.org -->
+            <article class="cartridge-slot" data-slot="1">
+              <div class="cartridge-body">
+                <div class="cart-notch-grip" aria-hidden="true"></div>
+                <div class="cart-grip-ribs" aria-hidden="true"></div>
+                <div class="cart-label">
+                  <div class="cart-header-stripe stripe-red">
+                    <span class="stripe-system-name">GENESIS 32X</span>
+                    <span class="stripe-cart-cat">MK-1601</span>
+                  </div>
+                  <a href="https://openooda.org" 
+                     class="theme-link cart-link" 
+                     data-destination="openooda" 
+                     target="_blank" 
+                     rel="noopener noreferrer" 
+                     aria-label="Launch openOODA.org in new window">
+                    <span class="cart-title theme-link-title">openOODA.org</span>
+                    <span class="cart-desc theme-link-desc">Autonomous Agentic Architecture &amp; OODA Protocols</span>
+                  </a>
+                  <div class="cart-meta theme-link-footer">
+                    <span class="cart-code theme-link-url">MK-1601</span>
+                    <span class="cart-chips theme-link-status">24 MEGABIT ROM</span>
+                  </div>
+                </div>
+                <!-- Exposed 64-Pin Gold Card Edge Contacts -->
+                <div class="cart-connector-housing" aria-hidden="true">
+                  <div class="cart-connector-edge"></div>
+                  <div class="gold-contact-pins"></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Cartridge 2: necrometer.dev -->
+            <article class="cartridge-slot" data-slot="2">
+              <div class="cartridge-body">
+                <div class="cart-notch-grip" aria-hidden="true"></div>
+                <div class="cart-grip-ribs" aria-hidden="true"></div>
+                <div class="cart-label">
+                  <div class="cart-header-stripe stripe-gold">
+                    <span class="stripe-system-name">GENESIS 16-BIT</span>
+                    <span class="stripe-cart-cat">MK-1602</span>
+                  </div>
+                  <a href="https://necrometer.dev" 
+                     class="theme-link cart-link" 
+                     data-destination="necrometer" 
+                     target="_blank" 
+                     rel="noopener noreferrer" 
+                     aria-label="Launch necrometer.dev in new window">
+                    <span class="cart-title theme-link-title">NECROMETER.DEV</span>
+                    <span class="cart-desc theme-link-desc">Developer Telemetry, Real-time Metrics &amp; Observability</span>
+                  </a>
+                  <div class="cart-meta theme-link-footer">
+                    <span class="cart-code theme-link-url">MK-1602</span>
+                    <span class="cart-chips theme-link-status">16 MEGABIT ROM</span>
+                  </div>
+                </div>
+                <div class="cart-connector-housing" aria-hidden="true">
+                  <div class="cart-connector-edge"></div>
+                  <div class="gold-contact-pins"></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Cartridge 3: bumtrips.com -->
+            <article class="cartridge-slot" data-slot="3">
+              <div class="cartridge-body">
+                <div class="cart-notch-grip" aria-hidden="true"></div>
+                <div class="cart-grip-ribs" aria-hidden="true"></div>
+                <div class="cart-label">
+                  <div class="cart-header-stripe stripe-blue">
+                    <span class="stripe-system-name">SEGA CD-ROM</span>
+                    <span class="stripe-cart-cat">SCD-4403</span>
+                  </div>
+                  <a href="https://bumtrips.com" 
+                     class="theme-link cart-link" 
+                     data-destination="bumtrips" 
+                     target="_blank" 
+                     rel="noopener noreferrer" 
+                     aria-label="Launch bumtrips.com in new window">
+                    <span class="cart-title theme-link-title">BUMTRIPS.COM</span>
+                    <span class="cart-desc theme-link-desc">Beatniks, Bumtrips &amp; Bullshit — Audio &amp; Culture</span>
+                  </a>
+                  <div class="cart-meta theme-link-footer">
+                    <span class="cart-code theme-link-url">SCD-4403</span>
+                    <span class="cart-chips theme-link-status">540 MB DISC</span>
+                  </div>
+                </div>
+                <div class="cart-connector-housing" aria-hidden="true">
+                  <div class="cart-connector-edge"></div>
+                  <div class="gold-contact-pins"></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Cartridge 4: reactle.clownhouse.io -->
+            <article class="cartridge-slot" data-slot="4">
+              <div class="cartridge-body">
+                <div class="cart-notch-grip" aria-hidden="true"></div>
+                <div class="cart-grip-ribs" aria-hidden="true"></div>
+                <div class="cart-label">
+                  <div class="cart-header-stripe stripe-green">
+                    <span class="stripe-system-name">GENESIS ARCADE</span>
+                    <span class="stripe-cart-cat">MK-1604</span>
+                  </div>
+                  <a href="https://reactle.clownhouse.io" 
+                     class="theme-link cart-link" 
+                     data-destination="reactle" 
+                     target="_blank" 
+                     rel="noopener noreferrer" 
+                     aria-label="Launch Reactle cluster game in new window">
+                    <span class="cart-title theme-link-title">REACTLE.CLOWNHOUSE.IO</span>
+                    <span class="cart-desc theme-link-desc">1980s Cryptic Word Guessing Game Terminal</span>
+                  </a>
+                  <div class="cart-meta theme-link-footer">
+                    <span class="cart-code theme-link-url">MK-1604</span>
+                    <span class="cart-chips theme-link-status">8 MEGABIT ROM</span>
+                  </div>
+                </div>
+                <div class="cart-connector-housing" aria-hidden="true">
+                  <div class="cart-connector-edge"></div>
+                  <div class="gold-contact-pins"></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Cartridge 5: giggle.clownhouse.io -->
+            <article class="cartridge-slot" data-slot="5">
+              <div class="cartridge-body">
+                <div class="cart-notch-grip" aria-hidden="true"></div>
+                <div class="cart-grip-ribs" aria-hidden="true"></div>
+                <div class="cart-label">
+                  <div class="cart-header-stripe stripe-purple">
+                    <span class="stripe-system-name">SEGA NETLINK</span>
+                    <span class="stripe-cart-cat">MK-1605</span>
+                  </div>
+                  <a href="https://giggle.clownhouse.io" 
+                     class="theme-link cart-link" 
+                     data-destination="giggle" 
+                     target="_blank" 
+                     rel="noopener noreferrer" 
+                     aria-label="Launch Giggle cluster compute node in new window">
+                    <span class="cart-title theme-link-title">GIGGLE.CLOWNHOUSE.IO</span>
+                    <span class="cart-desc theme-link-desc">Primary Cluster Computation &amp; Network Ingress</span>
+                  </a>
+                  <div class="cart-meta theme-link-footer">
+                    <span class="cart-code theme-link-url">MK-1605</span>
+                    <span class="cart-chips theme-link-status">HIGH SPEED MODEM</span>
+                  </div>
+                </div>
+                <div class="cart-connector-housing" aria-hidden="true">
+                  <div class="cart-connector-edge"></div>
+                  <div class="gold-contact-pins"></div>
+                </div>
+              </div>
+            </article>
+
+            <!-- Cartridge 6: mailto:jeryd@clownhouse.io -->
+            <article class="cartridge-slot" data-slot="6">
+              <div class="cartridge-body">
+                <div class="cart-notch-grip" aria-hidden="true"></div>
+                <div class="cart-grip-ribs" aria-hidden="true"></div>
+                <div class="cart-label">
+                  <div class="cart-header-stripe stripe-orange">
+                    <span class="stripe-system-name">DIRECT DISPATCH</span>
+                    <span class="stripe-cart-cat">COM-0001</span>
+                  </div>
+                  <a href="mailto:jeryd@clownhouse.io" 
+                     class="theme-link cart-link" 
+                     data-destination="contact" 
+                     aria-label="Send email to jeryd@clownhouse.io">
+                    <span class="cart-title theme-link-title">JERYD@CLOWNHOUSE.IO</span>
+                    <span class="cart-desc theme-link-desc">Cloudflare High-Speed Routed Direct Ingress</span>
+                  </a>
+                  <div class="cart-meta theme-link-footer">
+                    <span class="cart-code theme-link-url">COM-0001</span>
+                    <span class="cart-chips theme-link-status">DIRECT LINE</span>
+                  </div>
+                </div>
+                <div class="cart-connector-housing" aria-hidden="true">
+                  <div class="cart-connector-edge"></div>
+                  <div class="gold-contact-pins"></div>
+                </div>
+              </div>
+            </article>
+          </div>
         </div>
-      </div>
-    </main>
 
-    <!-- Monitor Bezel Footer & Spec Sheet -->
-    <footer class="bezel-bottom">
-      <div class="spec-readout">
-        <span class="spec-item">CPU: MOS 6510 (1.023 MHz)</span>
-        <span class="spec-sep">|</span>
-        <span class="spec-item">RAM: 64 KB</span>
-        <span class="spec-sep">|</span>
-        <span class="spec-item">VIDEO: VIC-II 320x200 16-COLOR</span>
-        <span class="spec-sep">|</span>
-        <span class="spec-item">AUDIO: SID 6581 3-VOICE</span>
-        <span class="spec-sep">|</span>
-        <span class="spec-item">&copy; 1982 STUDIO2201 // CLOWNHOUSE.IO</span>
-      </div>
-    </footer>
-  </div>
+        <!-- Sega CD Under-Dock Extension Sub-Chassis -->
+        <div class="sega-cd-dock-chassis" aria-hidden="true">
+          <div class="cd-tray-bezel">
+            <div class="cd-drawer-slot">
+              <span class="cd-disc-marker">COMPACT DISC AUDIO // 540MB OPTICAL BUFFER</span>
+            </div>
+            <div class="cd-led-group">
+              <span class="cd-led access-led" title="Sega CD Laser Access Active"></span>
+              <span class="cd-led ready-led" title="Sega CD Drive Ready"></span>
+            </div>
+          </div>
+        </div>
 
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- THEME 2: CHOZO SCAN VISOR (Metroid Combat HUD & Volcanic Basalt)     -->
+    <!-- ==================================================================== -->
+    <section id="theme-chozo-visor" 
+             class="theme-container" 
+             data-theme="chozo-visor" 
+             role="tabpanel" 
+             aria-labelledby="switcher-chozo-visor" 
+             hidden>
+      
+      <div class="theme-shell visor-shell">
+
+        <!-- Holographic Visor Frame, Corner Brackets & Scanlines -->
+        <div class="visor-hud-overlay" aria-hidden="true">
+          <div class="hud-corner-bracket top-left"></div>
+          <div class="hud-corner-bracket top-right"></div>
+          <div class="hud-corner-bracket bottom-left"></div>
+          <div class="hud-corner-bracket bottom-right"></div>
+          <div class="visor-scanlines"></div>
+          <div class="visor-curved-vignette"></div>
+        </div>
+
+        <!-- Holographic Visor Header & Curvature Frame -->
+        <header class="visor-header theme-header">
+          <div class="visor-hud-top">
+            <div class="visor-title-group">
+              <span class="visor-sub">CHOZO COMBAT SYSTEM // SCAN VISOR INTERFACE</span>
+              <h1 class="theme-title visor-headline">MAGMA PROFILE: KIHEI RIDGE CALDERA</h1>
+            </div>
+            <div class="visor-status-block">
+              <div class="visor-mode-badge-wrap">
+                <span class="visor-mode-beacon" aria-hidden="true"></span>
+                <span class="visor-mode-badge">SCAN ACTIVE</span>
+              </div>
+              <span class="visor-telemetry">TARGETING LOCKED // 540nm</span>
+            </div>
+          </div>
+
+          <!-- Energy Tanks & Combat HUD Telemetry Bar -->
+          <div class="visor-hud-telemetry">
+            <!-- Segmented Energy Tanks (E-Tanks) Cluster -->
+            <div class="e-tanks-cluster e-tanks energy-tanks" aria-label="Samus Energy Tanks Status">
+              <span class="e-tanks-label">ENERGY:</span>
+              <div class="e-tanks-display">
+                <span class="e-tank filled" title="Energy Tank 1: 100%"><span class="e-tank-core"></span></span>
+                <span class="e-tank filled" title="Energy Tank 2: 100%"><span class="e-tank-core"></span></span>
+                <span class="e-tank filled" title="Energy Tank 3: 100%"><span class="e-tank-core"></span></span>
+                <span class="e-tank filled" title="Energy Tank 4: 100%"><span class="e-tank-core"></span></span>
+              </div>
+              <span class="energy-numeric">99 / 99</span>
+              <span class="energy-sub-bar" aria-hidden="true">
+                <span class="sub-bar-tick"></span>
+                <span class="sub-bar-tick"></span>
+                <span class="sub-bar-tick"></span>
+              </span>
+            </div>
+
+            <!-- Dynamic Animated Dual-Ring Targeting Reticle -->
+            <div class="visor-reticle-indicator targeting-reticle" aria-label="Holographic Spectral Targeting Reticle">
+              <div class="reticle-anim-cluster" aria-hidden="true">
+                <svg class="reticle-svg" viewBox="0 0 60 60" width="38" height="38" aria-hidden="true">
+                  <!-- Outer Segmented Ring Rotating Clockwise -->
+                  <circle class="reticle-outer-ring" cx="30" cy="30" r="26" fill="none" stroke="#00f0ff" stroke-width="1.6" stroke-dasharray="10 6 16 6" />
+                  <!-- Middle Segmented Ring Rotating Counter-Clockwise -->
+                  <circle class="reticle-mid-ring" cx="30" cy="30" r="18" fill="none" stroke="#ffaa00" stroke-width="1.3" stroke-dasharray="12 4 8 4" />
+                  <!-- Inner Aiming Crosshairs -->
+                  <line x1="30" y1="5" x2="30" y2="15" stroke="#00f0ff" stroke-width="1.5" />
+                  <line x1="30" y1="45" x2="30" y2="55" stroke="#00f0ff" stroke-width="1.5" />
+                  <line x1="5" y1="30" x2="15" y2="30" stroke="#00f0ff" stroke-width="1.5" />
+                  <line x1="45" y1="30" x2="55" y2="30" stroke="#00f0ff" stroke-width="1.5" />
+                  <circle cx="30" cy="30" r="3" fill="#00f0ff" />
+                </svg>
+              </div>
+              <div class="reticle-text-group">
+                <span class="reticle-label">SPECTRAL VISOR 540nm</span>
+                <span class="reticle-glyph" aria-hidden="true">⌖</span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Basalt Ground & Pulsing Geothermal Magma SVG Fissures Layer -->
+        <div class="magma-fissures-wrapper" aria-hidden="true">
+          <div class="magma-fissures" aria-hidden="true">
+            <svg class="magma-svg-network" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="magmaGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#ff0044" stop-opacity="0.2" />
+                  <stop offset="25%" stop-color="#ff4500" stop-opacity="0.95" />
+                  <stop offset="50%" stop-color="#ffcc00" stop-opacity="1" />
+                  <stop offset="75%" stop-color="#ff4500" stop-opacity="0.95" />
+                  <stop offset="100%" stop-color="#ff0044" stop-opacity="0.2" />
+                </linearGradient>
+                <filter id="magmaGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+              <!-- Primary Geothermal Magma Vein -->
+              <path class="magma-path-main" 
+                    d="M0,20 Q150,6 300,22 T600,16 T900,25 T1200,18" 
+                    fill="none" 
+                    stroke="url(#magmaGrad)" 
+                    stroke-width="4.5" 
+                    filter="url(#magmaGlow)" />
+              <!-- Secondary Fissure Offshoots -->
+              <path class="magma-path-sub" 
+                    d="M160,18 Q230,32 310,22 M630,16 Q710,4 790,22 M950,25 Q1030,36 1110,20" 
+                    fill="none" 
+                    stroke="#ffaa00" 
+                    stroke-width="1.8" 
+                    opacity="0.85" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Scannable HUD Target Nodes (Universal Links Matrix) -->
+        <div class="visor-scan-bay">
+          <div class="scan-bay-header">
+            <div class="scan-bay-header-left">
+              <span class="scan-icon" aria-hidden="true">⌖</span>
+              <span class="scan-bay-title">HOLOGRAPHIC SCAN LOG // 6 TARGET SIGNALS IDENTIFIED</span>
+            </div>
+            <span class="scan-bay-status">ALL TARGETS SCANNED &amp; LOGGED</span>
+          </div>
+
+          <div class="visor-scan-grid theme-link-grid">
+            <!-- Scan Node 1: openOODA.org -->
+            <article class="visor-scan-node" data-target="alpha">
+              <div class="node-frame">
+                <!-- Four Corner Holographic Lock-On Brackets -->
+                <div class="node-reticle-bracket top-left" aria-hidden="true"></div>
+                <div class="node-reticle-bracket top-right" aria-hidden="true"></div>
+                <div class="node-reticle-bracket bottom-left" aria-hidden="true"></div>
+                <div class="node-reticle-bracket bottom-right" aria-hidden="true"></div>
+                
+                <div class="node-meta-top">
+                  <span class="node-id theme-link-badge">TARGET 01 // COGNITIVE</span>
+                  <span class="node-threat threat-low">SCANNED</span>
+                </div>
+
+                <a href="https://openooda.org" 
+                   class="theme-link visor-link" 
+                   data-destination="openooda" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Scan and open openOODA.org">
+                  <h3 class="node-title theme-link-title">openOODA.org</h3>
+                  <p class="node-desc theme-link-desc">Autonomous Agentic Architecture &amp; Cognitive OODA Protocols</p>
+                </a>
+
+                <div class="node-meta-bottom theme-link-footer">
+                  <span class="scan-pct theme-link-url">DATA INTEGRITY: 100%</span>
+                  <span class="scan-action theme-link-status">ACTIVATE LINK ⤤</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Scan Node 2: necrometer.dev -->
+            <article class="visor-scan-node" data-target="beta">
+              <div class="node-frame">
+                <div class="node-reticle-bracket top-left" aria-hidden="true"></div>
+                <div class="node-reticle-bracket top-right" aria-hidden="true"></div>
+                <div class="node-reticle-bracket bottom-left" aria-hidden="true"></div>
+                <div class="node-reticle-bracket bottom-right" aria-hidden="true"></div>
+
+                <div class="node-meta-top">
+                  <span class="node-id theme-link-badge">TARGET 02 // OBSERVABILITY</span>
+                  <span class="node-threat threat-low">SCANNED</span>
+                </div>
+
+                <a href="https://necrometer.dev" 
+                   class="theme-link visor-link" 
+                   data-destination="necrometer" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Scan and open necrometer.dev">
+                  <h3 class="node-title theme-link-title">NECROMETER.DEV</h3>
+                  <p class="node-desc theme-link-desc">Developer Telemetry, Real-time Metrics &amp; Machine Observability</p>
+                </a>
+
+                <div class="node-meta-bottom theme-link-footer">
+                  <span class="scan-pct theme-link-url">DATA INTEGRITY: 100%</span>
+                  <span class="scan-action theme-link-status">ACTIVATE LINK ⤤</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Scan Node 3: bumtrips.com -->
+            <article class="visor-scan-node" data-target="gamma">
+              <div class="node-frame">
+                <div class="node-reticle-bracket top-left" aria-hidden="true"></div>
+                <div class="node-reticle-bracket top-right" aria-hidden="true"></div>
+                <div class="node-reticle-bracket bottom-left" aria-hidden="true"></div>
+                <div class="node-reticle-bracket bottom-right" aria-hidden="true"></div>
+
+                <div class="node-meta-top">
+                  <span class="node-id theme-link-badge">TARGET 03 // AUDIO WAVE</span>
+                  <span class="node-threat threat-low">SCANNED</span>
+                </div>
+
+                <a href="https://bumtrips.com" 
+                   class="theme-link visor-link" 
+                   data-destination="bumtrips" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Scan and open bumtrips.com">
+                  <h3 class="node-title theme-link-title">BUMTRIPS.COM</h3>
+                  <p class="node-desc theme-link-desc">Beatniks, Bumtrips &amp; Bullshit — Audio &amp; Counter-Culture</p>
+                </a>
+
+                <div class="node-meta-bottom theme-link-footer">
+                  <span class="scan-pct theme-link-url">DATA INTEGRITY: 100%</span>
+                  <span class="scan-action theme-link-status">ACTIVATE LINK ⤤</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Scan Node 4: reactle.clownhouse.io -->
+            <article class="visor-scan-node" data-target="delta">
+              <div class="node-frame">
+                <div class="node-reticle-bracket top-left" aria-hidden="true"></div>
+                <div class="node-reticle-bracket top-right" aria-hidden="true"></div>
+                <div class="node-reticle-bracket bottom-left" aria-hidden="true"></div>
+                <div class="node-reticle-bracket bottom-right" aria-hidden="true"></div>
+
+                <div class="node-meta-top">
+                  <span class="node-id theme-link-badge">TARGET 04 // CLUSTER GAME</span>
+                  <span class="node-threat threat-low">SCANNED</span>
+                </div>
+
+                <a href="https://reactle.clownhouse.io" 
+                   class="theme-link visor-link" 
+                   data-destination="reactle" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Scan and open reactle.clownhouse.io">
+                  <h3 class="node-title theme-link-title">REACTLE.CLOWNHOUSE.IO</h3>
+                  <p class="node-desc theme-link-desc">1980s Cryptic Word Guessing Terminal</p>
+                </a>
+
+                <div class="node-meta-bottom theme-link-footer">
+                  <span class="scan-pct theme-link-url">DATA INTEGRITY: 100%</span>
+                  <span class="scan-action theme-link-status">ACTIVATE LINK ⤤</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Scan Node 5: giggle.clownhouse.io -->
+            <article class="visor-scan-node" data-target="epsilon">
+              <div class="node-frame">
+                <div class="node-reticle-bracket top-left" aria-hidden="true"></div>
+                <div class="node-reticle-bracket top-right" aria-hidden="true"></div>
+                <div class="node-reticle-bracket bottom-left" aria-hidden="true"></div>
+                <div class="node-reticle-bracket bottom-right" aria-hidden="true"></div>
+
+                <div class="node-meta-top">
+                  <span class="node-id theme-link-badge">TARGET 05 // CLOUD INGRESS</span>
+                  <span class="node-threat threat-low">SCANNED</span>
+                </div>
+
+                <a href="https://giggle.clownhouse.io" 
+                   class="theme-link visor-link" 
+                   data-destination="giggle" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Scan and open giggle.clownhouse.io">
+                  <h3 class="node-title theme-link-title">GIGGLE.CLOWNHOUSE.IO</h3>
+                  <p class="node-desc theme-link-desc">Primary Cluster Computation &amp; Network Ingress</p>
+                </a>
+
+                <div class="node-meta-bottom theme-link-footer">
+                  <span class="scan-pct theme-link-url">DATA INTEGRITY: 100%</span>
+                  <span class="scan-action theme-link-status">ACTIVATE LINK ⤤</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Scan Node 6: mailto:jeryd@clownhouse.io -->
+            <article class="visor-scan-node" data-target="zeta">
+              <div class="node-frame">
+                <div class="node-reticle-bracket top-left" aria-hidden="true"></div>
+                <div class="node-reticle-bracket top-right" aria-hidden="true"></div>
+                <div class="node-reticle-bracket bottom-left" aria-hidden="true"></div>
+                <div class="node-reticle-bracket bottom-right" aria-hidden="true"></div>
+
+                <div class="node-meta-top">
+                  <span class="node-id theme-link-badge">TARGET 06 // DIRECT COMMS</span>
+                  <span class="node-threat threat-low">SCANNED</span>
+                </div>
+
+                <a href="mailto:jeryd@clownhouse.io" 
+                   class="theme-link visor-link" 
+                   data-destination="contact" 
+                   aria-label="Open mailto client for jeryd@clownhouse.io">
+                  <h3 class="node-title theme-link-title">JERYD@CLOWNHOUSE.IO</h3>
+                  <p class="node-desc theme-link-desc">Direct Encrypted Comm Transmission Ingress</p>
+                </a>
+
+                <div class="node-meta-bottom theme-link-footer">
+                  <span class="scan-pct theme-link-url">CHANNEL STATUS: CLEAR</span>
+                  <span class="scan-action theme-link-status">DISPATCH MAIL ⤤</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- THEME 3: WRX TR RALLY TELEMETRY (Rally Blue, Brembo Red, Gauges)     -->
+    <!-- ==================================================================== -->
+    <section id="theme-wrx-telemetry" 
+             class="theme-container" 
+             data-theme="wrx-telemetry" 
+             role="tabpanel" 
+             aria-labelledby="switcher-wrx-telemetry" 
+             hidden>
+      
+      <div class="theme-shell wrx-shell wrx-carbon-panel">
+        
+        <!-- STI Motorsport Header & Dash Pod -->
+        <header class="wrx-header theme-header">
+          <div class="wrx-dash-top">
+            <div class="wrx-brand-block">
+              <div class="sti-badge-cluster" aria-label="Subaru WRX TR STI Badge">
+                <span class="wrx-logo">SUBARU <span class="wrx-accent-tr">WRX TR</span></span>
+                <span class="sti-pill">STI TELEMETRY</span>
+                <span class="awd-badge">SYMMETRICAL AWD</span>
+              </div>
+              <h1 class="theme-title wrx-title">SPECIAL STAGE TELEMETRY // WRC LIVE INGRESS</h1>
+            </div>
+
+            <!-- Sequential RPM Shift Lights Bar (7-Stage Tachometer Array) -->
+            <div class="shift-lights-cluster">
+              <div class="shift-lights-meta">
+                <span class="shift-label">RPM TACHOMETER</span>
+                <span class="rpm-val" id="wrx-rpm-val">7,200 RPM</span>
+              </div>
+              <div class="shift-lights-bar shift-lights rpm-lights" id="wrx-shift-lights" aria-label="Sequential RPM Shift Lights">
+                <div class="shift-led green" data-rpm="4000" title="RPM 4000"><span class="led-core"></span></div>
+                <div class="shift-led green" data-rpm="4800" title="RPM 4800"><span class="led-core"></span></div>
+                <div class="shift-led yellow" data-rpm="5600" title="RPM 5600"><span class="led-core"></span></div>
+                <div class="shift-led yellow" data-rpm="6200" title="RPM 6200"><span class="led-core"></span></div>
+                <div class="shift-led red" data-rpm="6800" title="RPM 6800"><span class="led-core"></span></div>
+                <div class="shift-led red" data-rpm="7200" title="RPM 7200"><span class="led-core"></span></div>
+                <div class="shift-led red redline active" data-rpm="7500" title="RPM 7500 REDLINE LIMITER"><span class="led-core"></span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Digital Turbo Boost Gauge & Telemetry Cluster -->
+          <div class="wrx-gauge-cluster">
+            
+            <!-- Hybrid SVG + Digital Turbo Boost Gauge (-1.0 to +1.8 bar) -->
+            <div class="boost-gauge-widget boost-gauge turbo-gauge" id="wrx-boost-gauge" aria-label="Digital Turbo Boost Gauge (-1.0 to +1.8 bar)">
+              <div class="gauge-dial">
+                <svg class="boost-gauge-svg" viewBox="0 0 240 240" width="160" height="160" role="img" aria-label="Analog Turbo Boost Dial: -1.0 to +1.8 Bar">
+                  <defs>
+                    <radialGradient id="wrx-face-grad" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stop-color="#181c26"/>
+                      <stop offset="65%" stop-color="#0c0e14"/>
+                      <stop offset="100%" stop-color="#040508"/>
+                    </radialGradient>
+                    <linearGradient id="wrx-bezel-ring" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#555f75"/>
+                      <stop offset="35%" stop-color="#1e222d"/>
+                      <stop offset="70%" stop-color="#0a0c10"/>
+                      <stop offset="100%" stop-color="#3b4254"/>
+                    </linearGradient>
+                    <linearGradient id="wrx-needle-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#ff3344"/>
+                      <stop offset="50%" stop-color="#e60012"/>
+                      <stop offset="100%" stop-color="#99000c"/>
+                    </linearGradient>
+                  </defs>
+
+                  <!-- Outer Metal Bezel & Inner Carbon Plate -->
+                  <circle cx="120" cy="120" r="116" fill="url(#wrx-bezel-ring)" stroke="#0038d6" stroke-width="2"/>
+                  <circle cx="120" cy="120" r="107" fill="#080a0e" stroke="#282b35" stroke-width="1.5"/>
+                  <circle cx="120" cy="120" r="102" fill="url(#wrx-face-grad)"/>
+
+                  <!-- Gauge Scale Arc Tracks: Vacuum (Cyan/Blue), Normal Boost (WR Blue), Overboost (Brembo Red) -->
+                  <!-- Arc from 135° (-1.0 bar) to 231.4° (0.0 bar) -->
+                  <path d="M 59.9 180.1 A 85 85 0 0 1 67.0 53.5" fill="none" stroke="#00e5ff" stroke-width="4.5" stroke-linecap="round" opacity="0.85"/>
+                  <!-- Arc from 231.4° (0.0 bar) to 347.1° (+1.2 bar) -->
+                  <path d="M 67.0 53.5 A 85 85 0 0 1 202.9 101.1" fill="none" stroke="#0038d6" stroke-width="5.5" stroke-linecap="round"/>
+                  <!-- Arc from 347.1° (+1.2 bar) to 405° (+1.8 bar Peak) -->
+                  <path d="M 202.9 101.1 A 85 85 0 0 1 180.1 180.1" fill="none" stroke="#e60012" stroke-width="6.5" stroke-linecap="round"/>
+
+                  <!-- Scale Major Tick Lines -->
+                  <line x1="59.9" y1="180.1" x2="69.1" y2="170.9" stroke="#00e5ff" stroke-width="2.5"/>
+                  <line x1="35.1" y1="124.7" x2="48.1" y2="124.0" stroke="#00e5ff" stroke-width="2"/>
+                  <line x1="67.0" y1="53.5" x2="75.1" y2="63.7" stroke="#f2f4f8" stroke-width="3"/>
+                  <line x1="134.2" y1="36.2" x2="132.1" y2="49.0" stroke="#0038d6" stroke-width="2"/>
+                  <line x1="192.0" y1="74.8" x2="181.0" y2="81.7" stroke="#0038d6" stroke-width="2.5"/>
+                  <line x1="201.7" y1="143.5" x2="189.2" y2="140.0" stroke="#e60012" stroke-width="2.5"/>
+                  <line x1="180.1" y1="180.1" x2="170.9" y2="170.9" stroke="#e60012" stroke-width="3"/>
+
+                  <!-- Numeric Gauge Scale Badges -->
+                  <text x="75" y="172" font-family="'Courier New', monospace" font-size="10" font-weight="700" fill="#00e5ff" text-anchor="middle">-1.0</text>
+                  <text x="82" y="80" font-family="'Courier New', monospace" font-size="11" font-weight="800" fill="#f2f4f8" text-anchor="middle">0</text>
+                  <text x="165" y="96" font-family="'Courier New', monospace" font-size="10" font-weight="700" fill="#0038d6" text-anchor="middle">+1.0</text>
+                  <text x="164" y="172" font-family="'Courier New', monospace" font-size="10" font-weight="800" fill="#e60012" text-anchor="middle">+1.8</text>
+
+                  <!-- Defi / STI Center Logo -->
+                  <text x="120" y="102" font-family="'Courier New', monospace" font-size="9" font-weight="900" fill="#9098a8" letter-spacing="1.5" text-anchor="middle">TURBO</text>
+
+                  <!-- Dynamic Sweeping Indicator Needle (Default +1.42 bar = rotate(98.4deg)) -->
+                  <g class="gauge-needle-group" id="wrx-needle-group" style="transform: rotate(98.4deg); transform-origin: 120px 120px; transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);">
+                    <polygon points="117,126 123,126 121,42 119,42" fill="url(#wrx-needle-grad)" filter="drop-shadow(0 0 4px #e60012)"/>
+                    <circle cx="120" cy="120" r="10" fill="#e60012" stroke="#ffffff" stroke-width="1.5"/>
+                    <circle cx="120" cy="120" r="4" fill="#14151a"/>
+                  </g>
+                </svg>
+
+                <div class="gauge-digital-block">
+                  <span class="gauge-label">BOOST PRESSURE</span>
+                  <span class="boost-readout" id="wrx-boost-val">+1.42 <span class="gauge-unit">BAR</span></span>
+                  <span class="peak-readout" id="wrx-peak-val">PEAK: +1.68 BAR</span>
+                </div>
+              </div>
+
+              <!-- Interactive Throttle Blip / Boost Trigger Button -->
+              <button type="button" class="wrx-throttle-btn" id="wrx-throttle-btn" aria-label="Simulate Full Throttle Turbo Spool and Shift Beeps">
+                <span class="btn-icon" aria-hidden="true">🏁</span>
+                <span class="btn-text">BLIP THROTTLE // 1.8 BAR</span>
+              </button>
+            </div>
+
+            <!-- Mechanical Telemetry Sensor Grid -->
+            <div class="telemetry-readout-block" aria-label="Vehicle Mechanical Telemetry">
+              <div class="tele-item"><span class="tele-label">DCCD DIFF:</span> <span class="tele-val">AUTO [41:59 RWD]</span></div>
+              <div class="tele-item"><span class="tele-label">ENGINE OIL:</span> <span class="tele-val">98°C // 5.2 BAR</span></div>
+              <div class="tele-item"><span class="tele-label">BREMBO ROTOR:</span> <span class="tele-val red-alert">340°C [OPTIMAL]</span></div>
+              <div class="tele-item"><span class="tele-label">I/C WATER SPRAY:</span> <span class="tele-val">ACTIVE [AUTO]</span></div>
+              <div class="tele-item"><span class="tele-label">MANIFOLD AIR:</span> <span class="tele-val">22°C // 101.3 kPa</span></div>
+              <div class="tele-item"><span class="tele-label">TIRE PRESSURE:</span> <span class="tele-val">32.5 PSI HOT</span></div>
+            </div>
+
+          </div>
+        </header>
+
+        <!-- Mechanical Rally Stage Waypoint Pace Notes (Universal Links Matrix) -->
+        <div class="rally-stage-bay">
+          <div class="rally-bay-header">
+            <span class="rally-bay-title">SPECIAL STAGE WAYPOINTS // WRC CO-DRIVER PACE NOTES</span>
+            <span class="rally-bay-status"><span class="live-dot"></span> 6 SECTOR TELEMETRY CHANNELS ACTIVE</span>
+          </div>
+
+          <div class="rally-checkpoint-grid theme-link-grid">
+            
+            <!-- Checkpoint 1: openOODA.org -->
+            <article class="rally-checkpoint" data-sector="1">
+              <div class="checkpoint-card">
+                <div class="checkpoint-top-bar">
+                  <span class="sector-code theme-link-badge">SS1 // COL DE TURINI</span>
+                  <span class="rally-surface-tag">ASPHALT / ICE</span>
+                </div>
+                <div class="pace-note-badge" aria-label="Pace note: Caution, Fast 6 Right over crest 120 meters, tightens to 3 Left don't cut">
+                  <span class="tulip-arrow" aria-hidden="true">⤹</span> ! CAUTION ! FAST R6 / CREST 120 &rarr; TIGHTENS L3 DON'T CUT
+                </div>
+                <a href="https://openooda.org" 
+                   class="theme-link rally-link" 
+                   data-destination="openooda" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Navigate to openOODA.org waypoint">
+                  <h3 class="checkpoint-title theme-link-title">openOODA.org</h3>
+                  <p class="checkpoint-desc theme-link-desc">Autonomous Agentic Architecture &amp; Cognitive OODA Decision Protocols</p>
+                </a>
+                <div class="checkpoint-telemetry-strip">
+                  <div class="tele-strip-item"><span class="strip-lbl">TOP SPEED:</span> <span class="strip-val">184 KM/H</span></div>
+                  <div class="tele-strip-item"><span class="strip-lbl">GRIP:</span> <span class="strip-val">88%</span></div>
+                  <div class="tele-strip-item"><span class="strip-lbl">DCCD:</span> <span class="strip-val">LOCK 50:50</span></div>
+                </div>
+                <div class="checkpoint-meta theme-link-footer">
+                  <span class="sector-time theme-link-url">SECTOR 01: 01:14.22</span>
+                  <span class="sector-speed theme-link-status split-green">SPLIT: -0.42s &darr;</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Checkpoint 2: necrometer.dev -->
+            <article class="rally-checkpoint" data-sector="2">
+              <div class="checkpoint-card">
+                <div class="checkpoint-top-bar">
+                  <span class="sector-code theme-link-badge">SS2 // OUNINPOHJA</span>
+                  <span class="rally-surface-tag">GRAVEL SPEEDWAY</span>
+                </div>
+                <div class="pace-note-badge" aria-label="Pace note: Flat 6 Right over crest jump 180 meters into 4 Left">
+                  <span class="tulip-arrow" aria-hidden="true">⤴</span> FLAT 6 RIGHT OVER JUMP 180 &rarr; STAY MID INTO L4 MINUS
+                </div>
+                <a href="https://necrometer.dev" 
+                   class="theme-link rally-link" 
+                   data-destination="necrometer" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Navigate to necrometer.dev waypoint">
+                  <h3 class="checkpoint-title theme-link-title">NECROMETER.DEV</h3>
+                  <p class="checkpoint-desc theme-link-desc">Developer Telemetry, Machine Observability &amp; Real-Time Execution Tracing</p>
+                </a>
+                <div class="checkpoint-telemetry-strip">
+                  <div class="tele-strip-item"><span class="strip-lbl">LATERAL G:</span> <span class="strip-val">1.45 G</span></div>
+                  <div class="tele-strip-item"><span class="strip-lbl">JUMP:</span> <span class="strip-val">42 METERS</span></div>
+                  <div class="tele-strip-item"><span class="strip-lbl">BOOST:</span> <span class="strip-val">+1.62 BAR</span></div>
+                </div>
+                <div class="checkpoint-meta theme-link-footer">
+                  <span class="sector-time theme-link-url">SECTOR 02: 02:28.90</span>
+                  <span class="sector-speed theme-link-status split-green">SPLIT: -0.88s &darr;</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Checkpoint 3: bumtrips.com -->
+            <article class="rally-checkpoint" data-sector="3">
+              <div class="checkpoint-card">
+                <div class="checkpoint-top-bar">
+                  <span class="sector-code theme-link-badge">SS3 // SAFARI RALLY KENYA</span>
+                  <span class="rally-surface-tag">DUST / FESH-FESH</span>
+                </div>
+                <div class="pace-note-badge" aria-label="Pace note: Long bumps 200 meters into heavy braking hairpin right rocks outside">
+                  <span class="tulip-arrow" aria-hidden="true">⤸</span> BUMP 200 &rarr; BRAKING HAIRPIN RIGHT // ROCKS OUTSIDE
+                </div>
+                <a href="https://bumtrips.com" 
+                   class="theme-link rally-link" 
+                   data-destination="bumtrips" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Navigate to bumtrips.com waypoint">
+                  <h3 class="checkpoint-title theme-link-title">BUMTRIPS.COM</h3>
+                  <p class="checkpoint-desc theme-link-desc">Beatniks, Bumtrips &amp; Bullshit — Analog Audio Waves &amp; Counter-Culture</p>
+                </a>
+                <div class="checkpoint-telemetry-strip">
+                  <div class="tele-strip-item"><span class="strip-lbl">DAMPERS:</span> <span class="strip-val">STAGE 3 HARD</span></div>
+                  <div class="tele-strip-item"><span class="strip-lbl">FREQ:</span> <span class="strip-val">FM 88.5 MHz</span></div>
+                  <div class="tele-strip-item"><span class="strip-lbl">SNORKEL:</span> <span class="strip-val">SEALED</span></div>
+                </div>
+                <div class="checkpoint-meta theme-link-footer">
+                  <span class="sector-time theme-link-url">SECTOR 03: 03:41.05</span>
+                  <span class="sector-speed theme-link-status split-green">SPLIT: -0.15s &darr;</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Checkpoint 4: reactle.clownhouse.io -->
+            <article class="rally-checkpoint" data-sector="4">
+              <div class="checkpoint-card">
+                <div class="checkpoint-top-bar">
+                  <span class="sector-code theme-link-badge">SS4 // MONTE-CARLO NIGHT</span>
+                  <span class="rally-surface-tag">SNOW &amp; DRY TARMAC</span>
+                </div>
+                <div class="pace-note-badge" aria-label="Pace note: Double chicane entry right 60 meters into narrow bridge 4 Left plus">
+                  <span class="tulip-arrow" aria-hidden="true">⤹</span> DOUBLE CHICANE ENTRY R 60 &rarr; NARROW BRIDGE L4 PLUS
+                </div>
+                <a href="https://reactle.clownhouse.io" 
+                   class="theme-link rally-link" 
+                   data-destination="reactle" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Navigate to reactle.clownhouse.io waypoint">
+                  <h3 class="checkpoint-title theme-link-title">REACTLE.CLOWNHOUSE.IO</h3>
+                  <p class="checkpoint-desc theme-link-desc">1980s Cryptic Word Guessing Terminal &amp; Retro Logic Decryption Engine</p>
+                </a>
+                <div class="checkpoint-telemetry-strip">
+                  <div class="tele-strip-item"><span class="strip-lbl">STUDDED:</span> <span class="strip-val">FRONT ONLY</span></div>
+                  <div class="tele-strip-item"><span class="strip-lbl">CIPHER:</span> <span class="strip-val">ACTIVE 5-LTR</span></div>
+                  <div class="tele-strip-item"><span class="strip-lbl">BOOST:</span> <span class="strip-val">+1.52 BAR</span></div>
+                </div>
+                <div class="checkpoint-meta theme-link-footer">
+                  <span class="sector-time theme-link-url">SECTOR 04: 04:52.31</span>
+                  <span class="sector-speed theme-link-status split-green">SPLIT: -0.60s &darr;</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Checkpoint 5: giggle.clownhouse.io -->
+            <article class="rally-checkpoint" data-sector="5">
+              <div class="checkpoint-card">
+                <div class="checkpoint-top-bar">
+                  <span class="sector-code theme-link-badge">SS5 // ACROPOLIS BEDROCK</span>
+                  <span class="rally-surface-tag">ROCKY BEDROCK</span>
+                </div>
+                <div class="pace-note-badge" aria-label="Pace note: Flat out 250 meters through water splash into sharp 2 Left uphill">
+                  <span class="tulip-arrow" aria-hidden="true">⤸</span> FLAT OUT 250 WATER SPLASH &rarr; SHARP L2 UPHILL CUT
+                </div>
+                <a href="https://giggle.clownhouse.io" 
+                   class="theme-link rally-link" 
+                   data-destination="giggle" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Navigate to giggle.clownhouse.io waypoint">
+                  <h3 class="checkpoint-title theme-link-title">GIGGLE.CLOWNHOUSE.IO</h3>
+                  <p class="checkpoint-desc theme-link-desc">Primary Cluster Computation Node, High-Density Routing &amp; Edge Ingress</p>
+                </a>
+                <div class="checkpoint-telemetry-strip">
+                  <div class="tele-strip-item"><span class="strip-lbl">INGRESS:</span> <span class="strip-val">40 Gbps OPT</span></div>
+                  <div class="tele-strip-item"><span class="strip-lbl">I/C TEMP:</span> <span class="strip-val">19°C COOLED</span></div>
+                  <div class="tele-strip-item"><span class="strip-lbl">RIDGE:</span> <span class="strip-val">SECTOR 2201</span></div>
+                </div>
+                <div class="checkpoint-meta theme-link-footer">
+                  <span class="sector-time theme-link-url">SECTOR 05: 05:59.88</span>
+                  <span class="sector-speed theme-link-status split-green">SPLIT: -1.02s &darr;</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Checkpoint 6: mailto:jeryd@clownhouse.io -->
+            <article class="rally-checkpoint" data-sector="6">
+              <div class="checkpoint-card">
+                <div class="checkpoint-top-bar">
+                  <span class="sector-code theme-link-badge">SS6 // SERVICE PARK INGRESS</span>
+                  <span class="rally-surface-tag">PADDOCK CONTROL</span>
+                </div>
+                <div class="pace-note-badge" aria-label="Pace note: Checkpoint 50 meters into Time Control Marshal Service Bay">
+                  <span class="tulip-arrow" aria-hidden="true">🏁</span> CHECKPOINT 50 &rarr; TIME CONTROL MARSHAL SERVICE BAY
+                </div>
+                <a href="mailto:jeryd@clownhouse.io" 
+                   class="theme-link rally-link" 
+                   data-destination="contact" 
+                   aria-label="Open mailto client for jeryd@clownhouse.io">
+                  <h3 class="checkpoint-title theme-link-title">JERYD@CLOWNHOUSE.IO</h3>
+                  <p class="checkpoint-desc theme-link-desc">Direct Dispatch Ingress via Cloudflare Enterprise High-Speed Mail Relays</p>
+                </a>
+                <div class="checkpoint-telemetry-strip">
+                  <div class="tele-strip-item"><span class="strip-lbl">SERVICE:</span> <span class="strip-val">20 MIN WINDOW</span></div>
+                  <div class="tele-strip-item"><span class="strip-lbl">CREW:</span> <span class="strip-val">CHIEF TECH READY</span></div>
+                  <div class="tele-strip-item"><span class="strip-lbl">LINK:</span> <span class="strip-val">DIRECT LINE</span></div>
+                </div>
+                <div class="checkpoint-meta theme-link-footer">
+                  <span class="sector-time theme-link-url">PARC FERMÉ: OPEN</span>
+                  <span class="sector-speed theme-link-status split-gold">READY FOR SERVICE &bull;</span>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- THEME 4: HUNTER BASE DISPATCH (Mega Man X 16-Bit Anime Tech)         -->
+    <!-- ==================================================================== -->
+    <section id="theme-hunter-base" 
+             class="theme-container" 
+             data-theme="hunter-base" 
+             role="tabpanel" 
+             aria-labelledby="switcher-hunter-base" 
+             hidden>
+      
+      <div class="theme-shell hunter-shell">
+        
+        <!-- Hunter Base HQ Header & Operative Status Banner -->
+        <header class="hunter-header theme-header">
+          <div class="hunter-top-row">
+            <div class="hunter-brand">
+              <div class="hunter-unit-tag">
+                <span class="hunter-unit">IRREGULAR HUNTER 17TH ELITE UNIT</span>
+                <span class="hunter-year">ERA: 21XX</span>
+              </div>
+              <h1 class="theme-title hunter-title">MAVERICK HUNTER BASE HQ // DISPATCH CORE</h1>
+              <div class="dr-cain-comm" aria-live="polite">
+                <span class="comm-glyph" aria-hidden="true">&bull;</span>
+                <span class="comm-text">TRANSMISSION: ALL REPLICAL SYSTEMS SYNCHRONIZED &bull; DR. CAIN STANDBY</span>
+              </div>
+            </div>
+
+            <!-- Rank & Threat Rating Badge -->
+            <div class="hunter-rank-cluster">
+              <div class="hunter-rank-badge">
+                <span class="rank-label">CLASS</span>
+                <span class="rank-value">S-RANK</span>
+              </div>
+              <div class="threat-matrix-badge">
+                <span class="threat-label">SIGMA VIRUS:</span>
+                <span class="threat-val">0.00% CLEAN</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 28-Tick Segmented Health Bar, Sub-Tanks & X-Buster Charge Widget -->
+          <div class="hunter-meters-row">
+            
+            <!-- Canonical 28-Tick Segmented Life Energy Bar with Gold Cap -->
+            <div class="hunter-health-meter health-bar life-bar energy-bar meter" id="hunter-health-meter" aria-label="Mega Man X Life Energy Meter: 28 of 28 Ticks">
+              <div class="meter-cap-box">
+                <span class="meter-cap-badge">LIFE</span>
+              </div>
+              <div class="health-bar-frame">
+                <div class="health-bar-28" aria-hidden="true">
+                  <span class="tick filled" data-tick="1"></span><span class="tick filled" data-tick="2"></span>
+                  <span class="tick filled" data-tick="3"></span><span class="tick filled" data-tick="4"></span>
+                  <span class="tick filled" data-tick="5"></span><span class="tick filled" data-tick="6"></span>
+                  <span class="tick filled" data-tick="7"></span><span class="tick filled" data-tick="8"></span>
+                  <span class="tick filled" data-tick="9"></span><span class="tick filled" data-tick="10"></span>
+                  <span class="tick filled" data-tick="11"></span><span class="tick filled" data-tick="12"></span>
+                  <span class="tick filled" data-tick="13"></span><span class="tick filled" data-tick="14"></span>
+                  <span class="tick filled" data-tick="15"></span><span class="tick filled" data-tick="16"></span>
+                  <span class="tick filled" data-tick="17"></span><span class="tick filled" data-tick="18"></span>
+                  <span class="tick filled" data-tick="19"></span><span class="tick filled" data-tick="20"></span>
+                  <span class="tick filled" data-tick="21"></span><span class="tick filled" data-tick="22"></span>
+                  <span class="tick filled" data-tick="23"></span><span class="tick filled" data-tick="24"></span>
+                  <span class="tick filled" data-tick="25"></span><span class="tick filled" data-tick="26"></span>
+                  <span class="tick filled" data-tick="27"></span><span class="tick filled" data-tick="28"></span>
+                </div>
+              </div>
+              <span class="meter-val" id="hunter-health-numeric">28/28</span>
+            </div>
+
+            <!-- Sub-Tank Auxiliary Reserves -->
+            <div class="sub-tank-cluster" aria-label="Sub-Tank Energy Reserves">
+              <div class="sub-tank filled" title="Sub-Tank 01: 100%"><span class="tank-icon">E</span><span class="tank-fill"></span></div>
+              <div class="sub-tank filled" title="Sub-Tank 02: 100%"><span class="tank-icon">E</span><span class="tank-fill"></span></div>
+              <div class="sub-tank filled" title="Sub-Tank 03: 100%"><span class="tank-icon">W</span><span class="tank-fill"></span></div>
+              <div class="sub-tank filled" title="Sub-Tank 04: 100%"><span class="tank-icon">EX</span><span class="tank-fill"></span></div>
+            </div>
+
+            <!-- Interactive Multi-Tier X-Buster Plasma Charge Widget -->
+            <div class="buster-charge-widget buster-charge" id="buster-charge-widget" aria-label="Mega Buster Plasma Charge Station">
+              <button type="button" 
+                      class="buster-charge-btn charge-btn" 
+                      id="buster-charge-btn" 
+                      aria-label="Charge Mega Buster Plasma Cannon">
+                <span class="btn-plasma-ring" aria-hidden="true"></span>
+                <span class="btn-text">CHARGE X-BUSTER</span>
+              </button>
+              <div class="buster-charge-level" aria-hidden="true">
+                <span class="charge-indicator" id="charge-indicator">READY</span>
+                <div class="charge-meter-strip" id="charge-meter-strip">
+                  <span class="charge-bar" id="charge-bar"></span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </header>
+
+        <!-- Authentic 3x3 Stage Select Mission Grid (Universal Links Matrix) -->
+        <div class="stage-select-bay">
+          <div class="stage-bay-header">
+            <span class="stage-bay-title">STAGE SELECT // CHOOSE TARGET MAVERICK MISSION CAPSULE</span>
+            <span class="stage-bay-sub"><span class="cursor-blink">&gt;</span> TARGET LOCK ACTIVE // SELECT CAPSULE</span>
+          </div>
+
+          <!-- True 3x3 Grid: 6 Destination Boss Capsules + Central Command Core + Auxiliary Hunter Capsules -->
+          <div class="stage-select-grid stage-grid mission-grid grid theme-link-grid">
+            
+            <!-- Cell 1 (Row 1, Col 1): Mission 01 — openOODA.org -->
+            <article class="stage-capsule" data-stage="1">
+              <div class="capsule-border">
+                <div class="boss-portrait-box">
+                  <div class="boss-icon-wrap">
+                    <span class="boss-icon" aria-hidden="true">🤖</span>
+                    <span class="boss-grid-crosshairs" aria-hidden="true"></span>
+                  </div>
+                  <div class="boss-meta-stack">
+                    <span class="stage-number theme-link-badge">STAGE 01</span>
+                    <span class="boss-codename">OVERDRIVE OSTENSIBLE</span>
+                  </div>
+                </div>
+                <a href="https://openooda.org" 
+                   class="theme-link stage-link" 
+                   data-destination="openooda" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Engage openOODA.org mission">
+                  <h3 class="stage-title theme-link-title">openOODA.org</h3>
+                  <p class="stage-desc theme-link-desc">Autonomous Agentic Architecture &amp; Cognitive OODA Protocol Core</p>
+                </a>
+                <div class="capsule-spec-strip">
+                  <span class="spec-item">WEAPON: AGENT BUSTER</span>
+                  <span class="spec-item">THREAT: RANK S</span>
+                </div>
+                <div class="stage-status theme-link-footer">
+                  <span class="theme-link-url">PROTOCOL: 21XX</span>
+                  <span class="theme-link-status status-deployable">TARGET ACQUIRED &bull;</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Cell 2 (Row 1, Col 2): Mission 02 — necrometer.dev -->
+            <article class="stage-capsule" data-stage="2">
+              <div class="capsule-border">
+                <div class="boss-portrait-box">
+                  <div class="boss-icon-wrap">
+                    <span class="boss-icon" aria-hidden="true">📊</span>
+                    <span class="boss-grid-crosshairs" aria-hidden="true"></span>
+                  </div>
+                  <div class="boss-meta-stack">
+                    <span class="stage-number theme-link-badge">STAGE 02</span>
+                    <span class="boss-codename">ARMORED TELEMETRY</span>
+                  </div>
+                </div>
+                <a href="https://necrometer.dev" 
+                   class="theme-link stage-link" 
+                   data-destination="necrometer" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Engage necrometer.dev mission">
+                  <h3 class="stage-title theme-link-title">NECROMETER.DEV</h3>
+                  <p class="stage-desc theme-link-desc">Developer Telemetry, Machine Observability &amp; Real-time Profiling</p>
+                </a>
+                <div class="capsule-spec-strip">
+                  <span class="spec-item">WEAPON: METRIC BEAM</span>
+                  <span class="spec-item">THREAT: HIGH</span>
+                </div>
+                <div class="stage-status theme-link-footer">
+                  <span class="theme-link-url">PROTOCOL: OBSERVABILITY</span>
+                  <span class="theme-link-status status-deployable">TARGET ACQUIRED &bull;</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Cell 3 (Row 1, Col 3): Mission 03 — bumtrips.com -->
+            <article class="stage-capsule" data-stage="3">
+              <div class="capsule-border">
+                <div class="boss-portrait-box">
+                  <div class="boss-icon-wrap">
+                    <span class="boss-icon" aria-hidden="true">📻</span>
+                    <span class="boss-grid-crosshairs" aria-hidden="true"></span>
+                  </div>
+                  <div class="boss-meta-stack">
+                    <span class="stage-number theme-link-badge">STAGE 03</span>
+                    <span class="boss-codename">SONIC BEATNIK</span>
+                  </div>
+                </div>
+                <a href="https://bumtrips.com" 
+                   class="theme-link stage-link" 
+                   data-destination="bumtrips" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Engage bumtrips.com mission">
+                  <h3 class="stage-title theme-link-title">BUMTRIPS.COM</h3>
+                  <p class="stage-desc theme-link-desc">Beatniks, Bumtrips &amp; Bullshit — Analog Sonic Broadcast &amp; Counter-Culture</p>
+                </a>
+                <div class="capsule-spec-strip">
+                  <span class="spec-item">WEAPON: SONIC CRUSH</span>
+                  <span class="spec-item">THREAT: A-RANK</span>
+                </div>
+                <div class="stage-status theme-link-footer">
+                  <span class="theme-link-url">PROTOCOL: BROADCAST</span>
+                  <span class="theme-link-status status-deployable">TARGET ACQUIRED &bull;</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Cell 4 (Row 2, Col 1): Mission 04 — reactle.clownhouse.io -->
+            <article class="stage-capsule" data-stage="4">
+              <div class="capsule-border">
+                <div class="boss-portrait-box">
+                  <div class="boss-icon-wrap">
+                    <span class="boss-icon" aria-hidden="true">🎮</span>
+                    <span class="boss-grid-crosshairs" aria-hidden="true"></span>
+                  </div>
+                  <div class="boss-meta-stack">
+                    <span class="stage-number theme-link-badge">STAGE 04</span>
+                    <span class="boss-codename">CIPHER CRACKER</span>
+                  </div>
+                </div>
+                <a href="https://reactle.clownhouse.io" 
+                   class="theme-link stage-link" 
+                   data-destination="reactle" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Engage reactle.clownhouse.io mission">
+                  <h3 class="stage-title theme-link-title">REACTLE.CLOWNHOUSE.IO</h3>
+                  <p class="stage-desc theme-link-desc">1980s Cryptic Word Decryption Terminal &amp; Interactive Logic Matrix</p>
+                </a>
+                <div class="capsule-spec-strip">
+                  <span class="spec-item">WEAPON: LOGIC SHIFT</span>
+                  <span class="spec-item">THREAT: PUZZLE</span>
+                </div>
+                <div class="stage-status theme-link-footer">
+                  <span class="theme-link-url">PROTOCOL: CIPHER</span>
+                  <span class="theme-link-status status-deployable">TARGET ACQUIRED &bull;</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Cell 5 (Row 2, Col 2): CENTRAL HUNTER BASE COMMAND CORE (Capcom Center Hub) -->
+            <div class="stage-center-hub" id="hunter-center-hub" aria-label="Hunter Base Central Dispatch Command Hub">
+              <div class="center-hub-frame">
+                <div class="hub-scanner-radar" aria-hidden="true">
+                  <div class="radar-scan-line"></div>
+                  <span class="hunter-x-sigil">X</span>
+                </div>
+                <div class="hub-info-block">
+                  <span class="hub-label">CENTRAL DISPATCH</span>
+                  <h4 class="hub-title">MISSION CONTROL</h4>
+                  <p class="hub-desc">SELECT TARGET SECTOR // ALL HUNTERS READY TO LAUNCH</p>
+                </div>
+                <div class="hub-status-strip">
+                  <span class="hub-readiness">SYSTEM: 100% READY</span>
+                  <span class="hub-clear-count">6 SECTORS OPEN</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cell 6 (Row 2, Col 3): Mission 05 — giggle.clownhouse.io -->
+            <article class="stage-capsule" data-stage="5">
+              <div class="capsule-border">
+                <div class="boss-portrait-box">
+                  <div class="boss-icon-wrap">
+                    <span class="boss-icon" aria-hidden="true">⚡</span>
+                    <span class="boss-grid-crosshairs" aria-hidden="true"></span>
+                  </div>
+                  <div class="boss-meta-stack">
+                    <span class="stage-number theme-link-badge">STAGE 05</span>
+                    <span class="boss-codename">GIGAWATT SPARK</span>
+                  </div>
+                </div>
+                <a href="https://giggle.clownhouse.io" 
+                   class="theme-link stage-link" 
+                   data-destination="giggle" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Engage giggle.clownhouse.io mission">
+                  <h3 class="stage-title theme-link-title">GIGGLE.CLOWNHOUSE.IO</h3>
+                  <p class="stage-desc theme-link-desc">Primary Compute Cluster Node, Microservice Mesh &amp; Ingress Nexus</p>
+                </a>
+                <div class="capsule-spec-strip">
+                  <span class="spec-item">WEAPON: SPARK CLUSTER</span>
+                  <span class="spec-item">THREAT: HIGH GIGA</span>
+                </div>
+                <div class="stage-status theme-link-footer">
+                  <span class="theme-link-url">PROTOCOL: EDGE COMPUTE</span>
+                  <span class="theme-link-status status-deployable">TARGET ACQUIRED &bull;</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Cell 7 (Row 3, Col 1): Mission 06 — mailto:jeryd@clownhouse.io -->
+            <article class="stage-capsule" data-stage="6">
+              <div class="capsule-border">
+                <div class="boss-portrait-box">
+                  <div class="boss-icon-wrap">
+                    <span class="boss-icon" aria-hidden="true">📡</span>
+                    <span class="boss-grid-crosshairs" aria-hidden="true"></span>
+                  </div>
+                  <div class="boss-meta-stack">
+                    <span class="stage-number theme-link-badge">STAGE 06</span>
+                    <span class="boss-codename">DIRECT TRANSMITTER</span>
+                  </div>
+                </div>
+                <a href="mailto:jeryd@clownhouse.io" 
+                   class="theme-link stage-link" 
+                   data-destination="contact" 
+                   aria-label="Open mailto client for jeryd@clownhouse.io">
+                  <h3 class="stage-title theme-link-title">JERYD@CLOWNHOUSE.IO</h3>
+                  <p class="stage-desc theme-link-desc">Encrypted Comm Dispatch Ingress Routed via High-Speed Cloudflare Edge</p>
+                </a>
+                <div class="capsule-spec-strip">
+                  <span class="spec-item">WEAPON: DIRECT BEAM</span>
+                  <span class="spec-item">THREAT: DIRECT COMMS</span>
+                </div>
+                <div class="stage-status theme-link-footer">
+                  <span class="theme-link-url">DIRECT LINE</span>
+                  <span class="theme-link-status status-direct">COMMS ACTIVE &bull;</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Cell 8 (Row 3, Col 2): Auxiliary Sub-Tank Station -->
+            <div class="stage-aux-capsule" aria-label="Sub-Tank Energy Recharge Chamber">
+              <div class="capsule-border aux-border">
+                <div class="aux-icon-wrap">
+                  <span class="aux-icon" aria-hidden="true">🔋</span>
+                </div>
+                <div class="aux-meta">
+                  <span class="aux-title">SUB-TANK RECHARGE BAY</span>
+                  <p class="aux-desc">4/4 SUB-TANKS CHARGED // AUTOMATIC EMERGENCY RESTORATION READY</p>
+                </div>
+                <div class="aux-status">RESERVES: MAX</div>
+              </div>
+            </div>
+
+            <!-- Cell 9 (Row 3, Col 3): Dr. Light Armor Upgrade Capsule -->
+            <div class="stage-aux-capsule" aria-label="Dr. Light Enhancement Capsule">
+              <div class="capsule-border aux-border light-capsule">
+                <div class="aux-icon-wrap">
+                  <span class="aux-icon" aria-hidden="true">🛡️</span>
+                </div>
+                <div class="aux-meta">
+                  <span class="aux-title">LIGHT ENHANCEMENT CAPSULE</span>
+                  <p class="aux-desc">ARMOR UPGRADE ENHANCEMENT: SPIRAL CRUSH BUSTER CHIP INSTALLED</p>
+                </div>
+                <div class="aux-status">UPGRADE: INSTALLED</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================================================================== -->
+    <!-- THEME 5: PACIFIC OUTPOST HYBRID (Volcanic, Chozo, WRX, 16-Bit)       -->
+    <!-- ==================================================================== -->
+    <section id="theme-pacific-outpost" 
+             class="theme-container" 
+             data-theme="pacific-outpost" 
+             role="tabpanel" 
+             aria-labelledby="switcher-pacific-outpost" 
+             hidden>
+      
+      <div class="theme-shell outpost-shell">
+        
+        <!-- Pacific Outpost Command Header -->
+        <header class="outpost-header theme-header">
+          
+          <!-- Station Identification & Sector Banner -->
+          <div class="outpost-brand-row">
+            <div class="outpost-title-group">
+              <div class="outpost-callsign-bar">
+                <span class="callsign-badge">STATION 2201</span>
+                <span class="outpost-callsign">HAWAIIAN VOLCANIC RIDGE OUTPOST // ELEVATION: 3,420M</span>
+                <span class="outpost-coords">LAT: 20.7097° N // LON: 156.2533° W</span>
+              </div>
+              <h1 class="theme-title outpost-headline">PACIFIC HYBRID COMMAND // SECTOR 2201</h1>
+              <p class="theme-subtitle outpost-sub">
+                Tactical Geothermal Operations Deck fusing Hawaiian Volcanic Strata, Chozo Alien Telemetry, WRX TR Rally Instrumentation, and 16-Bit Hardware Architecture.
+              </p>
+            </div>
+
+            <!-- 4-Pillar Hybrid Heritage Badges -->
+            <div class="hybrid-badge-stack" aria-label="System Heritage Badges">
+              <span class="hybrid-tag sega-tag" title="16-Bit Hardware Architecture">
+                <span class="tag-icon" aria-hidden="true">🕹️</span> 16-BIT FM
+              </span>
+              <span class="hybrid-tag chozo-tag" title="Chozo Spectral Visor &amp; Shields">
+                <span class="tag-icon" aria-hidden="true">👁️</span> CHOZO HUD
+              </span>
+              <span class="hybrid-tag wrx-tag" title="Subaru WRX TR Rally Telemetry">
+                <span class="tag-icon" aria-hidden="true">🏎️</span> WRX TR AWD
+              </span>
+              <span class="hybrid-tag ridge-tag" title="Volcanic Ridge Geothermal Deck">
+                <span class="tag-icon" aria-hidden="true">🌋</span> VOLCANIC RIDGE
+              </span>
+            </div>
+          </div>
+
+          <!-- Geothermal Magma Fissure Divider -->
+          <div class="outpost-magma-line" aria-hidden="true">
+            <div class="magma-core-glow"></div>
+          </div>
+
+          <!-- Tactical Telemetry & Radar Docking Bar -->
+          <div class="outpost-telemetry-bar">
+            
+            <!-- Tactical 360° Radar / Sonar Scope Widget -->
+            <div class="radar-widget radar" id="pacific-radar-widget" aria-label="Pacific Tactical Radar &amp; Sonar Comms Display">
+              <div class="radar-scope-frame">
+                <div class="radar-scope" id="pacific-radar-scope">
+                  <!-- Topographic Ridge Contour Lines (SVG Overlay) -->
+                  <svg class="radar-contours" viewBox="0 0 100 100" aria-hidden="true">
+                    <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(0, 229, 255, 0.2)" stroke-width="0.75" />
+                    <circle cx="50" cy="50" r="36" fill="none" stroke="rgba(0, 229, 255, 0.25)" stroke-dasharray="2, 2" stroke-width="0.75" />
+                    <circle cx="50" cy="50" r="24" fill="none" stroke="rgba(0, 229, 255, 0.3)" stroke-width="0.75" />
+                    <circle cx="50" cy="50" r="12" fill="none" stroke="rgba(0, 229, 255, 0.35)" stroke-width="0.75" />
+                    <!-- Azimuth Crosshairs -->
+                    <line x1="50" y1="0" x2="50" y2="100" stroke="rgba(0, 229, 255, 0.35)" stroke-width="0.5" />
+                    <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(0, 229, 255, 0.35)" stroke-width="0.5" />
+                    <!-- Ridge Topo Ring -->
+                    <ellipse cx="50" cy="46" rx="30" ry="22" fill="none" stroke="rgba(255, 72, 0, 0.35)" stroke-width="0.75" stroke-dasharray="3, 3" />
+                  </svg>
+
+                  <!-- 360° Sweeping Conic Beam -->
+                  <div class="radar-sweep-beam" aria-hidden="true"></div>
+
+                  <!-- 6 Active Destination Target Blips on Radar Scope -->
+                  <div class="radar-blip blip-openooda" data-target="openooda" title="Target Alpha: openOODA.org (AZ 045° // 1240KM)" aria-hidden="true">
+                    <span class="blip-beacon"></span>
+                  </div>
+                  <div class="radar-blip blip-necrometer" data-target="necrometer" title="Target Beta: necrometer.dev (AZ 120° // 2850KM)" aria-hidden="true">
+                    <span class="blip-beacon"></span>
+                  </div>
+                  <div class="radar-blip blip-bumtrips" data-target="bumtrips" title="Target Gamma: bumtrips.com (AZ 210° // 410KM)" aria-hidden="true">
+                    <span class="blip-beacon"></span>
+                  </div>
+                  <div class="radar-blip blip-reactle" data-target="reactle" title="Target Delta: reactle.clownhouse.io (AZ 290° // MESH)" aria-hidden="true">
+                    <span class="blip-beacon"></span>
+                  </div>
+                  <div class="radar-blip blip-giggle" data-target="giggle" title="Target Epsilon: giggle.clownhouse.io (AZ 335° // MESH)" aria-hidden="true">
+                    <span class="blip-beacon"></span>
+                  </div>
+                  <div class="radar-blip blip-contact" data-target="contact" title="Target Zeta: jeryd@clownhouse.io (AZ 000° // DIRECT)" aria-hidden="true">
+                    <span class="blip-beacon"></span>
+                  </div>
+
+                  <!-- Sonar Ripple Wave Container -->
+                  <div class="radar-sonar-wave" id="radar-sonar-wave" aria-hidden="true"></div>
+                </div>
+              </div>
+
+              <!-- Radar Live Telemetry Status -->
+              <div class="radar-meta-block">
+                <span class="radar-status" id="pacific-radar-status">RADAR: SWEEPING 360° // ALL SIGNALS LOCKED</span>
+                <span class="radar-subtext">RANGE: 3,000 KM // AZIMUTH RESOLUTION: 0.1°</span>
+              </div>
+            </div>
+
+            <!-- 4-Quadrant Hybrid Environmental Sensor Matrix -->
+            <div class="outpost-sensor-grid" aria-label="Tactical Environmental Telemetry">
+              <div class="sensor-cell" title="Caldera Magma Pressure">
+                <span class="sens-glyph">🌋</span>
+                <div class="sens-info">
+                  <span class="sens-lbl">MAGMA CORE:</span>
+                  <span class="sens-val sens-magma" id="outpost-sens-magma">94.2 PSI</span>
+                </div>
+              </div>
+              <div class="sensor-cell" title="WRX Turbo Boost Telemetry">
+                <span class="sens-glyph">🏎️</span>
+                <div class="sens-info">
+                  <span class="sens-lbl">TURBO BOOST:</span>
+                  <span class="sens-val sens-turbo" id="outpost-sens-turbo">+1.20 BAR</span>
+                </div>
+              </div>
+              <div class="sensor-cell" title="Chozo Energy Shield Status">
+                <span class="sens-glyph">🛡️</span>
+                <div class="sens-info">
+                  <span class="sens-lbl">E-TANK SHIELD:</span>
+                  <span class="sens-val sens-shield">4 / 4 ONLINE</span>
+                </div>
+              </div>
+              <div class="sensor-cell" title="16-Bit Motorola 68000 &amp; YM2612 FM Clock">
+                <span class="sens-glyph">⚡</span>
+                <div class="sens-info">
+                  <span class="sens-lbl">SYSTEM FM:</span>
+                  <span class="sens-val sens-freq">7.67 MHz FM</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </header>
+
+        <!-- Communications Uplink Relays Array (Universal 6 Links Matrix) -->
+        <div class="comms-bay comms-array">
+          <div class="comms-bay-header">
+            <div class="comms-header-title-group">
+              <span class="comms-radar-icon" aria-hidden="true">📡</span>
+              <span class="comms-title">COMMUNICATIONS RELAYS // 6 ENCRYPTED SATELLITE LINKS</span>
+            </div>
+            <div class="comms-header-status">
+              <span class="comms-sync-beacon" aria-hidden="true"></span>
+              <span class="comms-status">ALL CHANNELS SYNCHRONIZED</span>
+            </div>
+          </div>
+
+          <div class="comms-array-grid theme-link-grid">
+            
+            <!-- Relay 1: openOODA.org -->
+            <article class="comms-relay" data-relay="1" data-destination="openooda">
+              <div class="relay-card">
+                <!-- Chozo Holographic Corner Brackets -->
+                <span class="card-bracket br-tl" aria-hidden="true"></span>
+                <span class="card-bracket br-tr" aria-hidden="true"></span>
+                <span class="card-bracket br-bl" aria-hidden="true"></span>
+                <span class="card-bracket br-br" aria-hidden="true"></span>
+
+                <div class="relay-card-top">
+                  <span class="relay-alien-glyph" aria-hidden="true">⟨⌖-OODA-ALPHA⟩</span>
+                  <div class="relay-freq theme-link-badge">SAT FREQ: 142.85 MHz</div>
+                </div>
+
+                <a href="https://openooda.org" 
+                   class="theme-link comms-link" 
+                   data-destination="openooda" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Connect to openOODA.org satellite relay">
+                  <h3 class="relay-name theme-link-title">openOODA.org</h3>
+                  <p class="relay-details theme-link-desc">Autonomous Agentic Architecture &amp; Cognitive OODA Loop Protocols</p>
+                </a>
+
+                <!-- Tactical Hybrid Sub-Telemetry Bar -->
+                <div class="relay-sub-telemetry">
+                  <span class="sub-tele-item"><span class="sub-lbl">UPLINK:</span> OPTIMAL</span>
+                  <span class="sub-tele-item"><span class="sub-lbl">DIFF:</span> [AUTO+]</span>
+                  <span class="sub-tele-item"><span class="sub-lbl">AZ:</span> 045°</span>
+                </div>
+
+                <div class="relay-footer theme-link-footer">
+                  <span class="relay-protocol theme-link-url">PROTOCOL: OODA LOOP</span>
+                  <span class="relay-signal theme-link-status">TRANSMIT LINK ⤤</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Relay 2: necrometer.dev -->
+            <article class="comms-relay" data-relay="2" data-destination="necrometer">
+              <div class="relay-card">
+                <span class="card-bracket br-tl" aria-hidden="true"></span>
+                <span class="card-bracket br-tr" aria-hidden="true"></span>
+                <span class="card-bracket br-bl" aria-hidden="true"></span>
+                <span class="card-bracket br-br" aria-hidden="true"></span>
+
+                <div class="relay-card-top">
+                  <span class="relay-alien-glyph" aria-hidden="true">⟨⌖-NECRO-BETA⟩</span>
+                  <div class="relay-freq theme-link-badge">SAT FREQ: 218.40 MHz</div>
+                </div>
+
+                <a href="https://necrometer.dev" 
+                   class="theme-link comms-link" 
+                   data-destination="necrometer" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Connect to necrometer.dev satellite relay">
+                  <h3 class="relay-name theme-link-title">NECROMETER.DEV</h3>
+                  <p class="relay-details theme-link-desc">Developer Telemetry, Real-time Metrics &amp; Machine Observability</p>
+                </a>
+
+                <div class="relay-sub-telemetry">
+                  <span class="sub-tele-item"><span class="sub-lbl">TELEMETRY:</span> LIVE</span>
+                  <span class="sub-tele-item"><span class="sub-lbl">BREMBO:</span> 340°C</span>
+                  <span class="sub-tele-item"><span class="sub-lbl">AZ:</span> 120°</span>
+                </div>
+
+                <div class="relay-footer theme-link-footer">
+                  <span class="relay-protocol theme-link-url">PROTOCOL: TELEMETRY</span>
+                  <span class="relay-signal theme-link-status">TRANSMIT LINK ⤤</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Relay 3: bumtrips.com -->
+            <article class="comms-relay" data-relay="3" data-destination="bumtrips">
+              <div class="relay-card">
+                <span class="card-bracket br-tl" aria-hidden="true"></span>
+                <span class="card-bracket br-tr" aria-hidden="true"></span>
+                <span class="card-bracket br-bl" aria-hidden="true"></span>
+                <span class="card-bracket br-br" aria-hidden="true"></span>
+
+                <div class="relay-card-top">
+                  <span class="relay-alien-glyph" aria-hidden="true">⟨⌖-AUDIO-GAMMA⟩</span>
+                  <div class="relay-freq theme-link-badge">FM BROADCAST: 88.50 MHz</div>
+                </div>
+
+                <a href="https://bumtrips.com" 
+                   class="theme-link comms-link" 
+                   data-destination="bumtrips" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Connect to bumtrips.com broadcast transceiver">
+                  <h3 class="relay-name theme-link-title">BUMTRIPS.COM</h3>
+                  <p class="relay-details theme-link-desc">Beatniks, Bumtrips &amp; Bullshit — Underground Audio &amp; Culture</p>
+                </a>
+
+                <div class="relay-sub-telemetry">
+                  <span class="sub-tele-item"><span class="sub-lbl">CARRIER:</span> FM STEREO</span>
+                  <span class="sub-tele-item"><span class="sub-lbl">YM2612:</span> CH-4</span>
+                  <span class="sub-tele-item"><span class="sub-lbl">AZ:</span> 210°</span>
+                </div>
+
+                <div class="relay-footer theme-link-footer">
+                  <span class="relay-protocol theme-link-url">PROTOCOL: FM BROADCAST</span>
+                  <span class="relay-signal theme-link-status">TRANSMIT LINK ⤤</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Relay 4: reactle.clownhouse.io -->
+            <article class="comms-relay" data-relay="4" data-destination="reactle">
+              <div class="relay-card">
+                <span class="card-bracket br-tl" aria-hidden="true"></span>
+                <span class="card-bracket br-tr" aria-hidden="true"></span>
+                <span class="card-bracket br-bl" aria-hidden="true"></span>
+                <span class="card-bracket br-br" aria-hidden="true"></span>
+
+                <div class="relay-card-top">
+                  <span class="relay-alien-glyph" aria-hidden="true">⟨⌖-CIPHER-DELTA⟩</span>
+                  <div class="relay-freq theme-link-badge">CLUSTER MESH: 320.10 MHz</div>
+                </div>
+
+                <a href="https://reactle.clownhouse.io" 
+                   class="theme-link comms-link" 
+                   data-destination="reactle" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Connect to Reactle cluster game">
+                  <h3 class="relay-name theme-link-title">REACTLE.CLOWNHOUSE.IO</h3>
+                  <p class="relay-details theme-link-desc">1980s Cryptic Word Guessing Terminal &amp; Arcade Logic Node</p>
+                </a>
+
+                <div class="relay-sub-telemetry">
+                  <span class="sub-tele-item"><span class="sub-lbl">NODE:</span> ARCADE-04</span>
+                  <span class="sub-tele-item"><span class="sub-lbl">CPU:</span> 68000</span>
+                  <span class="sub-tele-item"><span class="sub-lbl">AZ:</span> 290°</span>
+                </div>
+
+                <div class="relay-footer theme-link-footer">
+                  <span class="relay-protocol theme-link-url">PROTOCOL: CIPHER GAME</span>
+                  <span class="relay-signal theme-link-status">TRANSMIT LINK ⤤</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Relay 5: giggle.clownhouse.io -->
+            <article class="comms-relay" data-relay="5" data-destination="giggle">
+              <div class="relay-card">
+                <span class="card-bracket br-tl" aria-hidden="true"></span>
+                <span class="card-bracket br-tr" aria-hidden="true"></span>
+                <span class="card-bracket br-bl" aria-hidden="true"></span>
+                <span class="card-bracket br-br" aria-hidden="true"></span>
+
+                <div class="relay-card-top">
+                  <span class="relay-alien-glyph" aria-hidden="true">⟨⌖-COMPUTE-EPSILON⟩</span>
+                  <div class="relay-freq theme-link-badge">CLUSTER MESH: 440.00 MHz</div>
+                </div>
+
+                <a href="https://giggle.clownhouse.io" 
+                   class="theme-link comms-link" 
+                   data-destination="giggle" 
+                   target="_blank" 
+                   rel="noopener noreferrer" 
+                   aria-label="Connect to Giggle cluster compute node">
+                  <h3 class="relay-name theme-link-title">GIGGLE.CLOWNHOUSE.IO</h3>
+                  <p class="relay-details theme-link-desc">Primary Cluster Computation &amp; High-Throughput Edge Ingress</p>
+                </a>
+
+                <div class="relay-sub-telemetry">
+                  <span class="sub-tele-item"><span class="sub-lbl">COMPUTE:</span> ACTIVE</span>
+                  <span class="sub-tele-item"><span class="sub-lbl">BOOST:</span> +1.20 BAR</span>
+                  <span class="sub-tele-item"><span class="sub-lbl">AZ:</span> 335°</span>
+                </div>
+
+                <div class="relay-footer theme-link-footer">
+                  <span class="relay-protocol theme-link-url">PROTOCOL: EDGE COMPUTE</span>
+                  <span class="relay-signal theme-link-status">TRANSMIT LINK ⤤</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- Relay 6: mailto:jeryd@clownhouse.io -->
+            <article class="comms-relay" data-relay="6" data-destination="contact">
+              <div class="relay-card">
+                <span class="card-bracket br-tl" aria-hidden="true"></span>
+                <span class="card-bracket br-tr" aria-hidden="true"></span>
+                <span class="card-bracket br-bl" aria-hidden="true"></span>
+                <span class="card-bracket br-br" aria-hidden="true"></span>
+
+                <div class="relay-card-top">
+                  <span class="relay-alien-glyph" aria-hidden="true">⟨⌖-DIRECT-ZETA⟩</span>
+                  <div class="relay-freq theme-link-badge">DIRECT DISPATCH: 999.99 MHz</div>
+                </div>
+
+                <a href="mailto:jeryd@clownhouse.io" 
+                   class="theme-link comms-link" 
+                   data-destination="contact" 
+                   aria-label="Open mailto client for jeryd@clownhouse.io">
+                  <h3 class="relay-name theme-link-title">JERYD@CLOWNHOUSE.IO</h3>
+                  <p class="relay-details theme-link-desc">Direct Encrypted Comm Transmission &amp; Cloudflare Routed Ingress</p>
+                </a>
+
+                <div class="relay-sub-telemetry">
+                  <span class="sub-tele-item"><span class="sub-lbl">ENCRYPT:</span> 4096-RSA</span>
+                  <span class="sub-tele-item"><span class="sub-lbl">CHIEF:</span> STATION</span>
+                  <span class="sub-tele-item"><span class="sub-lbl">AZ:</span> 000°</span>
+                </div>
+
+                <div class="relay-footer theme-link-footer">
+                  <span class="relay-protocol theme-link-url">DIRECT CHANNEL</span>
+                  <span class="relay-signal theme-link-status">DISPATCH MAIL ⤤</span>
+                </div>
+              </div>
+            </article>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer id="site-footer" class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-telemetry">
+        <span class="status-dot online" aria-hidden="true"></span>
+        <span class="telemetry-text">NETWORK: EDGE PROXIED VIA CLOUDFLARE // HOSTED ON GITHUB PAGES</span>
+      </div>
+      <div class="footer-copy">
+        &copy; 2026 STUDIO2201 // CLOWNHOUSE.IO // ALL BESPOKE THEMES ACTIVE
+      </div>
+    </div>
+  </footer>
+
+  <!-- Procedural Web Audio API Engine -->
+  <script src="audio.js"></script>
+
+  <!-- Core JavaScript Controller -->
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,413 +1,1181 @@
 /**
- * CLOWNHOUSE.IO // 1982 MICROSYSTEMS CONTROLLER
- * Handles CRT state, retro sound synthesis (Web Audio SID 6581),
- * theme switches, and the interactive BASIC command interpreter.
+ * CLOWNHOUSE.IO // MULTI-CONCEPT THEME SHOWCASE CONTROLLER
+ * Milestone M1: Core Shell & Dynamic Switcher Bar Controller
+ * 
+ * Features:
+ * - Real-time hot-swapping across 5 bespoke themes without page reload
+ * - Fail-closed localStorage persistence with strict whitelist validation
+ * - CustomEvent 'themechange' and 'soundstatechange' dispatching
+ * - Master audio mute toggle state management & ClownAudio coordination
+ * - Universal link delegation (.theme-link) for procedural audio triggers
+ * - Fully accessible keyboard navigation (WAI-ARIA roving tabindex tabs pattern)
+ * - Interactive widget ergonomics (Genesis volume slider, MMX Buster charge)
+ * - Zero syntax errors (node --check compliant)
  */
 
-(function () {
+(function (root, factory) {
+  'use strict';
+  if (typeof module === 'object' && module.exports) {
+    module.exports = factory();
+  } else {
+    root.clownhouse = factory();
+  }
+}(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  // DOM Elements
-  const body = document.body;
-  const themeSelect = document.getElementById('theme-select');
-  const scanlineToggle = document.getElementById('scanline-toggle');
-  const crtOverlay = document.getElementById('crt-overlay');
-  const soundToggle = document.getElementById('sound-toggle');
-  const terminalForm = document.getElementById('terminal-form');
-  const terminalInput = document.getElementById('terminal-input');
-  const terminalHistory = document.getElementById('terminal-history');
+  // --- Constants & Whitelists ---
+  var VALID_THEMES = Object.freeze([
+    'tower-of-power',
+    'chozo-visor',
+    'wrx-telemetry',
+    'hunter-base',
+    'pacific-outpost'
+  ]);
 
-  // State
-  let soundEnabled = false;
-  let audioCtx = null;
-  const cmdHistory = [];
-  let historyIdx = -1;
+  var DEFAULT_THEME = 'tower-of-power';
 
-  // Primary destinations map
-  const DESTINATIONS = {
-    '10': { name: 'openOODA.org', url: 'https://openooda.org', blocks: 1024 },
-    '20': { name: 'NECROMETER.DEV', url: 'https://necrometer.dev', blocks: 512 },
-    '30': { name: 'BUMTRIPS.COM', url: 'https://bumtrips.com', blocks: 808 },
-    '40': { name: 'REACTLE.CLOWNHOUSE.IO', url: 'https://reactle.clownhouse.io', blocks: 200 },
-    '50': { name: 'GIGGLE.CLOWNHOUSE.IO', url: 'https://giggle.clownhouse.io', blocks: 808 },
-    '60': { name: 'JERYD@CLOWNHOUSE.IO', url: 'mailto:jeryd@clownhouse.io', blocks: 1 }
-  };
+  var STORAGE_KEYS = Object.freeze({
+    THEME: 'clownhouse_theme',
+    SOUND: 'clownhouse_sound'
+  });
 
-  // --- 1. Sound Synthesis (Web Audio 8-Bit Synthesizer) ---
-  function initAudio() {
-    if (!audioCtx) {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (AudioContext) {
-        audioCtx = new AudioContext();
-      }
-    }
-    if (audioCtx && audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
-  }
+  // --- State ---
+  var currentTheme = DEFAULT_THEME;
+  var isMuted = true; // Audio is muted by default per autoplay requirements
+  var isInitialized = false;
 
-  function playTone(freq, type = 'square', duration = 0.06, volume = 0.1) {
-    if (!soundEnabled || !audioCtx) return;
+  // --- Safe Storage Layer (Fail-Closed) ---
+  function safeGetStorage(key) {
     try {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-      gain.gain.setValueAtTime(volume, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      osc.start();
-      osc.stop(audioCtx.currentTime + duration);
-    } catch (e) {
-      // Audio context error guard
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage.getItem(key);
+      }
+    } catch (err) {
+      // Catch SecurityError / DOMException (Safari private browsing, blocked storage)
     }
+    return null;
   }
 
-  function playChirp() {
-    playTone(987.77, 'square', 0.05, 0.08); // B5
-    setTimeout(() => playTone(1318.51, 'square', 0.07, 0.08), 50); // E6
-  }
-
-  function playLaunchChime() {
-    if (!soundEnabled || !audioCtx) return;
-    const notes = [523.25, 659.25, 783.99, 1046.50]; // C-E-G-C arpeggio
-    notes.forEach((f, idx) => {
-      setTimeout(() => playTone(f, 'square', 0.09, 0.12), idx * 70);
-    });
-  }
-
-  function playBootChime() {
-    if (!soundEnabled || !audioCtx) return;
-    const bootNotes = [261.63, 329.63, 392.00, 523.25];
-    bootNotes.forEach((f, idx) => {
-      setTimeout(() => playTone(f, 'triangle', 0.12, 0.1), idx * 80);
-    });
-  }
-
-  // --- 2. Theme & Display Controls ---
-  function setTheme(theme) {
-    body.setAttribute('data-theme', theme);
-    themeSelect.value = theme;
-    localStorage.setItem('clownhouse_theme', theme);
-  }
-
-  function setScanlines(enabled) {
-    if (enabled) {
-      crtOverlay.classList.remove('disabled');
-      scanlineToggle.setAttribute('aria-pressed', 'true');
-      scanlineToggle.querySelector('.btn-state').textContent = 'ON';
-      localStorage.setItem('clownhouse_scanlines', 'on');
-    } else {
-      crtOverlay.classList.add('disabled');
-      scanlineToggle.setAttribute('aria-pressed', 'false');
-      scanlineToggle.querySelector('.btn-state').textContent = 'OFF';
-      localStorage.setItem('clownhouse_scanlines', 'off');
-    }
-  }
-
-  function toggleSound() {
-    initAudio();
-    soundEnabled = !soundEnabled;
-    soundToggle.setAttribute('aria-pressed', soundEnabled ? 'true' : 'false');
-    soundToggle.querySelector('.btn-state').textContent = soundEnabled ? 'ACTIVE' : 'MUTED';
-    localStorage.setItem('clownhouse_sound', soundEnabled ? 'on' : 'off');
-    if (soundEnabled) {
-      playChirp();
-    }
-  }
-
-  // Initialize stored preferences
-  const savedTheme = localStorage.getItem('clownhouse_theme') || 'c64';
-  setTheme(savedTheme);
-
-  const savedScanlines = localStorage.getItem('clownhouse_scanlines');
-  if (savedScanlines === 'off') {
-    setScanlines(false);
-  } else {
-    setScanlines(true);
-  }
-
-  const savedSound = localStorage.getItem('clownhouse_sound');
-  if (savedSound === 'on') {
-    // Sound requires user gesture to resume audio context
-    soundToggle.querySelector('.btn-state').textContent = 'CLICK TO UNMUTE';
-  }
-
-  // Event Listeners for Bezel Controls
-  themeSelect.addEventListener('change', (e) => {
-    initAudio();
-    setTheme(e.target.value);
-    playChirp();
-  });
-
-  scanlineToggle.addEventListener('click', () => {
-    initAudio();
-    const isCurrentlyOn = !crtOverlay.classList.contains('disabled');
-    setScanlines(!isCurrentlyOn);
-    playTone(700, 'square', 0.04, 0.08);
-  });
-
-  soundToggle.addEventListener('click', () => {
-    toggleSound();
-  });
-
-  // --- 3. Interactive BASIC Terminal Interpreter ---
-  function printLine(text, className = '') {
-    const line = document.createElement('div');
-    line.className = 'history-line ' + className;
-    line.innerHTML = text;
-    terminalHistory.appendChild(line);
-    terminalHistory.scrollTop = terminalHistory.scrollHeight;
-  }
-
-  function launchDestination(destKey) {
-    const dest = DESTINATIONS[destKey];
-    if (dest) {
-      playLaunchChime();
-      printLine(`&gt; LOADING "${dest.name}",8,1...`, 'comment-line');
-      printLine(`&gt; LAUNCHING EXTERNAL MAINFRAME: ${dest.url}`, 'highlight-line');
-      setTimeout(() => {
-        window.open(dest.url, '_blank', 'noopener,noreferrer');
-      }, 350);
-      return true;
+  function safeSetStorage(key, value) {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(key, value);
+        return true;
+      }
+    } catch (err) {
+      // QuotaExceededError or SecurityError
     }
     return false;
   }
 
-  function executeCommand(rawInput) {
-    const input = rawInput.trim().toUpperCase();
-    if (!input) return;
+  // --- Safe DOM Query Helpers ---
+  function safeQuery(parent, sel) {
+    if (!parent) return null;
+    try {
+      if (typeof parent.querySelector === 'function') {
+        return parent.querySelector(sel);
+      }
+      if (typeof parent.querySelectorAll === 'function') {
+        var all = parent.querySelectorAll(sel);
+        return (all && all.length > 0) ? all[0] : null;
+      }
+      if (parent === document && typeof document !== 'undefined' && document.body && typeof document.body.querySelectorAll === 'function') {
+        var allBody = document.body.querySelectorAll(sel);
+        return (allBody && allBody.length > 0) ? allBody[0] : null;
+      }
+    } catch (e) {}
+    return null;
+  }
 
-    printLine(`READY.&gt; ${escapeHtml(rawInput)}`, 'prompt-echo');
-    playTone(880, 'square', 0.04, 0.06);
+  function safeQueryAll(parent, sel) {
+    if (!parent) return [];
+    try {
+      var res = null;
+      if (typeof parent.querySelectorAll === 'function') {
+        res = parent.querySelectorAll(sel);
+      } else if (parent === document && typeof document !== 'undefined' && document.body && typeof document.body.querySelectorAll === 'function') {
+        res = document.body.querySelectorAll(sel);
+      }
+      if (!res) return [];
+      if (Array.isArray(res)) return res;
+      if (typeof res.forEach === 'function') return res;
+      return Array.prototype.slice.call(res);
+    } catch (e) {}
+    return [];
+  }
 
-    // Numeric line execution (e.g. "10", "20", "30")
-    if (DESTINATIONS[input]) {
-      launchDestination(input);
-      return;
+  function isValidTheme(theme) {
+    return typeof theme === 'string' && VALID_THEMES.indexOf(theme) !== -1;
+  }
+
+  function resolveInitialTheme() {
+    var stored = null;
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        stored = window.localStorage.getItem('clownhouse_theme');
+      }
+    } catch (err) {
+      // Safe fallback on SecurityError
     }
 
-    const parts = input.split(/\s+/);
-    const cmd = parts[0];
-    const arg = parts[1] || '';
+    if (isValidTheme(stored)) {
+      return stored;
+    }
+    // If stored value was present but invalid/corrupted, overwrite with default to self-heal
+    if (stored !== null) {
+      safeSetStorage('clownhouse_theme', DEFAULT_THEME);
+    }
+    return DEFAULT_THEME;
+  }
 
-    switch (cmd) {
-      case 'HELP':
-      case '?':
-        printLine('AVAILABLE COMMANDS:');
-        printLine('  10, 20, 30        - RUN SPECIFIED DIRECTORY PROGRAM');
-        printLine('  OPEN &lt;10|20|30&gt;   - LAUNCH SPECIFIED LINK');
-        printLine('  DIR / CATALOG     - LIST ALL DISK ENTRIES');
-        printLine('  THEME &lt;NAME&gt;      - C64, GREEN, AMBER, TRON');
-        printLine('  SCANLINES &lt;ON|OFF&gt; - TOGGLE CRT SCANLINES');
-        printLine('  SOUND &lt;ON|OFF&gt;    - TOGGLE 8-BIT SID SYNTH');
-        printLine('  ABOUT             - HARDWARE ARCHITECTURE &amp; LORE');
-        printLine('  CLS / CLEAR       - CLEAR TERMINAL BUFFER');
-        printLine('  SYS 64738         - WARM SYSTEM RESET (REBOOT)');
-        break;
+  // --- Dynamic Theme Hot-Swapping ---
+  function setTheme(themeName, options) {
+    var opts = options || {};
+    var force = Boolean(opts.force);
+    var triggerAudio = opts.triggerAudio !== false;
 
-      case 'OPEN':
-      case 'RUN':
-      case 'LOAD':
-      case 'GOTO':
-        if (arg && DESTINATIONS[arg]) {
-          launchDestination(arg);
-        } else if (arg === 'OPENOODA' || arg === 'OODA') {
-          launchDestination('10');
-        } else if (arg === 'NECROMETER' || arg === 'NECRO') {
-          launchDestination('20');
-        } else if (arg === 'BUMTRIPS') {
-          launchDestination('30');
+    // Fail-closed validation
+    if (!isValidTheme(themeName)) {
+      var safeThemeStr = 'unknown';
+      try {
+        if (typeof themeName === 'symbol') {
+          safeThemeStr = themeName.toString();
+        } else if (themeName && typeof themeName === 'object' && Object.getPrototypeOf(themeName) === null) {
+          safeThemeStr = '[object Object]';
         } else {
-          printLine('?FILE NOT FOUND ERROR. TYPE "DIR" FOR CATALOG.');
+          safeThemeStr = String(themeName);
         }
-        break;
+      } catch (e) {
+        safeThemeStr = '[unserializable]';
+      }
+      console.warn('[clownhouse] Invalid theme rejected: "' + safeThemeStr + '". Keeping: "' + currentTheme + '".');
+      return false;
+    }
 
-      case 'OPENOODA':
-      case 'OODA':
-        launchDestination('10');
-        break;
+    if (themeName === currentTheme && !force && isInitialized) {
+      return true;
+    }
 
-      case 'NECROMETER':
-      case 'NECRO':
-        launchDestination('20');
-        break;
+    var previousTheme = currentTheme;
+    currentTheme = themeName;
 
-      case 'BUMTRIPS':
-        launchDestination('30');
-        break;
+    // Persist to storage
+    safeSetStorage(STORAGE_KEYS.THEME, themeName);
 
-      case 'REACTLE':
-        launchDestination('40');
-        break;
+    // Update DOM attributes on root and body
+    if (typeof document !== 'undefined') {
+      var rootEl = document.documentElement;
+      if (rootEl) {
+        rootEl.setAttribute('data-theme', themeName);
+      }
+      if (document.body) {
+        document.body.setAttribute('data-theme', themeName);
+      }
 
-      case 'GIGGLE':
-        launchDestination('50');
-        break;
+      // Update Switcher Buttons UI
+      var buttons = document.querySelectorAll(
+        '#theme-switcher-bar [data-theme], #theme-switcher-bar [data-theme-target], .theme-btn, .theme-switcher-btn, .switcher-btn'
+      );
+      for (var i = 0; i < buttons.length; i++) {
+        var btn = buttons[i];
+        var btnTarget = btn.getAttribute('data-theme') || btn.getAttribute('data-theme-target');
+        var isMatch = (btnTarget === themeName);
 
-      case 'MAIL':
-      case 'EMAIL':
-        launchDestination('60');
-        break;
-
-      case 'DIR':
-      case 'CATALOG':
-      case 'LIST':
-        printLine('0 "CLOWNHOUSE 1982" 82 2A');
-        Object.keys(DESTINATIONS).forEach((key) => {
-          const item = DESTINATIONS[key];
-          printLine(`  ${key.padEnd(4, ' ')} "${item.name}" PRG (${item.blocks} BLOCKS)`);
-        });
-        printLine('38911 BLOCKS FREE.');
-        break;
-
-      case 'THEME':
-        if (['C64', 'GREEN', 'AMBER', 'TRON'].includes(arg)) {
-          setTheme(arg.toLowerCase());
-          printLine(`PALETTE SWITCHED TO: ${arg}`);
-          playChirp();
+        if (isMatch) {
+          btn.classList.add('active');
+          btn.setAttribute('aria-pressed', 'true');
+          btn.setAttribute('aria-selected', 'true');
+          btn.setAttribute('tabindex', '0');
         } else {
-          printLine('?SYNTAX ERROR. OPTIONS: C64, GREEN, AMBER, TRON');
+          btn.classList.remove('active');
+          btn.setAttribute('aria-pressed', 'false');
+          btn.setAttribute('aria-selected', 'false');
+          btn.setAttribute('tabindex', '-1');
         }
-        break;
+      }
 
-      case 'SCANLINES':
-        if (arg === 'ON') {
-          setScanlines(true);
-          printLine('CRT SCANLINES: ENABLED');
-        } else if (arg === 'OFF') {
-          setScanlines(false);
-          printLine('CRT SCANLINES: DISABLED');
+      // Update Theme Containers UI (Show active, hide others)
+      var containers = document.querySelectorAll('.theme-container');
+      for (var j = 0; j < containers.length; j++) {
+        var container = containers[j];
+        var containerTheme = container.getAttribute('data-theme') || container.id.replace(/^theme-/, '');
+        var isContainerMatch = (containerTheme === themeName);
+
+        if (isContainerMatch) {
+          container.classList.add('active');
+          container.removeAttribute('hidden');
+          container.setAttribute('aria-hidden', 'false');
         } else {
-          printLine('?SYNTAX ERROR. USAGE: SCANLINES ON|OFF');
+          container.classList.remove('active');
+          container.setAttribute('hidden', '');
+          container.setAttribute('aria-hidden', 'true');
         }
-        break;
+      }
+    }
 
-      case 'SOUND':
-        if (arg === 'ON') {
-          if (!soundEnabled) toggleSound();
-          printLine('SID 6581 SYNTHESIZER: ACTIVE');
-        } else if (arg === 'OFF') {
-          if (soundEnabled) toggleSound();
-          printLine('SID 6581 SYNTHESIZER: MUTED');
-        } else {
-          printLine('?SYNTAX ERROR. USAGE: SOUND ON|OFF');
+    // Coordinate with Audio Engine (ClownAudio) if available
+    if (typeof window !== 'undefined' && window.ClownAudio) {
+      if (typeof window.ClownAudio.setTheme === 'function') {
+        try {
+          window.ClownAudio.setTheme(themeName);
+        } catch (e) {
+          // Audio safety guard
         }
-        break;
-
-      case 'CLS':
-      case 'CLEAR':
-        terminalHistory.innerHTML = '';
-        printLine('* TERMINAL CLEARED. READY.', 'comment-line');
-        break;
-
-      case 'ABOUT':
-        printLine('=== CLOWNHOUSE.IO // 1982 ARCHIVE ===');
-        printLine('HARDWARE: MOS 6510 8-BIT CPU @ 1.023 MHZ');
-        printLine('GRAPHICS: VIC-II VIDEO INTERFACE CHIP');
-        printLine('AUDIO:    MOS 6581 SID SYNTH (3 INDEPENDENT VOICES)');
-        printLine('NETWORK:  AUTONOMOUS EDGE MESH + CLOUDFLARE ARGO TUNNELS');
-        printLine('FOUNDED:  1982 RETRO-FUTURE PARALLEL UNIVERSE');
-        break;
-
-      case 'SYS':
-        if (arg === '64738' || arg === '64738;' || arg === '0') {
-          printLine('WARM REBOOT INITIATED...');
-          playBootChime();
-          setTimeout(() => {
-            terminalHistory.innerHTML = '';
-            printLine('**** CLOWNHOUSE.IO BASIC V2.1 (1982) ****', 'highlight-line');
-            printLine('64K RAM SYSTEM  38911 BASIC BYTES FREE');
-            printLine('READY.');
-          }, 600);
-        } else {
-          printLine('?ILLEGAL QUANTITY ERROR');
+      }
+      if (triggerAudio && !isMuted && typeof window.ClownAudio.playSfx === 'function') {
+        try {
+          window.ClownAudio.playSfx('switch');
+        } catch (e) {
+          // Audio safety guard
         }
-        break;
+      }
+    }
 
-      case '10':
-      case '20':
-        // Infinite loop Easter Egg
-        if (input.includes('PRINT') || input.includes('GOTO')) {
-          printLine('10 PRINT "CLOWNHOUSE 1982 ";');
-          printLine('20 GOTO 10');
-          let count = 0;
-          const loopInterval = setInterval(() => {
-            if (count > 8) {
-              clearInterval(loopInterval);
-              printLine('BREAK IN 10', 'comment-line');
-              printLine('READY.');
+    // Dispatch CustomEvent 'themechange' on window and document
+    if (typeof window !== 'undefined' && typeof window.CustomEvent === 'function') {
+      var eventDetail = {
+        theme: themeName,
+        previousTheme: previousTheme
+      };
+      var event = new CustomEvent('themechange', {
+        bubbles: false,
+        cancelable: true,
+        detail: eventDetail
+      });
+      window.dispatchEvent(event);
+      if (typeof document !== 'undefined' && typeof document.dispatchEvent === 'function') {
+        document.dispatchEvent(event);
+      }
+    }
+
+    return true;
+  }
+
+  // --- Master Audio Mute Toggle ---
+  function updateSoundUI(muted) {
+    if (typeof document === 'undefined') return;
+    var toggleBtn = document.getElementById('sound-toggle');
+    if (!toggleBtn) return;
+
+    toggleBtn.setAttribute('aria-pressed', muted ? 'false' : 'true');
+    toggleBtn.setAttribute('title', muted ? 'Sound: Muted (Click to unmute)' : 'Sound: Active (Click to mute)');
+
+    if (muted) {
+      toggleBtn.classList.remove('active');
+      toggleBtn.classList.add('muted');
+    } else {
+      toggleBtn.classList.remove('muted');
+      toggleBtn.classList.add('active');
+    }
+
+    var stateSpan = safeQuery(toggleBtn, '.btn-state');
+    if (stateSpan) {
+      stateSpan.textContent = muted ? 'MUTED' : 'ACTIVE';
+    } else {
+      var currentLabel = toggleBtn.textContent.trim();
+      if (/^SOUND:/i.test(currentLabel)) {
+        toggleBtn.textContent = muted ? 'SOUND: MUTED' : 'SOUND: ACTIVE';
+      }
+    }
+  }
+
+  function toggleSound(forcedState) {
+    var targetMuted;
+    if (typeof forcedState === 'boolean') {
+      targetMuted = forcedState;
+    } else {
+      targetMuted = !isMuted;
+    }
+
+    isMuted = targetMuted;
+    safeSetStorage(STORAGE_KEYS.SOUND, isMuted ? 'off' : 'on');
+
+    // Coordinate with ClownAudio engine
+    if (typeof window !== 'undefined' && window.ClownAudio) {
+      if (!isMuted && typeof window.ClownAudio.initContext === 'function') {
+        try {
+          window.ClownAudio.initContext();
+        } catch (e) {
+          // Ignore context errors
+        }
+      }
+      if (typeof window.ClownAudio.toggleMute === 'function') {
+        try {
+          if (typeof window.ClownAudio.isMuted === 'function') {
+            if (window.ClownAudio.isMuted() !== isMuted) {
+              window.ClownAudio.toggleMute();
+            }
+          } else {
+            window.ClownAudio.toggleMute();
+          }
+        } catch (e) {
+          // Audio safety guard
+        }
+      }
+      if (!isMuted && typeof window.ClownAudio.playSfx === 'function') {
+        try {
+          window.ClownAudio.playSfx('switch');
+        } catch (e) {
+          // Audio safety guard
+        }
+      }
+    }
+
+    updateSoundUI(isMuted);
+
+    // Dispatch CustomEvent 'soundstatechange'
+    if (typeof window !== 'undefined' && typeof window.CustomEvent === 'function') {
+      var event = new CustomEvent('soundstatechange', {
+        bubbles: true,
+        cancelable: true,
+        detail: { muted: isMuted }
+      });
+      window.dispatchEvent(event);
+    }
+
+    return isMuted;
+  }
+
+  // --- Volume Control Helper ---
+  function setVolume(fraction) {
+    var num = 0;
+    try {
+      if (typeof fraction === 'number') {
+        num = fraction;
+      } else if (typeof fraction === 'string') {
+        num = parseFloat(fraction) || 0;
+      } else if (fraction !== null && typeof fraction !== 'undefined' && typeof fraction !== 'symbol') {
+        var n = Number(fraction);
+        num = isNaN(n) ? 0 : n;
+      }
+    } catch (e) {
+      num = 0;
+    }
+    if (isNaN(num) || typeof num !== 'number') {
+      num = 0;
+    }
+    var vol = Math.max(0, Math.min(1, num));
+    if (typeof window !== 'undefined' && window.ClownAudio && typeof window.ClownAudio.setVolume === 'function') {
+      try {
+        window.ClownAudio.setVolume(vol);
+      } catch (e) {
+        // Audio safety guard
+      }
+    }
+    return vol;
+  }
+
+  // --- Interactive Widgets Setup ---
+  function setupInteractiveWidgets() {
+    if (typeof document === 'undefined') return;
+
+    // =========================================================================
+    // 1. SEGA GENESIS VOLUME SLIDER CONTROLLER (#top-volume-slider)
+    // =========================================================================
+    try {
+      (function setupSegaVolumeSlider() {
+        var volSlider = document.getElementById('top-volume-slider');
+        var volVal = document.getElementById('top-volume-val');
+        var resetBtn = document.getElementById('top-reset-btn');
+        var powerLed = safeQuery(document, '.power-led');
+
+        if (!volSlider && !resetBtn) return;
+
+        function applyVolume(val, triggerAudio) {
+          var numericVal = parseInt(val, 10);
+          if (isNaN(numericVal)) numericVal = 7;
+          numericVal = Math.max(0, Math.min(10, numericVal));
+
+          if (volSlider && volSlider.value !== String(numericVal)) {
+            volSlider.value = numericVal;
+          }
+          if (volSlider) {
+            volSlider.setAttribute('aria-valuenow', String(numericVal));
+          }
+          if (volVal) {
+            volVal.textContent = String(numericVal);
+          }
+
+          var fraction = numericVal / 10;
+          setVolume(fraction);
+
+          // Highlight tick marks up to current value
+          var ticks = safeQueryAll(document, '.slider-scale .slider-tick');
+          if (ticks && ticks.length > 0) {
+            ticks.forEach(function (tick, idx) {
+              if (idx <= (numericVal / 2)) {
+                tick.classList.add('tick-active');
+              } else {
+                tick.classList.remove('tick-active');
+              }
+            });
+          }
+
+          // Subtle audio feedback when sliding while unmuted
+          if (triggerAudio && !isMuted && typeof window !== 'undefined' && window.ClownAudio && typeof window.ClownAudio.playTone === 'function') {
+            try {
+              window.ClownAudio.playTone(300 + (numericVal * 60), 'sine', 0.02, 0.08);
+            } catch (e) {}
+          }
+        }
+
+        if (volSlider) {
+          volSlider.addEventListener('input', function () {
+            applyVolume(volSlider.value, true);
+          });
+          volSlider.addEventListener('change', function () {
+            applyVolume(volSlider.value, false);
+          });
+        }
+
+        if (resetBtn) {
+          resetBtn.addEventListener('click', function () {
+            applyVolume(7, false);
+            if (powerLed) {
+              powerLed.classList.add('led-reset-blink');
+              setTimeout(function () {
+                powerLed.classList.remove('led-reset-blink');
+              }, 600);
+            }
+            if (!isMuted && typeof window !== 'undefined' && window.ClownAudio && typeof window.ClownAudio.playSfx === 'function') {
+              try {
+                window.ClownAudio.playSfx('special');
+              } catch (e) {}
+            }
+          });
+        }
+      })();
+    } catch (err) {}
+
+    // =========================================================================
+    // 2. WRX TR TURBO BOOST GAUGE & SHIFT LIGHTS DYNAMICS
+    // =========================================================================
+    try {
+      (function setupWrxBoostGauge() {
+        var wrxContainer = document.getElementById('theme-wrx-telemetry');
+        var gaugeWidget = safeQuery(wrxContainer, '.boost-gauge-widget') || safeQuery(document, '.boost-gauge-widget') || safeQuery(document, '.boost-gauge');
+        var boostReadout = safeQuery(gaugeWidget || wrxContainer || document, '.boost-readout');
+        var peakReadout = safeQuery(gaugeWidget || wrxContainer || document, '.peak-readout');
+        var rpmVal = document.getElementById('wrx-rpm-val');
+        var needleGroup = document.getElementById('wrx-needle-group');
+        var throttleBtn = document.getElementById('wrx-throttle-btn');
+        var shiftLeds = safeQueryAll(wrxContainer || document, '.shift-lights .shift-led');
+
+        if (!gaugeWidget && !needleGroup && !throttleBtn) return;
+
+        var currentBar = -0.50;
+        var targetBar = -0.50;
+        var peakBar = 1.68;
+        var isHovered = false;
+        var rafId = null;
+
+        function updateGaugeDisplay(barVal) {
+          if (boostReadout) {
+            var prefix = barVal >= 0 ? '+' : '';
+            boostReadout.innerHTML = prefix + barVal.toFixed(2) + ' <span class="gauge-unit">BAR</span>';
+          }
+
+          // Rotate SVG analog indicator needle (-1.0 bar = -135deg, +1.8 bar = +135deg)
+          if (needleGroup) {
+            var clamped = Math.max(-1.0, Math.min(1.8, barVal));
+            var angle = -135 + ((clamped - (-1.0)) / 2.8) * 270;
+            needleGroup.style.transform = 'rotate(' + angle.toFixed(1) + 'deg)';
+          }
+
+          // Sequential Shift Lights illumination across 7 stages
+          if (shiftLeds && shiftLeds.length >= 7) {
+            if (barVal > -0.2) shiftLeds[0].classList.add('active');
+            else shiftLeds[0].classList.remove('active');
+
+            if (barVal > 0.2) shiftLeds[1].classList.add('active');
+            else shiftLeds[1].classList.remove('active');
+
+            if (barVal > 0.6) shiftLeds[2].classList.add('active');
+            else shiftLeds[2].classList.remove('active');
+
+            if (barVal > 1.0) shiftLeds[3].classList.add('active');
+            else shiftLeds[3].classList.remove('active');
+
+            if (barVal > 1.3) shiftLeds[4].classList.add('active');
+            else shiftLeds[4].classList.remove('active');
+
+            if (barVal > 1.5) shiftLeds[5].classList.add('active');
+            else shiftLeds[5].classList.remove('active');
+
+            if (barVal > 1.65) {
+              shiftLeds[6].classList.add('active', 'redline-active');
             } else {
-              printLine('CLOWNHOUSE 1982 CLOWNHOUSE 1982 CLOWNHOUSE 1982');
-              playTone(440 + count * 50, 'square', 0.03, 0.05);
-              count++;
+              shiftLeds[6].classList.remove('active', 'redline-active');
+            }
+          }
+
+          // Update tachometer numeric display
+          if (rpmVal) {
+            var clampedBar = Math.max(-1.0, Math.min(1.8, barVal));
+            var calculatedRpm = Math.round(3500 + ((clampedBar - (-1.0)) / 2.8) * 4000);
+            rpmVal.textContent = calculatedRpm.toLocaleString() + ' RPM';
+          }
+
+          // Update peak hold
+          if (barVal > peakBar) {
+            peakBar = barVal;
+            if (peakReadout) {
+              peakReadout.textContent = 'PEAK: +' + peakBar.toFixed(2) + ' BAR';
+            }
+          }
+        }
+
+        function isWrxActive() {
+          return currentTheme === 'wrx-telemetry' || (wrxContainer && wrxContainer.classList.contains('active') && !wrxContainer.hidden);
+        }
+
+        function startGaugeLoop() {
+          if (rafId !== null) return;
+          if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+            rafId = window.requestAnimationFrame(stepGauge);
+          } else {
+            updateGaugeDisplay(currentBar);
+          }
+        }
+
+        function stopGaugeLoop() {
+          if (rafId !== null) {
+            if (typeof window !== 'undefined' && typeof window.cancelAnimationFrame === 'function') {
+              window.cancelAnimationFrame(rafId);
+            }
+            rafId = null;
+          }
+        }
+
+        function stepGauge() {
+          rafId = null;
+          if (!isWrxActive()) {
+            return;
+          }
+
+          var diff = targetBar - currentBar;
+          if (Math.abs(diff) > 0.01) {
+            currentBar += diff * 0.22; // Smooth spring dampening
+          } else {
+            currentBar = targetBar;
+          }
+
+          // Idle micro-flutter when sitting at engine vacuum
+          if (!isHovered && Math.abs(currentBar - (-0.50)) < 0.05) {
+            var flutter = (Math.sin(Date.now() / 250) * 0.03);
+            updateGaugeDisplay(currentBar + flutter);
+          } else {
+            updateGaugeDisplay(currentBar);
+          }
+
+          if (isWrxActive() && typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+            rafId = window.requestAnimationFrame(stepGauge);
+          }
+        }
+
+        // Start loop only if WRX telemetry is currently active
+        if (isWrxActive()) {
+          startGaugeLoop();
+        } else {
+          updateGaugeDisplay(currentBar);
+        }
+
+        // Listen for themechange to pause/resume animation frame loop
+        if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+          window.addEventListener('themechange', function (e) {
+            var nextTheme = e && e.detail ? e.detail.theme : currentTheme;
+            if (nextTheme === 'wrx-telemetry') {
+              startGaugeLoop();
+            } else {
+              stopGaugeLoop();
+            }
+          });
+        }
+
+        function triggerSpool(intensity) {
+          isHovered = true;
+          targetBar = typeof intensity === 'number' ? intensity : 1.58;
+        }
+
+        function triggerDump() {
+          isHovered = false;
+          targetBar = -0.50; // Return to engine vacuum
+        }
+
+        if (gaugeWidget) {
+          gaugeWidget.addEventListener('mouseenter', function () {
+            triggerSpool(1.72);
+          });
+          gaugeWidget.addEventListener('mouseleave', triggerDump);
+          gaugeWidget.addEventListener('click', function () {
+            triggerSpool(1.78);
+            setTimeout(triggerDump, 400);
+          });
+        }
+
+        if (throttleBtn) {
+          throttleBtn.addEventListener('click', function () {
+            triggerSpool(1.80);
+            if (!isMuted && typeof window !== 'undefined' && window.ClownAudio && typeof window.ClownAudio.playSfx === 'function') {
+              try {
+                window.ClownAudio.playSfx('special');
+              } catch (e) {}
+            }
+            setTimeout(triggerDump, 600);
+          });
+        }
+
+        // Spool boost when hovering any rally checkpoint inside WRX theme
+        if (wrxContainer) {
+          var checkpoints = safeQueryAll(wrxContainer, '.rally-checkpoint, .rally-link');
+          checkpoints.forEach(function (cp) {
+            cp.addEventListener('mouseenter', function () {
+              triggerSpool(1.48);
+            });
+            cp.addEventListener('mouseleave', triggerDump);
+          });
+        }
+      })();
+    } catch (err) {}
+
+    // =========================================================================
+    // 3. MEGA MAN X BUSTER CHARGE & HEALTH METER CONTROLLER
+    // =========================================================================
+    try {
+      (function setupBusterCharge() {
+        var chargeBtn = document.getElementById('buster-charge-btn');
+        var chargeIndicator = document.getElementById('charge-indicator');
+        var chargeBar = document.getElementById('charge-bar');
+        var chargeWidget = document.getElementById('buster-charge-widget');
+        var healthMeter = document.getElementById('hunter-health-meter');
+        var healthNumeric = document.getElementById('hunter-health-numeric');
+
+        // Health meter interactive refill simulation
+        if (healthMeter) {
+          healthMeter.addEventListener('click', function () {
+            var ticks = safeQueryAll(healthMeter, '.health-bar-28 .tick');
+            if (ticks && ticks.length > 0) {
+              ticks.forEach(function (t, i) {
+                t.classList.remove('filled');
+                setTimeout(function () {
+                  t.classList.add('filled');
+                }, i * 25);
+              });
+              if (healthNumeric) healthNumeric.textContent = '28/28';
+              if (!isMuted && typeof window !== 'undefined' && window.ClownAudio && typeof window.ClownAudio.playTone === 'function') {
+                try {
+                  window.ClownAudio.playTone(660, 'square', 0.12, 0.3);
+                } catch (e) {}
+              }
+            }
+          });
+        }
+
+        if (!chargeBtn) return;
+
+        var chargeStartTime = 0;
+        var chargeTimer = null;
+        var isCharging = false;
+
+        function updateChargeAura(level) {
+          if (chargeBtn) {
+            chargeBtn.setAttribute('data-charge-level', level);
+            chargeBtn.classList.remove('charging-blue', 'charging-green', 'charging-pink');
+            if (level !== 'idle') {
+              chargeBtn.classList.add('charging-' + level);
+            }
+          }
+        }
+
+        function startCharging(e) {
+          if (isCharging) return;
+          isCharging = true;
+          chargeStartTime = Date.now();
+          updateChargeAura('blue');
+
+          if (chargeIndicator) {
+            chargeIndicator.textContent = 'CHARGING: LV1 [BLUE]';
+          }
+          if (chargeBar) {
+            chargeBar.style.width = '33%';
+          }
+
+          // Periodic charge step check
+          chargeTimer = setInterval(function () {
+            if (!isCharging) return;
+            var elapsed = Date.now() - chargeStartTime;
+
+            if (elapsed >= 1400) {
+              updateChargeAura('pink');
+              if (chargeIndicator) {
+                chargeIndicator.textContent = 'MAX CHARGE! [PINK]';
+              }
+              if (chargeBar) {
+                chargeBar.style.width = '100%';
+              }
+            } else if (elapsed >= 600) {
+              updateChargeAura('green');
+              if (chargeIndicator) {
+                chargeIndicator.textContent = 'CHARGING: LV2 [GREEN]';
+              }
+              if (chargeBar) {
+                chargeBar.style.width = '66%';
+              }
             }
           }, 80);
-        } else {
-          printLine('?SYNTAX ERROR');
         }
-        break;
 
-      default:
-        printLine('?SYNTAX ERROR IN 1982. TYPE "HELP" FOR COMMANDS.');
-        playTone(220, 'sawtooth', 0.1, 0.08);
-        break;
-    }
+        function releaseCharge(e) {
+          if (!isCharging) return;
+          var elapsed = Date.now() - chargeStartTime;
+          clearInterval(chargeTimer);
+          isCharging = false;
+
+          if (elapsed >= 1400) {
+            // MAX PLASMA BURST
+            if (chargeIndicator) chargeIndicator.textContent = 'RELEASE: MAX PLASMA BURST!';
+            if (chargeWidget) {
+              chargeWidget.classList.add('plasma-burst-active');
+              setTimeout(function () {
+                chargeWidget.classList.remove('plasma-burst-active');
+              }, 600);
+            }
+            if (!isMuted && typeof window !== 'undefined' && window.ClownAudio && typeof window.ClownAudio.playSfx === 'function') {
+              try {
+                window.ClownAudio.playSfx('special');
+              } catch (err) {}
+            }
+          } else if (elapsed >= 600) {
+            // MEDIUM CHARGE
+            if (chargeIndicator) chargeIndicator.textContent = 'FIRED: CHARGE SHOT LV2';
+            if (!isMuted && typeof window !== 'undefined' && window.ClownAudio && typeof window.ClownAudio.playTone === 'function') {
+              try {
+                window.ClownAudio.playTone(880, 'square', 0.1, 0.35);
+              } catch (err) {}
+            }
+          } else {
+            // NORMAL SHOT
+            if (chargeIndicator) chargeIndicator.textContent = 'FIRED: NORMAL SHOT';
+            if (!isMuted && typeof window !== 'undefined' && window.ClownAudio && typeof window.ClownAudio.playTone === 'function') {
+              try {
+                window.ClownAudio.playTone(587.33, 'square', 0.04, 0.25);
+              } catch (err) {}
+            }
+          }
+
+          updateChargeAura('idle');
+          if (chargeBar) {
+            chargeBar.style.width = '0%';
+          }
+
+          setTimeout(function () {
+            if (!isCharging && chargeIndicator) {
+              chargeIndicator.textContent = 'READY';
+            }
+          }, 1200);
+        }
+
+        function cancelCharge() {
+          if (!isCharging) return;
+          clearInterval(chargeTimer);
+          isCharging = false;
+          updateChargeAura('idle');
+          if (chargeBar) {
+            chargeBar.style.width = '0%';
+          }
+          if (chargeIndicator) {
+            chargeIndicator.textContent = 'READY';
+          }
+        }
+
+        // Pointer events for smooth mouse, touch, and pen interactions
+        chargeBtn.addEventListener('pointerdown', startCharging);
+        chargeBtn.addEventListener('pointerup', releaseCharge);
+        chargeBtn.addEventListener('pointercancel', cancelCharge);
+        chargeBtn.addEventListener('pointerleave', cancelCharge);
+
+        // Keyboard support: Space / Enter to charge
+        chargeBtn.addEventListener('keydown', function (e) {
+          if (e.key === ' ' || e.key === 'Enter') {
+            if (!isCharging) startCharging(e);
+          }
+        });
+        chargeBtn.addEventListener('keyup', function (e) {
+          if (e.key === ' ' || e.key === 'Enter') {
+            if (isCharging) releaseCharge(e);
+          }
+        });
+
+        // Window blur and theme switch safety guards
+        if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+          window.addEventListener('blur', cancelCharge);
+          window.addEventListener('themechange', function () {
+            if (isCharging) {
+              cancelCharge();
+            }
+          });
+        }
+      })();
+    } catch (err) {}
+
+    // =========================================================================
+    // 4. PACIFIC OUTPOST RADAR / SONAR DOCK CONTROLLER
+    // =========================================================================
+    try {
+      (function setupPacificRadarDock() {
+        var outpostContainer = document.getElementById('theme-pacific-outpost');
+        var radarWidget = document.getElementById('pacific-radar-widget');
+        var radarScope = document.getElementById('pacific-radar-scope');
+        var radarStatus = document.getElementById('pacific-radar-status');
+        var sonarWave = document.getElementById('radar-sonar-wave');
+        var magmaSensor = document.getElementById('outpost-sens-magma');
+        var turboSensor = document.getElementById('outpost-sens-turbo');
+
+        if (!outpostContainer || (!radarWidget && !radarScope)) return;
+
+        var targetMeta = {
+          openooda:   { title: 'openOODA.org', freq: '142.85 MHz', az: '045°', rng: '1,240 KM' },
+          necrometer: { title: 'NECROMETER.DEV', freq: '218.40 MHz', az: '120°', rng: '2,850 KM' },
+          bumtrips:   { title: 'BUMTRIPS.COM', freq: '88.50 MHz', az: '210°', rng: '410 KM' },
+          reactle:    { title: 'REACTLE.CLOWNHOUSE.IO', freq: '320.10 MHz', az: '290°', rng: 'LOCAL MESH' },
+          giggle:     { title: 'GIGGLE.CLOWNHOUSE.IO', freq: '440.00 MHz', az: '335°', rng: 'LOCAL MESH' },
+          contact:    { title: 'JERYD@CLOWNHOUSE.IO', freq: '999.99 MHz', az: '000°', rng: 'DIRECT LINE' }
+        };
+
+        function triggerSonarPing() {
+          if (sonarWave) {
+            sonarWave.classList.remove('pinging');
+            void sonarWave.offsetWidth; // Force reflow
+            sonarWave.classList.add('pinging');
+          }
+          if (!isMuted && typeof window !== 'undefined' && window.ClownAudio && typeof window.ClownAudio.playSfx === 'function') {
+            try {
+              window.ClownAudio.playSfx('hover');
+            } catch (e) {}
+          }
+        }
+
+        function highlightTarget(destKey) {
+          if (!destKey || !targetMeta[destKey]) return;
+          var info = targetMeta[destKey];
+
+          if (radarStatus) {
+            radarStatus.textContent = 'TARGET LOCKED: ' + info.title + ' [AZ ' + info.az + ' // ' + info.freq + ']';
+          }
+
+          // Highlight radar blip
+          var blip = safeQuery(outpostContainer, '.radar-blip[data-target="' + destKey + '"]');
+          if (blip) blip.classList.add('active-target');
+
+          // Highlight comms card
+          var card = safeQuery(outpostContainer, '.comms-relay[data-destination="' + destKey + '"]');
+          if (card) card.classList.add('active-tracked');
+        }
+
+        function unhighlightTarget(destKey) {
+          if (radarStatus) {
+            radarStatus.textContent = 'RADAR: SWEEPING 360° // ALL SIGNALS LOCKED';
+          }
+
+          var blip = safeQuery(outpostContainer, '.radar-blip[data-target="' + destKey + '"]');
+          if (blip) blip.classList.remove('active-target');
+
+          var card = safeQuery(outpostContainer, '.comms-relay[data-destination="' + destKey + '"]');
+          if (card) card.classList.remove('active-tracked');
+        }
+
+        // Blip interactions
+        var blips = safeQueryAll(outpostContainer, '.radar-blip');
+        blips.forEach(function (blip) {
+          var dest = blip.getAttribute('data-target');
+          blip.addEventListener('mouseenter', function () {
+            highlightTarget(dest);
+            triggerSonarPing();
+          });
+          blip.addEventListener('mouseleave', function () {
+            unhighlightTarget(dest);
+          });
+          blip.addEventListener('click', function () {
+            var cardLink = safeQuery(outpostContainer, '.comms-relay[data-destination="' + dest + '"] a.theme-link');
+            if (cardLink && typeof cardLink.click === 'function') {
+              cardLink.click();
+            }
+          });
+        });
+
+        // Comms card interactions
+        var commsCards = safeQueryAll(outpostContainer, '.comms-relay');
+        commsCards.forEach(function (card) {
+          var dest = card.getAttribute('data-destination');
+          card.addEventListener('mouseenter', function () {
+            highlightTarget(dest);
+            triggerSonarPing();
+          });
+          card.addEventListener('mouseleave', function () {
+            unhighlightTarget(dest);
+          });
+        });
+
+        // Click on radar scope triggers sonar ping
+        if (radarScope) {
+          radarScope.addEventListener('click', triggerSonarPing);
+        }
+
+        // Ambient station telemetry micro-flutter (runs every 3.5s only if sensors exist)
+        if (magmaSensor || turboSensor) {
+          setInterval(function () {
+            if (magmaSensor) {
+              var psi = (94.1 + Math.random() * 0.3).toFixed(1);
+              magmaSensor.textContent = psi + ' PSI';
+            }
+            if (turboSensor) {
+              var bar = (1.18 + Math.random() * 0.05).toFixed(2);
+              turboSensor.textContent = '+' + bar + ' BAR';
+            }
+          }, 3500);
+        }
+      })();
+    } catch (err) {}
+
+    // =========================================================================
+    // 5. CHOZO SCAN VISOR DYNAMIC RETICLE & E-TANK INTERACTION
+    // =========================================================================
+    try {
+      (function setupChozoVisorInteractive() {
+        var chozoContainer = document.getElementById('theme-chozo-visor');
+        if (!chozoContainer) return;
+
+        var reticle = safeQuery(chozoContainer, '.targeting-reticle');
+        if (reticle) {
+          reticle.style.cursor = 'pointer';
+          reticle.addEventListener('click', function () {
+            if (!isMuted && typeof window !== 'undefined' && window.ClownAudio && typeof window.ClownAudio.playTone === 'function') {
+              try {
+                window.ClownAudio.playTone(1200, 'sine', 0.08, 0.2);
+                setTimeout(function () {
+                  window.ClownAudio.playTone(1600, 'sine', 0.12, 0.25);
+                }, 80);
+              } catch (e) {}
+            }
+          });
+        }
+
+        var eTanks = safeQuery(chozoContainer, '.e-tanks-cluster');
+        if (eTanks) {
+          eTanks.style.cursor = 'pointer';
+          eTanks.addEventListener('click', function () {
+            var tanks = safeQueryAll(eTanks, '.e-tank');
+            tanks.forEach(function (tank, i) {
+              setTimeout(function () {
+                tank.classList.add('filled');
+              }, i * 80);
+            });
+            if (!isMuted && typeof window !== 'undefined' && window.ClownAudio && typeof window.ClownAudio.playTone === 'function') {
+              try {
+                window.ClownAudio.playTone(880, 'triangle', 0.15, 0.25);
+              } catch (e) {}
+            }
+          });
+        }
+      })();
+    } catch (err) {}
   }
 
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+  // --- Universal Link & SFX Delegation ---
+  function setupLinkDelegation() {
+    if (typeof document === 'undefined' || typeof document.addEventListener !== 'function') return;
+
+    var lastHoverTime = 0;
+    var lastHoverElement = null;
+
+    function handleLinkHover(e) {
+      if (isMuted) return;
+      var link = e.target && typeof e.target.closest === 'function' ? e.target.closest('.theme-link') : null;
+      if (!link) return;
+
+      var now = Date.now();
+      if (link === lastHoverElement && (now - lastHoverTime) < 100) {
+        return; // Deduplicate rapid sequential pointerenter / mouseenter
+      }
+      lastHoverTime = now;
+      lastHoverElement = link;
+
+      if (typeof window !== 'undefined' && window.ClownAudio && typeof window.ClownAudio.playSfx === 'function') {
+        try {
+          window.ClownAudio.playSfx('hover');
+        } catch (err) {
+          // Audio safety guard
+        }
+      }
+    }
+
+    // Hover / mouseenter and pointerenter with timestamp debounce guard
+    document.addEventListener('mouseenter', handleLinkHover, true);
+    document.addEventListener('pointerenter', handleLinkHover, true);
+
+    // Click sound effect
+    document.addEventListener('click', function (e) {
+      if (isMuted) return;
+      var link = e.target && typeof e.target.closest === 'function' ? e.target.closest('.theme-link') : null;
+      if (link && typeof window !== 'undefined' && window.ClownAudio && typeof window.ClownAudio.playSfx === 'function') {
+        try {
+          window.ClownAudio.playSfx('click');
+        } catch (err) {
+          // Audio safety guard
+        }
+      }
+    }, false);
   }
 
-  // Form submission
-  terminalForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    initAudio();
-    const val = terminalInput.value;
-    if (val.trim()) {
-      cmdHistory.push(val);
-      historyIdx = cmdHistory.length;
-      executeCommand(val);
-      terminalInput.value = '';
-    }
-  });
+  // --- Switcher Bar Keyboard Navigation (Roving Tabindex) ---
+  function setupKeyboardNavigation() {
+    if (typeof document === 'undefined') return;
+    var switcherBar = document.getElementById('theme-switcher-bar');
+    if (!switcherBar || typeof switcherBar.addEventListener !== 'function') return;
 
-  // Keyboard navigation for command history
-  terminalInput.addEventListener('keydown', (e) => {
-    initAudio();
-    if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (historyIdx > 0) {
-        historyIdx--;
-        terminalInput.value = cmdHistory[historyIdx];
-      }
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (historyIdx < cmdHistory.length - 1) {
-        historyIdx++;
-        terminalInput.value = cmdHistory[historyIdx];
-      } else {
-        historyIdx = cmdHistory.length;
-        terminalInput.value = '';
-      }
-    } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
-      // Keystroke sound
-      playTone(1200 + Math.random() * 200, 'square', 0.015, 0.02);
-    }
-  });
+    switcherBar.addEventListener('keydown', function (e) {
+      var buttons = Array.from(
+        switcherBar.querySelectorAll('[data-theme], [data-theme-target], .theme-btn, .theme-switcher-btn, .switcher-btn')
+      );
+      if (!buttons.length) return;
 
-  // Clicking directory links plays retro chime
-  document.querySelectorAll('.dir-entry a').forEach((link) => {
-    link.addEventListener('click', () => {
-      initAudio();
-      playLaunchChime();
+      var activeIndex = buttons.findIndex(function (btn) {
+        return btn === document.activeElement;
+      });
+
+      if (activeIndex === -1) return;
+
+      var targetIndex = -1;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        targetIndex = (activeIndex + 1) % buttons.length;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        targetIndex = (activeIndex - 1 + buttons.length) % buttons.length;
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        targetIndex = 0;
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        targetIndex = buttons.length - 1;
+      }
+
+      if (targetIndex !== -1) {
+        var targetBtn = buttons[targetIndex];
+        if (targetBtn && typeof targetBtn.focus === 'function') {
+          targetBtn.focus();
+        }
+        var theme = targetBtn ? (targetBtn.getAttribute('data-theme') || targetBtn.getAttribute('data-theme-target')) : null;
+        if (theme) {
+          setTheme(theme);
+        }
+      }
     });
-  });
+  }
 
-})();
+  // --- Switcher Bar Event Listeners ---
+  function setupSwitcherEvents() {
+    if (typeof document === 'undefined') return;
+
+    var switcherBar = document.getElementById('theme-switcher-bar');
+    if (switcherBar && typeof switcherBar.addEventListener === 'function') {
+      switcherBar.addEventListener('click', function (e) {
+        var themeBtn = e.target && typeof e.target.closest === 'function'
+          ? e.target.closest('button[data-theme], button[data-theme-target], .theme-btn, .theme-switcher-btn, .switcher-btn')
+          : null;
+
+        if (themeBtn) {
+          e.preventDefault();
+          var targetTheme = themeBtn.getAttribute('data-theme') || themeBtn.getAttribute('data-theme-target');
+          if (targetTheme) {
+            setTheme(targetTheme);
+          }
+          return;
+        }
+
+        var soundBtn = e.target && typeof e.target.closest === 'function'
+          ? e.target.closest('#sound-toggle')
+          : null;
+
+        if (soundBtn) {
+          e.preventDefault();
+          toggleSound();
+        }
+      });
+    }
+
+    // Fallback direct listener on sound-toggle if outside switcherBar
+    var soundToggle = document.getElementById('sound-toggle');
+    if (soundToggle && typeof soundToggle.addEventListener === 'function') {
+      var isInside = switcherBar && typeof switcherBar.contains === 'function' ? switcherBar.contains(soundToggle) : false;
+      if (!isInside) {
+        soundToggle.addEventListener('click', function (e) {
+          e.preventDefault();
+          toggleSound();
+        });
+      }
+    }
+  }
+
+  // --- Initialization ---
+  function init() {
+    if (isInitialized) return;
+
+    var initialTheme = resolveInitialTheme();
+    var savedSound = safeGetStorage(STORAGE_KEYS.SOUND);
+
+    // Audio starts muted by default per autoplay requirements
+    isMuted = true;
+
+    // Apply theme immediately
+    setTheme(initialTheme, { force: true, triggerAudio: false });
+
+    // Update sound UI
+    if (savedSound === 'on') {
+      var soundToggle = typeof document !== 'undefined' ? document.getElementById('sound-toggle') : null;
+      if (soundToggle) {
+        var stateSpan = safeQuery(soundToggle, '.btn-state');
+        if (stateSpan) {
+          stateSpan.textContent = 'MUTED';
+        }
+        soundToggle.setAttribute('aria-pressed', 'false');
+      }
+    } else {
+      updateSoundUI(true);
+    }
+
+    // Attach listeners
+    setupSwitcherEvents();
+    setupKeyboardNavigation();
+    setupLinkDelegation();
+    setupInteractiveWidgets();
+
+    isInitialized = true;
+  }
+
+  // Auto-init on DOM ready
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading' && typeof document.addEventListener === 'function') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  }
+
+  // Return Public API
+  return {
+    init: init,
+    setTheme: setTheme,
+    getActiveTheme: function () {
+      return currentTheme;
+    },
+    toggleSound: toggleSound,
+    isSoundMuted: function () {
+      return isMuted;
+    },
+    setVolume: setVolume,
+    getThemes: function () {
+      return VALID_THEMES.slice();
+    }
+  };
+}));
