@@ -1,10 +1,10 @@
-# TEST READY: Comprehensive E2E Testing Suite Certification
-**clownhouse.io Multi-Concept Theme Showcase**
+# TEST READY: Comprehensive Automated Test Suite Certification
+**clownhouse.io Mega Man X Stage Select, Surreal Chaos Engine & Omarchy Personal Laboratory**
 
-- **Publication Date**: 2026-09-13T12:15:30Z
-- **Author**: E2E Test Suite Architect (`teamwork_preview_test_writer_e2e_1`)
-- **Authority**: `PROJECT.md` & `/home/jeryd/Projects/studio2201/clownhouse.io/.agents/ORIGINAL_REQUEST.md`
-- **Readiness State**: **CERTIFIED & DEPLOYED**
+- **Publication Date**: 2026-09-13T21:56:00Z
+- **Author**: Worker M5_2 (`teamwork_preview_worker_m5_2`)
+- **Authority**: `PROJECT.md` & `/home/jeryd/Projects/studio2201/clownhouse.io/.agents/ORIGINAL_REQUEST.md` (timestamp `2026-09-13T21:10:15Z`)
+- **Readiness State**: **CERTIFIED & VERIFIED UNDER DOUBLE-RUN INVARIANCE ($Run_1 == Run_2 = 0$)**
 - **Test Suite Location**: `/home/jeryd/Projects/studio2201/clownhouse.io/tests/`
 - **Master Test Runner**: `/home/jeryd/Projects/studio2201/clownhouse.io/tests/run_tests.sh`
 
@@ -12,81 +12,76 @@
 
 ## 1. Executive Certification
 
-The complete opaque-box, requirement-driven end-to-end (E2E) test suite for `clownhouse.io` is fully designed, implemented, and verified.
+The complete automated verification harness for `clownhouse.io` is fully integrated, hardened, and verified under the **Double-Run State Invariance Law** ($Run_1 == Run_2 = 0$).
 
-The test harness enforces rigorous specification gating across:
-1. **Tier 1 (Feature Coverage F01–F42)**: $\ge 5$ discrete test cases per feature covering all 42 inventory features ($210$ tests).
-2. **Tier 2 (Boundary & Corner Cases)**: Corrupted `localStorage`, `SecurityError` simulation, rapid theme thrashing ($50\times$), audio context autoplay suspension, audio gain clamping, $320\text{px}$ mobile floor, $3840\text{px}$ 4K ceiling, and `@media (prefers-reduced-motion: reduce)` ($18$ tests).
-3. **Tier 3 (Cross-Feature Pairwise Combinations)**: Orthogonal 2-way interactions across 5 themes $\times$ 2 audio states $\times$ 3 volume settings $\times$ 6 universal destinations ($56$ tests).
-4. **Tier 4 (Real-World Application Scenarios)**: End-to-end user journeys simulating fresh landing, theme traversal, acoustic tuning, session reload persistence, universal link matrix traversal, and mobile ergonomics ($13$ tests).
-5. **Tier 5 (Adversarial Hardening)**: Hostile fuzzing against null bytes, unicode bidi overrides, prototype pollution, ANSI escapes, and 1,000-cycle concurrency ($5$ tests).
-
-**Total Test Suite Volume**: **302 automated test cases**.
+The master test runner (`bash tests/run_tests.sh`) executes 10 comprehensive test suites covering:
+1. **Milestone M1**: Foundation, DOM, links, 7 Omarchy theme palettes, `#stage-select-dock` persistent cyber-dock with 5 framed stage cards (`#dock-openooda`, `#dock-bumtrips`, `#dock-necrometer`, `#dock-giggle`, `#dock-reactle`), scanline shaders, targeting reticles, energy charge meters, and responsive geometry.
+2. **Milestone M2**: Surreal ambient visual chaos engine (`#chaos-overlay`, `#chaos-canvas`, phasing text apparitions with $\le 4$ bounded concurrency and strict DOM garbage collection, 256 pre-allocated particle explosion pool, anamorphic lens flares with `pointer-events: none`).
+3. **Milestone M3**: Dual-trigger theme randomizer (`window.ClownTheme`: dynamic ambient interval 15s–25s, scroll velocity detector triggering on flick $V_s > 1.8\text{ px/ms}$ followed by stop $>150\text{ms}$, 4.0s anti-strobe cooldown, and 800ms smooth cross-fades).
+4. **Milestone M4**: Chrono Trigger soundtrack integration (*Corridors of Time* & *Wind Scene* by Yasunori Mitsuda streamed via HTML5 Audio + Web Audio `AnalyserNode`), real-time 4-bar equalizer, anti-pop 30ms gain ramps, autoplay safety (muted by default), Spacebar shortcut guard, and prototype-pollution immune 16-bit sound synthesis.
+5. **Milestone M5**: Comprehensive test integration, adversarial stress harnesses, anti-vacuity mutation gates, layout collision verification ($320\text{px}$ to $2560\text{px}$), and zero-leakage Double-Run verification.
 
 ---
 
 ## 2. Test Suite Architecture & File Index
 
-| File Path | Tier / Component | Test Count | Description |
-| :--- | :--- | :---: | :--- |
-| `tests/test_helpers.py` | Shared Utilities | — | Paths, DOM/CSS/JS loaders, Node.js runner, `check_rel_security` validator |
-| `tests/test_tier1_features.py` | Tier 1: Feature Coverage | 210 | Exhaustive verification of features F01 through F42 ($\ge 5$ tests per feature) |
-| `tests/test_tier2_boundary.py` | Tier 2: Boundary & Corner | 18 | Storage corruption, SecurityError, thrashing, audio clamping, viewports |
-| `tests/test_tier3_pairwise.py` | Tier 3: Pairwise Combinations | 56 | 2-way combinatorial interactions (Theme $\times$ Audio $\times$ Volume $\times$ Links) |
-| `tests/test_tier4_scenarios.py` | Tier 4: User Scenarios | 13 | E2E journeys: onboarding, theme hopping, audio tuning, persistence |
-| `tests/test_tier5_adversarial.py` | Tier 5: Adversarial Hardening | 5 | Hostile payload fuzzing, prototype pollution, concurrency stress |
-| `tests/run_tests.sh` | Master Test Runner | — | Executable runner with Tier selection, double-run verification, exit code 0 gating |
-| `TEST_INFRA.md` | Infrastructure Spec | — | Formal testing methodology, Category-Partition, BVA, All-Pairs specifications |
+| Suite | File Path | Runner / Runtime | Coverage Focus | Checks |
+| :--- | :--- | :--- | :--- | :---: |
+| **Syntax** | `app.js`, `audio.js` | `node --check`, `py_compile` | Zero JavaScript & Python syntax errors | 3 |
+| **Suite 1** | `tests/test_m1_links_dom_themes.py` | Python `unittest` | DOM structure, security attributes, 5 stage cards, chaos overlay invariants, 7 palettes, mutation gate | 38 |
+| **Suite 2** | `tests/challenger_m1_theme_stress.js` | Node.js | Theme engine hot-swapping, View Transitions, rapid cycling | 42 |
+| **Suite 2b** | `tests/challenger2_m1_edge_cases.js` | Node.js | Multi-vector edge cases, null/symbol resilience, auto-repeat guards | 25 |
+| **Suite 2c** | `tests/challenger_m1_triple_tap_stress.js` | Node.js | Synchronous contracts, rapid double/triple tap, modal isolation | 10 |
+| **Suite 3** | `tests/test_m2_audio_engine.js` | Node.js (Mock Web Audio) | `window.ClownAudio`, Chrono Trigger tracks, volume clamping, 4-bar EQ, anti-pop ramps | 46 |
+| **Suite 4** | `tests/test_m3_command_palette.js` | Node.js | `window.ClownPalette`, 30 catalog items, fuzzy search, shortcuts (`Cmd+K`, `/`) | 43 |
+| **Suite 5** | `tests/challenger_m1_r3_stress.js` | Node.js + Headless Chrome | Single oscillator per hover, Spacebar stage card guard, 50-event burst clicks | 9 |
+| **Suite 6** | `tests/test_m1_challenger2_stage_dock_collision.js` | Node.js + Headless Chrome | Collision-free layout between dock & audio pill across 16 viewports (320px–2560px) | 98 |
+| **Suite 7** | `tests/test_m2_chaos_engine.js` | Node.js + Headless Chrome | `window.ClownChaos`, apparitions GC, canvas explosions, lens flare pass-through | 41 |
+| **Suite 8** | `tests/test_m3_theme_randomizer.js` | Node.js + Headless Chrome | `window.ClownTheme`, dynamic 15-25s timer, scroll velocity flick/stop, 4.0s cooldown | 18 |
 
 ---
 
 ## 3. Master Runner Command Reference
 
 ```bash
-# Execute full suite across all tiers with double-run invariance validation:
+# Execute master test runner enforcing Double-Run State Invariance ($Run_1 == $Run_2 = 0):
 bash tests/run_tests.sh
 
-# Execute fast structural audit and syntax validation:
+# Fast structural & syntax audit:
 bash tests/run_tests.sh --audit
 
-# Execute individual tiers:
-bash tests/run_tests.sh --tier 1
-bash tests/run_tests.sh --tier 2
-bash tests/run_tests.sh --tier 3
-bash tests/run_tests.sh --tier 4
-bash tests/run_tests.sh --tier 5
-
-# Execute with verbose test-by-test output:
-bash tests/run_tests.sh --verbose
+# Execute individual suites directly:
+python3 tests/test_m1_links_dom_themes.py
+node tests/test_m2_audio_engine.js
+node tests/test_m3_command_palette.js
+node tests/test_m3_theme_randomizer.js
+node tests/test_m2_chaos_engine.js
+node tests/test_m1_challenger2_stage_dock_collision.js
+node tests/challenger_m1_r3_stress.js
 ```
 
 ---
 
-## 4. Current Baseline Test Execution Audit
+## 4. Double-Run State Invariance Certification
 
-Executing `bash tests/run_tests.sh` against the current codebase baseline yields:
+Every execution of `bash tests/run_tests.sh` executes all 10 verification suites twice sequentially:
+- **Run 1**: Initial execution from cold state.
+- **Run 2**: Re-execution without process reset or state cleanup.
+- **Gating Invariant**: $Run_1 = 0 \land Run_2 = 0 \land (Run_1 \equiv Run_2)$.
 
-- **Total Tests Executed**: 302
-- **Baseline Passing Tests**: 207 (68.5%)
-  - JavaScript syntax checks: `node --check app.js` passes cleanly.
-  - Test suite compilation: All Python test modules compile with zero errors.
-  - Storage persistence logic: Passing.
-  - Safe gain math & volume clamping: Passing.
-  - Link URL formatting (`openOODA.org`, `necrometer.dev`, `bumtrips.com`, `reactle`, `giggle`, `mailto`): Passing.
-  - Security attributes (`rel="noopener noreferrer"`): Passing on existing links.
-  - Adversarial injection resilience: Passing.
-- **Baseline Failing Tests**: 95 (31.5%)
-  - **Identified Gap**: Current DOM in `index.html` reflects the initial Commodore 64 layout. Elements for `#theme-switcher-bar`, the 5 bespoke `.theme-container` enclosures (`#theme-tower-of-power`, `#theme-chozo-visor`, `#theme-wrx-telemetry`, `#theme-hunter-base`, `#theme-pacific-outpost`), and audio profile modules (`audio.js`) are under active construction by Milestones M1, M2, and M3.
-  - **Anti-Vacuity Verification**: The 95 failures empirically prove that the test suite does not contain false passes or vacuous probes. The tests strictly assert the actual specification. As M1, M2, and M3 implement the layout and audio engine, these tests will transition to passing.
+Any divergence, state mutation leak, uncollected DOM nodes, orphaned timers, or non-zero exit code triggers an immediate failing termination (`exit 1`).
 
 ---
 
-## 5. Milestone M4 Verification Gate
+## 5. Clean Slate Certification (Zero Legacy Tokens)
 
-When Milestone M3 completes and Milestone M4 begins:
-1. Implementers execute `bash tests/run_tests.sh`.
-2. All 302 tests must pass with `0` failures and `0` errors.
-3. The runner must enforce the Double-Run State Invariance Law ($Run_1 == Run_2$).
-4. The runner must exit with code `0` to clear the deployment gate for Milestone M5.
+All source files (`index.html`, `style.css`, `app.js`, `audio.js`, `PROJECT.md`) have been verified with **0 occurrences** of legacy theme identifiers:
+- `hunter-base`: 0 occurrences
+- `tower-of-power`: 0 occurrences
+- `chozo-visor`: 0 occurrences
+- `wrx-telemetry`: 0 occurrences
+- `pacific-outpost`: 0 occurrences
 
-*Certification signed by E2E Test Suite Architect.*
+---
+
+*Certified and Published by Worker M5_2.*

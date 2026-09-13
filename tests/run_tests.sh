@@ -64,7 +64,7 @@ echo ""
 # ------------------------------------------------------------------------------
 # 1. Structural Syntax & Integrity Check
 # ------------------------------------------------------------------------------
-echo -e "${BOLD}${BLUE}[1/4] Verifying JavaScript & Python Syntax Integrity...${RESET}"
+echo -e "${BOLD}${BLUE}[1/3] Verifying JavaScript & Python Syntax Integrity...${RESET}"
 
 NODE_SYNTAX_FAIL=0
 if node --check app.js >/dev/null 2>&1; then
@@ -124,12 +124,28 @@ execute_all_suites() {
   node tests/challenger_m1_triple_tap_stress.js || fails=$((fails + 1))
 
   echo ""
-  echo -e "${BOLD}${CYAN}--- Suite 3: Milestone M2 Procedural Web Audio Engine (Node) ---${RESET}"
+  echo -e "${BOLD}${CYAN}--- Suite 3: Milestone M2 Audio Engine & Chrono Trigger Streams (Node) ---${RESET}"
   node tests/test_m2_audio_engine.js || fails=$((fails + 1))
 
   echo ""
   echo -e "${BOLD}${CYAN}--- Suite 4: Milestone M3 Command Palette & Fuzzy Search (Node) ---${RESET}"
   node tests/test_m3_command_palette.js || fails=$((fails + 1))
+
+  echo ""
+  echo -e "${BOLD}${CYAN}--- Suite 5: Milestone M1/R3 Stage Select Dock & Audio Stress (Node) ---${RESET}"
+  node tests/challenger_m1_r3_stress.js || fails=$((fails + 1))
+
+  echo ""
+  echo -e "${BOLD}${CYAN}--- Suite 6: Milestone M1 Stage Dock Geometry & Collision (Node) ---${RESET}"
+  node tests/test_m1_challenger2_stage_dock_collision.js || fails=$((fails + 1))
+
+  echo ""
+  echo -e "${BOLD}${CYAN}--- Suite 7: Milestone M2 Chaos Engine Anomaly Suite (Node) ---${RESET}"
+  node tests/test_m2_chaos_engine.js || fails=$((fails + 1))
+
+  echo ""
+  echo -e "${BOLD}${CYAN}--- Suite 8: Milestone M3 Dual-Trigger Theme Randomizer (Node) ---${RESET}"
+  node tests/test_m3_theme_randomizer.js || fails=$((fails + 1))
 
   return ${fails}
 }
@@ -148,14 +164,14 @@ RUN1_STATUS=$?
 RUN2_STATUS=0
 if [[ ${DOUBLE_RUN} -eq 1 && ${RUN1_STATUS} -eq 0 ]]; then
   echo ""
-  echo -e "${BOLD}${BLUE}[3/3] Enforcing Double-Run Parity Law (\$Run_1 == \$Run_2)...${RESET}"
+  echo -e "${BOLD}${BLUE}[3/3] Enforcing Double-Run State Invariance Law (\$Run_1 == \$Run_2 = 0)...${RESET}"
   execute_all_suites
   RUN2_STATUS=$?
-  if [[ ${RUN1_STATUS} -ne ${RUN2_STATUS} ]]; then
+  if [[ ${RUN1_STATUS} -ne ${RUN2_STATUS} || ${RUN1_STATUS} -ne 0 ]]; then
     echo -e "${RED}[ERROR] Double-Run Violation: Run 1 status (${RUN1_STATUS}) != Run 2 status (${RUN2_STATUS})${RESET}"
     exit 1
   fi
-  echo -e "${GREEN}  [PASS] Double-run state invariance confirmed (${RUN1_STATUS} == ${RUN2_STATUS})${RESET}"
+  echo -e "${GREEN}  [PASS] Double-run state invariance confirmed (${RUN1_STATUS} == ${RUN2_STATUS} == 0)${RESET}"
 fi
 
 # ------------------------------------------------------------------------------

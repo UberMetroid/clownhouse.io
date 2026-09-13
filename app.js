@@ -42,7 +42,7 @@
     } catch (err) {
       console.warn('[ClownTheme] LocalStorage read error:', err);
     }
-    return DEFAULT_THEME;
+    return null;
   }
 
   function setStoredTheme(themeId) {
@@ -89,10 +89,197 @@
     }
   }
 
-  // --- Random Theme Selection & Ambient Auto-Changer ---
+  // --- Trigger 1: Ambient Random Theme Cycle (15–25s) ---
   let autoThemeTimer = null;
-  const AUTO_THEME_INTERVAL_MS = 25000;
+  let autoRandomActive = true;
+  let customAutoInterval = null;
 
+  function scheduleNextAutoTheme() {
+    if (autoThemeTimer) {
+      clearTimeout(autoThemeTimer);
+      autoThemeTimer = null;
+    }
+    if (!autoRandomActive) return;
+    if (typeof document !== 'undefined' && document.hidden) return;
+
+    // Dynamically reschedules every 15 to 25 seconds: 15000 + Math.random() * 10000
+    const delay = (typeof customAutoInterval === 'number' && Number.isFinite(customAutoInterval) && customAutoInterval > 0)
+      ? customAutoInterval
+      : Math.floor(15000 + Math.random() * 10000);
+
+    autoThemeTimer = setTimeout(() => {
+      autoThemeTimer = null;
+      if (typeof document !== 'undefined' && document.hidden) {
+        return;
+      }
+      randomTheme();
+      if (autoRandomActive && !autoThemeTimer) {
+        scheduleNextAutoTheme();
+      }
+    }, delay);
+  }
+
+  function startAutoRandom(intervalMs) {
+    autoRandomActive = true;
+    if (typeof intervalMs === 'number' && Number.isFinite(intervalMs) && intervalMs > 0) {
+      customAutoInterval = intervalMs;
+    } else {
+      customAutoInterval = null;
+    }
+    scheduleNextAutoTheme();
+  }
+
+  function stopAutoRandom() {
+    autoRandomActive = false;
+    if (autoThemeTimer) {
+      clearTimeout(autoThemeTimer);
+      autoThemeTimer = null;
+    }
+  }
+
+  function resetAutoRandom() {
+    scrollFlickArmed = false;
+    if (scrollStopTimer) {
+      clearTimeout(scrollStopTimer);
+      scrollStopTimer = null;
+    }
+    if (autoRandomActive) {
+      scheduleNextAutoTheme();
+    }
+  }
+
+  function handleThemeVisibilityChange() {
+    if (typeof document === 'undefined') return;
+    if (document.hidden) {
+      if (autoThemeTimer) {
+        clearTimeout(autoThemeTimer);
+        autoThemeTimer = null;
+      }
+    } else {
+      if (autoRandomActive && !autoThemeTimer) {
+        scheduleNextAutoTheme();
+      }
+    }
+  }
+
+  // --- Trigger 2: Scroll Velocity & Stop Detector with 4.0s Anti-Strobe Cooldown ---
+  const SCROLL_FLICK_THRESHOLD = 1.8;      // px/ms
+  const SCROLL_STOP_THRESHOLD = 0.1;       // px/ms
+  const SCROLL_STOP_DURATION_MS = 150;     // ms (>150ms of stop)
+  const SCROLL_COOLDOWN_MS = 4000;         // 4.0s anti-strobe cooldown
+  const SCROLL_WINDOW_MS = 100;            // sliding window ~100ms
+
+  let scrollSamples = [];
+  let scrollFlickArmed = false;
+  let scrollFlickTimestamp = 0;
+  let scrollStopTimer = null;
+  let lastScrollTriggerTime = -SCROLL_COOLDOWN_MS;
+
+  function isReducedMotion() {
+    try {
+      return Boolean(
+        typeof window !== 'undefined' &&
+        window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function handleThemeScroll(e) {
+    if (isReducedMotion()) {
+      scrollFlickArmed = false;
+      if (scrollStopTimer) {
+        clearTimeout(scrollStopTimer);
+        scrollStopTimer = null;
+      }
+      return;
+    }
+
+    const now = (e && e.detail && typeof e.detail.time === 'number')
+      ? e.detail.time
+      : ((typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now());
+
+    const currentY = (e && e.detail && typeof e.detail.scrollY === 'number')
+      ? e.detail.scrollY
+      : ((e && typeof e.scrollY === 'number')
+        ? e.scrollY
+        : ((typeof window !== 'undefined') ? (window.scrollY || window.pageYOffset || 0) : 0));
+
+    // Record sample in sliding window
+    scrollSamples.push({ y: currentY, time: now });
+
+    // Prune samples older than sliding window (~100ms)
+    while (scrollSamples.length > 0 && (now - scrollSamples[0].time) > SCROLL_WINDOW_MS) {
+      scrollSamples.shift();
+    }
+
+    // Compute velocity: Vs = |Δy| / Δt over sliding window (px/ms)
+    let vs = 0;
+    if (scrollSamples.length >= 2) {
+      const oldest = scrollSamples[0];
+      const dt = now - oldest.time;
+      const dy = Math.abs(currentY - oldest.y);
+      if (dt >= 5) {
+        vs = dy / dt;
+      }
+    }
+
+    // Detect rapid scroll flick: Vs > 1.8 px/ms
+    if (vs > SCROLL_FLICK_THRESHOLD) {
+      scrollFlickArmed = true;
+      scrollFlickTimestamp = now;
+    }
+
+    // If velocity is high, scroll is actively moving, clear stop timer
+    if (vs >= SCROLL_STOP_THRESHOLD) {
+      if (scrollStopTimer) {
+        clearTimeout(scrollStopTimer);
+        scrollStopTimer = null;
+      }
+    }
+
+    // Schedule or refresh stop detector: triggers when Vs < 0.1 px/ms for > 150ms
+    if (scrollStopTimer) {
+      clearTimeout(scrollStopTimer);
+    }
+    scrollStopTimer = setTimeout(onScrollStopDetected, SCROLL_STOP_DURATION_MS + 10);
+  }
+
+  function onScrollStopDetected() {
+    scrollStopTimer = null;
+
+    if (isReducedMotion()) {
+      scrollFlickArmed = false;
+      return;
+    }
+
+    const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+
+    // If a flick was armed within the last 3.0s:
+    if (scrollFlickArmed && (now - scrollFlickTimestamp) <= 3000) {
+      scrollFlickArmed = false;
+
+      // Strictly enforce 4.0-second cooldown window between scroll-triggered shifts
+      if (now - lastScrollTriggerTime >= SCROLL_COOLDOWN_MS) {
+        lastScrollTriggerTime = now;
+        randomTheme();
+      }
+    } else {
+      scrollFlickArmed = false;
+    }
+  }
+
+  // Attach immediate global listeners if window / document defined
+  if (typeof window !== 'undefined') {
+    window.addEventListener('scroll', handleThemeScroll, { passive: true });
+  }
+  if (typeof document !== 'undefined') {
+    document.addEventListener('visibilitychange', handleThemeVisibilityChange);
+  }
+
+  // --- Theme Selection & Application Wrappers ---
   function getRandomTheme(excludeCurrent = true) {
     const pool = (excludeCurrent && THEMES.length > 1)
       ? THEMES.filter(t => t !== currentTheme)
@@ -103,47 +290,21 @@
   function randomTheme() {
     const nextTheme = getRandomTheme(true);
     setTheme(nextTheme);
-    resetAutoThemeTimer();
     return nextTheme;
   }
 
-  function startAutoThemeTimer(intervalMs = AUTO_THEME_INTERVAL_MS) {
-    stopAutoThemeTimer();
-    autoThemeTimer = setInterval(() => {
-      if (typeof document !== 'undefined' && document.hidden) {
-        return;
-      }
-      randomTheme();
-    }, intervalMs);
-  }
-
-  function stopAutoThemeTimer() {
-    if (autoThemeTimer) {
-      clearInterval(autoThemeTimer);
-      autoThemeTimer = null;
-    }
-  }
-
-  function resetAutoThemeTimer() {
-    if (autoThemeTimer) {
-      startAutoThemeTimer(AUTO_THEME_INTERVAL_MS);
-    }
-  }
-
   function setTheme(themeId) {
-    if (!THEMES.includes(themeId)) {
-      console.warn('[ClownTheme] Unknown theme', themeId, `falling back to ${DEFAULT_THEME}`);
+    if (typeof themeId !== 'string' || !THEMES.includes(themeId)) {
+      const safeId = (typeof themeId === 'string') ? themeId : String(typeof themeId);
+      console.warn('[ClownTheme] Unknown theme', safeId, 'falling back to', DEFAULT_THEME);
       themeId = DEFAULT_THEME;
     }
 
     // Synchronously execute applyTheme so DOM and state update immediately
     applyTheme(themeId);
-    resetAutoThemeTimer();
+    resetAutoRandom();
 
-    const prefersReducedMotion =
-      typeof window.matchMedia === 'function'
-        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        : false;
+    const prefersReducedMotion = isReducedMotion();
 
     if (!prefersReducedMotion && typeof document.startViewTransition === 'function') {
       try {
@@ -169,7 +330,6 @@
     const nextIndex = (currentIndex + 1) % THEMES.length;
     const nextTheme = THEMES[nextIndex];
     setTheme(nextTheme);
-    resetAutoThemeTimer();
     return nextTheme;
   }
 
@@ -184,9 +344,9 @@
     cycleTheme,
     randomTheme,
     getCurrentTheme,
-    startAutoRandom: startAutoThemeTimer,
-    stopAutoRandom: stopAutoThemeTimer,
-    resetAutoRandom: resetAutoThemeTimer
+    startAutoRandom,
+    stopAutoRandom,
+    resetAutoRandom
   });
 
   // Legacy/Convenience namespace
@@ -807,18 +967,585 @@
     if (muteBtn) muteBtn.addEventListener('click', toggleMutePill);
   }
 
+  function initStageSelectDock() {
+    const dock = document.getElementById('stage-select-dock');
+    if (!dock) return;
+
+    const cards = dock.querySelectorAll('.stage-card');
+    cards.forEach((card) => {
+      if (card.dataset.dockBound) return;
+      card.dataset.dockBound = "true";
+
+      card.addEventListener('mouseenter', () => {
+        if (window.ClownAudio && typeof window.ClownAudio.playSfx === 'function') {
+          window.ClownAudio.playSfx('hover');
+        }
+      });
+
+      card.addEventListener('focus', () => {
+        if (window.ClownAudio && typeof window.ClownAudio.playSfx === 'function') {
+          window.ClownAudio.playSfx('hover');
+        }
+      });
+
+      card.addEventListener('click', () => {
+        if (window.ClownAudio && typeof window.ClownAudio.playSfx === 'function') {
+          window.ClownAudio.playSfx('select');
+        }
+      });
+
+      card.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' || e.key === ' ' || e.code === 'Enter' || e.key === 'Enter') {
+          e.preventDefault();
+          card.click();
+        }
+      });
+    });
+  }
+
+  // ==========================================================================
+  // SURREAL AMBIENT VISUAL CHAOS ENGINE (window.ClownChaos)
+  // - Phasing text apparitions (bounded pool <= 4, strict DOM .remove(), drift/fade)
+  // - 16-bit pixel art explosions on canvas (256 particle pool, ambient bursts + clicks)
+  // - Sci-fi anamorphic lens flares (pointer-events: none !important, lerp tracking, scroll)
+  // - 60fps performance, tab visibility pause, reduced-motion support
+  // ==========================================================================
+
+  const APPARITION_CATALOG = [
+    "OODA LOOP: OBSERVE -> ORIENT -> DECIDE -> ACT",
+    "CAPABILITY TOKEN 0x7F... VERIFIED",
+    "THE CLOWN SEES THROUGH THE SCANLINES",
+    "ENTROPY LEVEL: 528Hz CRITICAL",
+    "SYNAPSE DIVERGENCE DETECTED",
+    "CHRONO ANOMALY: ZEAL 12,000 B.C.",
+    "SATELLITE DOWNLINK: PACIFIC OUTPOST ONLINE",
+    "REALITY BUFFER OVERFLOW: NULL_POINTER_VOID",
+    "TRANSMITTING TO THE VOID...",
+    "HOW DEAD IS YOUR CODE? // NECROMETER",
+    "BEATNIKS, BUMTRIPS & COUNTER-CULTURE FREQUENCIES",
+    "X-BUSTER CHARGE: 100% MAXIMUM",
+    "SUB-ATOMIC TELEMETRY STREAM ACQUIRED",
+    "MAVERICK SIGNATURE ISOLATED",
+    "STATIC SITE PURITY: ZERO FRAMEWORKS"
+  ];
+
+  const PARTICLE_POOL_SIZE = 256;
+  const particlePool = new Array(PARTICLE_POOL_SIZE);
+  for (let i = 0; i < PARTICLE_POOL_SIZE; i++) {
+    particlePool[i] = {
+      active: false,
+      x: 0,
+      y: 0,
+      vx: 0,
+      vy: 0,
+      size: 4,
+      life: 0,
+      maxLife: 60
+    };
+  }
+
+  let chaosRafId = null;
+  let apparitionTimer = null;
+  let burstTimer = null;
+  let chaosDestroyed = false;
+  let isChaosInitialized = false;
+  let prefersReducedMotionState = false;
+
+  // Lens flare smoothed coordinates & scroll state
+  let targetFlareX = 400;
+  let targetFlareY = 300;
+  let currentFlareX = 400;
+  let currentFlareY = 300;
+  let scrollVelocity = 0;
+  let lastScrollY = 0;
+  let lastScrollTime = 0;
+
+  // DOM Elements cache
+  let chaosCanvas = null;
+  let chaosCtx = null;
+  let apparitionsContainer = null;
+  let flaresContainer = null;
+  let flareStreakEl = null;
+  let flareGlintEl = null;
+  let flareAuraEl = null;
+
+  // Safe RAF polyfill for node / mock environments
+  const safeRaf = typeof requestAnimationFrame === 'function'
+    ? requestAnimationFrame
+    : (cb) => setTimeout(() => cb(Date.now()), 16);
+  const safeCancelRaf = typeof cancelAnimationFrame === 'function'
+    ? cancelAnimationFrame
+    : clearTimeout;
+
+  function getActiveApparitionCount() {
+    if (!apparitionsContainer && typeof document !== 'undefined') {
+      apparitionsContainer = document.getElementById('chaos-apparitions');
+    }
+    return apparitionsContainer ? apparitionsContainer.childElementCount : 0;
+  }
+
+  function spawnApparition(customText) {
+    if (chaosDestroyed || prefersReducedMotionState) return;
+    if (typeof document !== 'undefined' && document.hidden) return;
+    if (getActiveApparitionCount() >= 4) return;
+
+    if (!apparitionsContainer && typeof document !== 'undefined') {
+      apparitionsContainer = document.getElementById('chaos-apparitions');
+    }
+    if (!apparitionsContainer) return;
+
+    let text;
+    if (typeof customText === 'string' && customText.trim().length > 0) {
+      text = customText.trim();
+    } else {
+      const idx = Math.floor(Math.random() * APPARITION_CATALOG.length);
+      text = APPARITION_CATALOG[idx];
+    }
+
+    // Coordinates bounded to 5% <= x <= 80%, 10% <= y <= 85%
+    const xPct = (5 + Math.random() * 75).toFixed(1);
+    const yPct = (10 + Math.random() * 75).toFixed(1);
+    // Duration between 3.5s and 6.0s
+    const duration = (3.5 + Math.random() * 2.5).toFixed(2);
+
+    const span = document.createElement('span');
+    span.className = 'chaos-text-apparition';
+    span.textContent = text;
+    span.style.left = `${xPct}%`;
+    span.style.top = `${yPct}%`;
+    span.style.animationDuration = `${duration}s`;
+
+    let removed = false;
+    const removeSpan = () => {
+      if (removed) return;
+      removed = true;
+      span.removeEventListener('animationend', removeSpan);
+      if (span.parentNode) {
+        span.remove();
+      }
+    };
+
+    span.addEventListener('animationend', removeSpan);
+    // Hard garbage-collection fallback timer (7.5s)
+    setTimeout(removeSpan, 7500);
+
+    apparitionsContainer.appendChild(span);
+  }
+
+  function scheduleNextApparition() {
+    if (apparitionTimer) clearTimeout(apparitionTimer);
+    if (chaosDestroyed || (typeof document !== 'undefined' && document.hidden) || prefersReducedMotionState) return;
+
+    // Fires every 4–8 seconds
+    const delay = 4000 + Math.random() * 4000;
+    apparitionTimer = setTimeout(() => {
+      spawnApparition();
+      scheduleNextApparition();
+    }, delay);
+  }
+
+  function triggerExplosion(x, y, particleCount) {
+    if (chaosDestroyed || prefersReducedMotionState) return;
+
+    const w = (typeof window !== 'undefined' && window.innerWidth) ? window.innerWidth : 800;
+    const h = (typeof window !== 'undefined' && window.innerHeight) ? window.innerHeight : 600;
+
+    const originX = (typeof x === 'number' && Number.isFinite(x) && x >= 0) ? x : (w / 2);
+    const originY = (typeof y === 'number' && Number.isFinite(y) && y >= 0) ? y : (h / 2);
+
+    const count = (typeof particleCount === 'number' && Number.isFinite(particleCount) && particleCount > 0)
+      ? Math.min(64, Math.floor(particleCount))
+      : 24;
+
+    const SIZES = [3, 4, 5, 6];
+
+    for (let c = 0; c < count; c++) {
+      let candidate = null;
+      let maxLife = -1;
+      let oldest = null;
+
+      for (let i = 0; i < PARTICLE_POOL_SIZE; i++) {
+        const p = particlePool[i];
+        if (!p.active) {
+          candidate = p;
+          break;
+        }
+        if (p.life > maxLife) {
+          maxLife = p.life;
+          oldest = p;
+        }
+      }
+
+      const p = candidate || oldest;
+      if (!p) continue;
+
+      p.active = true;
+      p.x = originX;
+      p.y = originY;
+      p.size = SIZES[Math.floor(Math.random() * SIZES.length)];
+      p.life = 0;
+      p.maxLife = 35 + Math.floor(Math.random() * 30);
+
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 2.0 + Math.random() * 5.0; // [2.0, 7.0]
+      p.vx = Math.cos(angle) * speed;
+      p.vy = Math.sin(angle) * speed;
+    }
+  }
+
+  function scheduleNextBurst() {
+    if (burstTimer) clearTimeout(burstTimer);
+    if (chaosDestroyed || (typeof document !== 'undefined' && document.hidden) || prefersReducedMotionState) return;
+
+    // Ambient background burst every 8–16 seconds
+    const delay = 8000 + Math.random() * 8000;
+    burstTimer = setTimeout(() => {
+      const w = (typeof window !== 'undefined' && window.innerWidth) ? window.innerWidth : 800;
+      const h = (typeof window !== 'undefined' && window.innerHeight) ? window.innerHeight : 600;
+      const rx = 0.10 * w + Math.random() * 0.80 * w;
+      const ry = 0.10 * h + Math.random() * 0.80 * h;
+      triggerExplosion(rx, ry, 18 + Math.floor(Math.random() * 8));
+      scheduleNextBurst();
+    }, delay);
+  }
+
+  function resizeCanvas() {
+    if (!chaosCanvas && typeof document !== 'undefined') {
+      chaosCanvas = document.getElementById('chaos-canvas');
+    }
+    if (!chaosCanvas) return;
+
+    if (!chaosCtx && typeof chaosCanvas.getContext === 'function') {
+      chaosCtx = chaosCanvas.getContext('2d');
+    }
+
+    const dpr = (typeof window !== 'undefined' && window.devicePixelRatio) ? window.devicePixelRatio : 1;
+    const w = (typeof window !== 'undefined' && window.innerWidth) ? window.innerWidth : 800;
+    const h = (typeof window !== 'undefined' && window.innerHeight) ? window.innerHeight : 600;
+
+    chaosCanvas.width = Math.floor(w * dpr);
+    chaosCanvas.height = Math.floor(h * dpr);
+    chaosCanvas.style.width = `${w}px`;
+    chaosCanvas.style.height = `${h}px`;
+
+    if (chaosCtx && typeof chaosCtx.setTransform === 'function') {
+      chaosCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      chaosCtx.imageSmoothingEnabled = false;
+    }
+  }
+
+  function updateAndRenderParticles() {
+    if (!chaosCtx || !chaosCanvas) return;
+    const w = (typeof window !== 'undefined' && window.innerWidth) ? window.innerWidth : 800;
+    const h = (typeof window !== 'undefined' && window.innerHeight) ? window.innerHeight : 600;
+
+    chaosCtx.clearRect(0, 0, w, h);
+
+    // Read current theme accent
+    let accent = '#f9e2af';
+    if (typeof document !== 'undefined' && document.documentElement) {
+      accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#f9e2af';
+    }
+
+    for (let i = 0; i < PARTICLE_POOL_SIZE; i++) {
+      const p = particlePool[i];
+      if (!p.active) continue;
+
+      // 16-bit arcade physics: drag 0.94, gravity +0.12
+      p.vx *= 0.94;
+      p.vy = p.vy * 0.94 + 0.12;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.life++;
+
+      if (p.life >= p.maxLife || p.x < -20 || p.x > w + 20 || p.y < -20 || p.y > h + 20) {
+        p.active = false;
+        continue;
+      }
+
+      // 4-step color grading:
+      // core white (#ffffff) -> high-energy accent -> flame (#e06c75) -> smoke (#414868)
+      const t = 1.0 - (p.life / p.maxLife);
+      let color;
+      if (t >= 0.75) {
+        color = '#ffffff';
+      } else if (t >= 0.50) {
+        color = accent;
+      } else if (t >= 0.25) {
+        color = '#e06c75';
+      } else {
+        color = '#414868';
+      }
+
+      chaosCtx.fillStyle = color;
+      chaosCtx.fillRect(Math.round(p.x), Math.round(p.y), p.size, p.size);
+    }
+  }
+
+  function updateLensFlares() {
+    if (prefersReducedMotionState || !flareStreakEl) return;
+
+    // Smooth lerp cursor coordinates (factor 0.08)
+    currentFlareX += (targetFlareX - currentFlareX) * 0.08;
+    currentFlareY += (targetFlareY - currentFlareY) * 0.08;
+
+    // Decay scroll velocity smoothly
+    scrollVelocity *= 0.92;
+
+    const streakOpacity = Math.min(0.85, 0.18 + scrollVelocity * 0.35);
+    const streakHeight = Math.min(8, 2 + scrollVelocity * 2.0);
+
+    flareStreakEl.style.transform = `translateY(${currentFlareY.toFixed(1)}px)`;
+    flareStreakEl.style.opacity = streakOpacity.toFixed(2);
+    flareStreakEl.style.height = `${streakHeight.toFixed(1)}px`;
+
+    if (flareGlintEl) {
+      const glintOpacity = Math.min(0.85, 0.15 + scrollVelocity * 0.3);
+      flareGlintEl.style.transform = `translate(${currentFlareX.toFixed(1)}px, ${currentFlareY.toFixed(1)}px) rotate(45deg)`;
+      flareGlintEl.style.opacity = glintOpacity.toFixed(2);
+    }
+
+    if (flareAuraEl) {
+      const auraOpacity = Math.min(0.65, 0.12 + scrollVelocity * 0.25);
+      flareAuraEl.style.transform = `translate(${currentFlareX.toFixed(1)}px, ${currentFlareY.toFixed(1)}px)`;
+      flareAuraEl.style.opacity = auraOpacity.toFixed(2);
+    }
+  }
+
+  function chaosRenderLoop() {
+    if (chaosDestroyed) return;
+    chaosRafId = safeRaf(chaosRenderLoop);
+
+    if (prefersReducedMotionState) {
+      if (chaosCtx && chaosCanvas) {
+        chaosCtx.clearRect(0, 0, chaosCanvas.width, chaosCanvas.height);
+      }
+      return;
+    }
+
+    updateAndRenderParticles();
+    updateLensFlares();
+  }
+
+  function setReducedMotion(enabled) {
+    prefersReducedMotionState = Boolean(enabled);
+    if (prefersReducedMotionState) {
+      if (chaosCtx && chaosCanvas) {
+        chaosCtx.clearRect(0, 0, chaosCanvas.width, chaosCanvas.height);
+      }
+      for (let i = 0; i < PARTICLE_POOL_SIZE; i++) {
+        particlePool[i].active = false;
+      }
+      if (flareStreakEl) flareStreakEl.style.opacity = '0';
+      if (flareGlintEl) flareGlintEl.style.opacity = '0';
+      if (flareAuraEl) flareAuraEl.style.opacity = '0';
+      if (apparitionsContainer) {
+        while (apparitionsContainer.firstChild) {
+          apparitionsContainer.removeChild(apparitionsContainer.firstChild);
+        }
+      }
+    } else {
+      scheduleNextApparition();
+      scheduleNextBurst();
+    }
+  }
+
+  function destroyChaos() {
+    chaosDestroyed = true;
+    isChaosInitialized = false;
+    if (chaosRafId) {
+      safeCancelRaf(chaosRafId);
+      chaosRafId = null;
+    }
+    if (apparitionTimer) {
+      clearTimeout(apparitionTimer);
+      apparitionTimer = null;
+    }
+    if (burstTimer) {
+      clearTimeout(burstTimer);
+      burstTimer = null;
+    }
+
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', onChaosResize);
+      window.removeEventListener('mousemove', onChaosMouseMove);
+      window.removeEventListener('scroll', onChaosScroll);
+    }
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('click', onChaosClick);
+      document.removeEventListener('visibilitychange', onChaosVisibilityChange);
+    }
+
+    if (chaosCtx && chaosCanvas) {
+      chaosCtx.clearRect(0, 0, chaosCanvas.width, chaosCanvas.height);
+    }
+    for (let i = 0; i < PARTICLE_POOL_SIZE; i++) {
+      particlePool[i].active = false;
+    }
+    if (apparitionsContainer) {
+      while (apparitionsContainer.firstChild) {
+        apparitionsContainer.removeChild(apparitionsContainer.firstChild);
+      }
+    }
+  }
+
+  // Event handlers
+  function onChaosResize() {
+    resizeCanvas();
+  }
+
+  function onChaosMouseMove(e) {
+    if (prefersReducedMotionState) return;
+    targetFlareX = e.clientX;
+    targetFlareY = e.clientY;
+  }
+
+  function onChaosScroll() {
+    if (prefersReducedMotionState) return;
+    const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+    const currentY = (typeof window !== 'undefined') ? (window.scrollY || window.pageYOffset || 0) : 0;
+    const dt = Math.max(1, now - lastScrollTime);
+    const dy = Math.abs(currentY - lastScrollY);
+    scrollVelocity = Math.min(5.0, dy / dt);
+    lastScrollY = currentY;
+    lastScrollTime = now;
+  }
+
+  function onChaosClick(e) {
+    if (prefersReducedMotionState || chaosDestroyed) return;
+    const isStageCard = Boolean(e.target && typeof e.target.closest === 'function' && e.target.closest('.stage-card'));
+    const count = isStageCard ? 48 : 24;
+    const clickX = (typeof e.clientX === 'number' && Number.isFinite(e.clientX)) ? e.clientX : (window.innerWidth / 2);
+    const clickY = (typeof e.clientY === 'number' && Number.isFinite(e.clientY)) ? e.clientY : (window.innerHeight / 2);
+    triggerExplosion(clickX, clickY, count);
+  }
+
+  function onChaosVisibilityChange() {
+    if (typeof document === 'undefined') return;
+    if (document.hidden) {
+      if (chaosRafId) {
+        safeCancelRaf(chaosRafId);
+        chaosRafId = null;
+      }
+      if (apparitionTimer) {
+        clearTimeout(apparitionTimer);
+        apparitionTimer = null;
+      }
+      if (burstTimer) {
+        clearTimeout(burstTimer);
+        burstTimer = null;
+      }
+    } else {
+      if (!chaosRafId && !chaosDestroyed) {
+        chaosRafId = safeRaf(chaosRenderLoop);
+      }
+      scheduleNextApparition();
+      scheduleNextBurst();
+    }
+  }
+
+  function initChaosEngine() {
+    if (isChaosInitialized || typeof document === 'undefined') return;
+    isChaosInitialized = true;
+    chaosDestroyed = false;
+
+    chaosCanvas = document.getElementById('chaos-canvas');
+    apparitionsContainer = document.getElementById('chaos-apparitions');
+    flaresContainer = document.getElementById('chaos-flares');
+
+    // Create lens flare DOM elements if flaresContainer exists
+    if (flaresContainer) {
+      flareStreakEl = flaresContainer.querySelector('.chaos-flare-streak');
+      if (!flareStreakEl) {
+        flareStreakEl = document.createElement('div');
+        flareStreakEl.className = 'chaos-flare-streak';
+        flaresContainer.appendChild(flareStreakEl);
+      }
+
+      flareGlintEl = flaresContainer.querySelector('.chaos-flare-glint');
+      if (!flareGlintEl) {
+        flareGlintEl = document.createElement('div');
+        flareGlintEl.className = 'chaos-flare-glint';
+        flaresContainer.appendChild(flareGlintEl);
+      }
+
+      flareAuraEl = flaresContainer.querySelector('.chaos-flare-aura');
+      if (!flareAuraEl) {
+        flareAuraEl = document.createElement('div');
+        flareAuraEl.className = 'chaos-flare-aura';
+        flaresContainer.appendChild(flareAuraEl);
+      }
+    }
+
+    // Check media query for prefers-reduced-motion
+    if (typeof window !== 'undefined' && window.matchMedia) {
+      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+      prefersReducedMotionState = mediaQuery.matches;
+      if (typeof mediaQuery.addEventListener === 'function') {
+        mediaQuery.addEventListener('change', (e) => {
+          setReducedMotion(e.matches);
+        });
+      }
+    }
+
+    // Initialize canvas sizing
+    resizeCanvas();
+
+    // Attach listeners
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', onChaosResize);
+      window.addEventListener('mousemove', onChaosMouseMove, { passive: true });
+      window.addEventListener('scroll', onChaosScroll, { passive: true });
+    }
+    if (typeof document !== 'undefined') {
+      document.addEventListener('click', onChaosClick, { passive: true });
+      document.addEventListener('visibilitychange', onChaosVisibilityChange);
+    }
+
+    // Initial flare position centered
+    if (typeof window !== 'undefined') {
+      targetFlareX = window.innerWidth / 2;
+      targetFlareY = window.innerHeight / 2;
+      currentFlareX = targetFlareX;
+      currentFlareY = targetFlareY;
+    }
+
+    // Start 60fps render loop
+    if (!chaosRafId) {
+      chaosRafId = safeRaf(chaosRenderLoop);
+    }
+
+    // Schedule ambient timers
+    scheduleNextApparition();
+    scheduleNextBurst();
+  }
+
+  // Public ClownChaos contract
+  const ClownChaosAPI = {
+    spawnApparition,
+    triggerExplosion,
+    setReducedMotion,
+    getActiveApparitionCount,
+    destroy: destroyChaos
+  };
+
+  if (typeof window !== 'undefined') {
+    window.ClownChaos = ClownChaosAPI;
+  }
+
   // --- Initialization Routine ---
   let isInitialized = false;
   function init() {
     if (isInitialized) return;
     isInitialized = true;
 
-    // 1. Initial Load: Pick a random theme palette from the 7 Omarchy presets
-    const initialTheme = getRandomTheme(false);
+    // 1. Initial Load: Stored theme from localStorage or random theme
+    const stored = getStoredTheme();
+    const initialTheme = (stored && THEMES.includes(stored)) ? stored : getRandomTheme(false);
     applyTheme(initialTheme);
 
-    // 2. Start Ambient Auto-Changer (periodic random theme morphing)
-    startAutoThemeTimer();
+    // 2. Start Ambient Auto-Changer (periodic random theme morphing every 15-25s)
+    startAutoRandom();
 
     // 3. Setup Theme Button in Header: click picks a random theme
     const themeBtn = document.getElementById('theme-toggle-btn');
@@ -828,7 +1555,7 @@
       });
     }
 
-    // 3. Setup Command Palette Buttons
+    // 4. Setup Command Palette Buttons
     const paletteBtn = document.getElementById('palette-toggle-btn');
     const heroPaletteBtn = document.getElementById('hero-palette-btn');
 
@@ -844,11 +1571,13 @@
       });
     }
 
-    // 4. Initialize Command Palette & Audio Pill
+    // 5. Initialize Command Palette, Audio Pill, Stage Dock & Chaos Engine
     initCommandPalette();
     initAudioPill();
+    initStageSelectDock();
+    initChaosEngine();
 
-    // 5. Attach Global Keydown Listener
+    // 6. Attach Global Keydown Listener
     window.addEventListener('keydown', handleKeydown);
 
     // 6. Synchronize theme across browser tabs
