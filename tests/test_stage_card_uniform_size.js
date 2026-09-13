@@ -209,10 +209,15 @@ async function runAudit() {
   const scrollContainers = (html.match(/class="card-title-scroll"/g) || []).length;
   record('index.html contains 5 .card-title-scroll containers', scrollContainers === 5, `Found: ${scrollContainers}`);
 
+  const glyphsCount = (html.match(/class="portrait-glyph"/g) || []).length;
+  record('index.html contains 0 .portrait-glyph flavor icons', glyphsCount === 0, `Found: ${glyphsCount}`);
+  const subTextCount = (html.match(/class="card-sub"/g) || []).length;
+  record('index.html contains 0 .card-sub flavor text elements', subTextCount === 0, `Found: ${subTextCount}`);
+
   // 2. Static CSS Audit
   const css = fs.readFileSync(path.join(PROJECT_ROOT, 'style.css'), 'utf-8');
-  const hasFixedCardWidth = css.includes('width: 140px') && css.includes('flex: 0 0 140px');
-  record('style.css defines uniform fixed width (140px) on .stage-card', hasFixedCardWidth);
+  const hasFixedCardWidth = css.includes('width: 172px') && css.includes('flex: 0 0 172px');
+  record('style.css defines uniform fixed width (172px) on .stage-card', hasFixedCardWidth);
   const hasMarqueeKeyframes = css.includes('@keyframes stageTitleMarquee');
   record('style.css defines @keyframes stageTitleMarquee', hasMarqueeKeyframes);
 
@@ -291,8 +296,8 @@ async function runAudit() {
   );
 
   record(
-    'Total dock width is comfortable (< 800px)',
-    desktopData.dockWidth < 800,
+    'Total dock width is comfortable (< 960px)',
+    desktopData.dockWidth < 960,
     `Dock width: ${desktopData.dockWidth.toFixed(1)}px`
   );
 
