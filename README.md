@@ -24,9 +24,7 @@ Welcome to **clownhouse.io**, an authentic 1982 retro-computing terminal hub and
 3. **[Bumtrips.com](https://bumtrips.com)**: Beatniks, Bumtrips & Bullshit — Underground Audio & Counter-Culture.
 
 ## 🎪 Clownhouse Cluster Services
-- **Purple**: `https://purple.clownhouse.io` (Jukebox Media Vault)
 - **Reactle**: `https://reactle.clownhouse.io` (1980s Cryptic Word Guessing Terminal)
-- **Oracle**: `https://oracle.clownhouse.io` (Subsystem Gateway & Telemetry)
 - **Giggle**: `https://giggle.clownhouse.io` (Cluster Node)
 - **Email**: `jeryd@clownhouse.io` (Cloudflare High-Speed Routed Inbound Mail)
 

@@ -28,11 +28,9 @@
     '10': { name: 'OPEN-OODA.ORG', url: 'https://openooda.org', blocks: 1024 },
     '20': { name: 'NECROMETER.DEV', url: 'https://necrometer.dev', blocks: 512 },
     '30': { name: 'BUMTRIPS.COM', url: 'https://bumtrips.com', blocks: 808 },
-    '40': { name: 'PURPLE.CLOWNHOUSE.IO', url: 'https://purple.clownhouse.io', blocks: 302 },
-    '50': { name: 'REACTLE.CLOWNHOUSE.IO', url: 'https://reactle.clownhouse.io', blocks: 200 },
-    '60': { name: 'ORACLE.CLOWNHOUSE.IO', url: 'https://oracle.clownhouse.io', blocks: 505 },
-    '70': { name: 'GIGGLE.CLOWNHOUSE.IO', url: 'https://giggle.clownhouse.io', blocks: 808 },
-    '80': { name: 'JERYD@CLOWNHOUSE.IO', url: 'mailto:jeryd@clownhouse.io', blocks: 1 }
+    '40': { name: 'REACTLE.CLOWNHOUSE.IO', url: 'https://reactle.clownhouse.io', blocks: 200 },
+    '50': { name: 'GIGGLE.CLOWNHOUSE.IO', url: 'https://giggle.clownhouse.io', blocks: 808 },
+    '60': { name: 'JERYD@CLOWNHOUSE.IO', url: 'mailto:jeryd@clownhouse.io', blocks: 1 }
   };
 
   // --- 1. Sound Synthesis (Web Audio 8-Bit Synthesizer) ---
@@ -243,25 +241,17 @@
         launchDestination('30');
         break;
 
-      case 'PURPLE':
+      case 'REACTLE':
         launchDestination('40');
         break;
 
-      case 'REACTLE':
-        launchDestination('50');
-        break;
-
-      case 'ORACLE':
-        launchDestination('60');
-        break;
-
       case 'GIGGLE':
-        launchDestination('70');
+        launchDestination('50');
         break;
 
       case 'MAIL':
       case 'EMAIL':
-        launchDestination('80');
+        launchDestination('60');
         break;
 
       case 'DIR':
