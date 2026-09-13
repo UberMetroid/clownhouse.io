@@ -104,7 +104,7 @@ The application is a zero-dependency static web application delivered via GitHub
 | M2 | Procedural Web Audio Engine | Web Audio FM synthesis, noise generation, per-theme audio profiles, mute toggle | M1 interface | DONE |
 | M3 | 5 Bespoke Themes & Links | 5 theme layouts, bespoke widgets (cartridges, visor, gauges, grid, outpost), 6 universal links | M1, M2 | DONE |
 | M4 | Final Milestone (E2E & Hardening) | Pass 100% of E2E tests (Tiers 1-4) and Adversarial Coverage Hardening (Tier 5) | M3, E2E | DONE |
-| M5 | Deployment & Edge Verification | Git commit/push, GitHub Pages verification, Cloudflare edge cache & SSL check | M4 | IN_PROGRESS |
+| M5 | Deployment & Edge Verification | Git commit/push, GitHub Pages verification, Cloudflare edge cache & SSL check | M4 | DONE |
 
 ---
 
