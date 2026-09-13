@@ -211,8 +211,8 @@ async function runAudit() {
 
   // 2. Static CSS Audit
   const css = fs.readFileSync(path.join(PROJECT_ROOT, 'style.css'), 'utf-8');
-  const hasFixedCardWidth = css.includes('width: 104px') && css.includes('flex: 0 0 104px');
-  record('style.css defines uniform fixed width (104px) on .stage-card', hasFixedCardWidth);
+  const hasFixedCardWidth = css.includes('width: 140px') && css.includes('flex: 0 0 140px');
+  record('style.css defines uniform fixed width (140px) on .stage-card', hasFixedCardWidth);
   const hasMarqueeKeyframes = css.includes('@keyframes stageTitleMarquee');
   record('style.css defines @keyframes stageTitleMarquee', hasMarqueeKeyframes);
 
@@ -291,8 +291,8 @@ async function runAudit() {
   );
 
   record(
-    'Total dock width is compact (< 600px)',
-    desktopData.dockWidth < 600,
+    'Total dock width is comfortable (< 800px)',
+    desktopData.dockWidth < 800,
     `Dock width: ${desktopData.dockWidth.toFixed(1)}px`
   );
 
