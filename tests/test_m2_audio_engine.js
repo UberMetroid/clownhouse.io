@@ -278,23 +278,23 @@ async function runTestSuite(runIndex) {
   assert(typeof audio.prevTrack === 'function', 'audio.prevTrack is a function');
   assert(typeof audio.getState === 'function', 'audio.getState is a function');
   assert(typeof audio.getFrequencyData === 'function', 'audio.getFrequencyData is a function');
-  assert(Array.isArray(audio.TRACKS) && audio.TRACKS.length === 4, 'audio.TRACKS contains exactly 4 tracks');
+  assert(Array.isArray(audio.TRACKS) && audio.TRACKS.length >= 1, 'audio.TRACKS contains valid tracks');
 
   // 2. Track Catalog Metadata Accuracy
   console.log('\n--- 2. Track Catalog Metadata ---');
-  const expectedTracks = [
-    { id: 'lab-01', title: 'LAB-01: Carrier Drift', freq: '55Hz Sub · 432Hz Carrier' },
-    { id: 'lab-02', title: 'LAB-02: Cybernetic Drone', freq: '110Hz Drone · Modulated Filter' },
-    { id: 'lab-03', title: 'LAB-03: Necrometer 528Hz', freq: '528Hz Solfeggio Matrix · Pulse Sweep' },
-    { id: 'lab-04', title: 'LAB-04: Velvet Frequency', freq: '63Hz Warm Bass · Pink Noise Wash' }
-  ];
+  const expectedTrack = {
+    id: 'fix-everything',
+    title: 'We Can Fix Everything',
+    artist: 'Kevin Koontz',
+    freq: 'Kevin Koontz'
+  };
 
-  expectedTracks.forEach((exp, idx) => {
-    const act = audio.TRACKS[idx];
-    assert(act && act.id === exp.id, `Track ${idx} ID is "${exp.id}"`);
-    assert(act && act.title === exp.title, `Track ${idx} title is "${exp.title}"`);
-    assert(act && act.freq === exp.freq, `Track ${idx} frequency profile is "${exp.freq}"`);
-  });
+  const act = audio.TRACKS[0];
+  assert(act && act.id === expectedTrack.id, `Track 0 ID is "${expectedTrack.id}"`);
+  assert(act && act.title === expectedTrack.title, `Track 0 title is "${expectedTrack.title}"`);
+  assert(act && act.artist === expectedTrack.artist, `Track 0 artist is "${expectedTrack.artist}"`);
+  assert(act && act.src === 'music/kevin_koontz-we_can_fix_everything.mp3', 'Track 0 src points to Kevin Koontz MP3');
+  assert(act && act.art === 'music/kevin_koontz-we_can_fix_everything.webp', 'Track 0 art points to Kevin Koontz WebP');
 
   // 3. Volume Clamping & Numerical Boundary Fuzzing
   console.log('\n--- 3. Volume Boundary Clamping ---');
@@ -321,17 +321,10 @@ async function runTestSuite(runIndex) {
   assert(audio.getState().trackIndex === 0, 'setTrack(0) sets trackIndex to 0');
 
   audio.nextTrack();
-  assert(audio.getState().trackIndex === 1, 'nextTrack() advances to 1');
-
-  audio.nextTrack();
-  audio.nextTrack();
-  assert(audio.getState().trackIndex === 3, 'nextTrack() advances to 3');
-
-  audio.nextTrack();
-  assert(audio.getState().trackIndex === 0, 'nextTrack() wraps modulo from 3 back to 0');
+  assert(audio.getState().trackIndex === 0, 'nextTrack() wraps modulo cleanly to 0');
 
   audio.prevTrack();
-  assert(audio.getState().trackIndex === 3, 'prevTrack() wraps modulo from 0 back to 3');
+  assert(audio.getState().trackIndex === 0, 'prevTrack() wraps modulo cleanly to 0');
 
   audio.setTrack(99);
   assert(audio.getState().trackIndex === 0, 'setTrack(99) out-of-bounds falls back to 0');

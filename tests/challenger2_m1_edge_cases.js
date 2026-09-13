@@ -540,7 +540,7 @@ async function runChallenger2Suite() {
       searchNonStringResult.safe === searchNonStringResult.total
     );
 
-    // 2.5: Empty string & whitespace returns full catalog (26 items)
+    // 2.5: Empty string & whitespace returns full catalog (>= 26 items)
     const emptyQueryResults = await cdp.eval(`
       (() => {
         const resEmpty = window.ClownPalette.search('');
@@ -548,12 +548,12 @@ async function runChallenger2Suite() {
         return {
           emptyCount: resEmpty.length,
           spacesCount: resSpaces.length,
-          success: resEmpty.length === 26 && resSpaces.length === 26
+          success: resEmpty.length >= 26 && resEmpty.length === resSpaces.length
         };
       })()
     `);
     record(
-      '2.5 ClownPalette.search("") and search("   ") return complete 26-item catalog',
+      '2.5 ClownPalette.search("") and search("   ") return complete catalog (>= 26 items)',
       emptyQueryResults.success === true,
       `emptyCount: ${emptyQueryResults.emptyCount}, spacesCount: ${emptyQueryResults.spacesCount}`
     );

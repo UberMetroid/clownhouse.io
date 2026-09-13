@@ -44,6 +44,7 @@
   --badge-radius: 3px;
   --transition-fast: 150ms cubic-bezier(0, 0, 0.2, 1);
   --transition-normal: 250ms cubic-bezier(0, 0, 0.2, 1);
+  --transition-theme: 800ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* --- The 7 Authoritative Theme Palettes --- */
@@ -204,7 +205,7 @@ body {
   line-height: 1.5;
   position: relative;
   overflow-x: hidden;
-  transition: background-color var(--transition-normal), color var(--transition-normal);
+  transition: background-color var(--transition-theme), color var(--transition-theme);
 }
 
 a {
@@ -248,7 +249,7 @@ code, pre, kbd {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
-  transition: background-color var(--transition-normal), border-color var(--transition-normal);
+  transition: background-color var(--transition-theme), border-color var(--transition-theme);
 }
 
 .header-container {
@@ -540,7 +541,7 @@ code, pre, kbd {
   padding: 2rem 1.75rem;
   display: flex;
   flex-direction: column;
-  transition: border-color var(--transition-fast), background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+  transition: border-color var(--transition-theme), background-color var(--transition-theme), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .editorial-card:hover {
@@ -833,7 +834,7 @@ code, pre, kbd {
   border: 1px solid var(--border);
   border-radius: var(--pill-radius);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  transition: border-color var(--transition-fast), transform var(--transition-fast);
+  transition: background-color var(--transition-theme), border-color var(--transition-theme), transform var(--transition-fast);
 }
 
 .floating-audio-pill:hover {
@@ -842,6 +843,7 @@ code, pre, kbd {
 }
 
 .audio-play-btn {
+  position: relative;
   width: 44px;
   height: 44px;
   border-radius: var(--pill-radius) 0 0 var(--pill-radius);
@@ -849,13 +851,37 @@ code, pre, kbd {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent);
-  background-color: color-mix(in srgb, var(--accent) 8%, transparent);
-  transition: background-color var(--transition-fast), color var(--transition-fast);
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  background-color: var(--bg-secondary);
 }
 
-.audio-play-btn:hover {
-  background-color: color-mix(in srgb, var(--accent) 18%, transparent);
+.audio-art-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--transition-fast);
+}
+
+.audio-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  color: #ffffff;
+  transition: background-color var(--transition-fast);
+}
+
+.audio-play-btn:hover .audio-art-img {
+  transform: scale(1.08);
+}
+
+.audio-play-btn:hover .audio-play-overlay {
+  background: rgba(0, 0, 0, 0.65);
 }
 
 .audio-track-info {

@@ -89,6 +89,47 @@
     }
   }
 
+  // --- Random Theme Selection & Ambient Auto-Changer ---
+  let autoThemeTimer = null;
+  const AUTO_THEME_INTERVAL_MS = 25000;
+
+  function getRandomTheme(excludeCurrent = true) {
+    const pool = (excludeCurrent && THEMES.length > 1)
+      ? THEMES.filter(t => t !== currentTheme)
+      : THEMES;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  function randomTheme() {
+    const nextTheme = getRandomTheme(true);
+    setTheme(nextTheme);
+    resetAutoThemeTimer();
+    return nextTheme;
+  }
+
+  function startAutoThemeTimer(intervalMs = AUTO_THEME_INTERVAL_MS) {
+    stopAutoThemeTimer();
+    autoThemeTimer = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) {
+        return;
+      }
+      randomTheme();
+    }, intervalMs);
+  }
+
+  function stopAutoThemeTimer() {
+    if (autoThemeTimer) {
+      clearInterval(autoThemeTimer);
+      autoThemeTimer = null;
+    }
+  }
+
+  function resetAutoThemeTimer() {
+    if (autoThemeTimer) {
+      startAutoThemeTimer(AUTO_THEME_INTERVAL_MS);
+    }
+  }
+
   function setTheme(themeId) {
     if (!THEMES.includes(themeId)) {
       console.warn('[ClownTheme] Unknown theme', themeId, `falling back to ${DEFAULT_THEME}`);
@@ -97,6 +138,7 @@
 
     // Synchronously execute applyTheme so DOM and state update immediately
     applyTheme(themeId);
+    resetAutoThemeTimer();
 
     const prefersReducedMotion =
       typeof window.matchMedia === 'function'
@@ -127,6 +169,7 @@
     const nextIndex = (currentIndex + 1) % THEMES.length;
     const nextTheme = THEMES[nextIndex];
     setTheme(nextTheme);
+    resetAutoThemeTimer();
     return nextTheme;
   }
 
@@ -139,7 +182,11 @@
     THEMES: Object.freeze([...THEMES]),
     setTheme,
     cycleTheme,
-    getCurrentTheme
+    randomTheme,
+    getCurrentTheme,
+    startAutoRandom: startAutoThemeTimer,
+    stopAutoRandom: stopAutoThemeTimer,
+    resetAutoRandom: resetAutoThemeTimer
   });
 
   // Legacy/Convenience namespace
@@ -147,6 +194,7 @@
     theme: window.ClownTheme,
     setTheme,
     cycleTheme,
+    randomTheme,
     getActiveTheme: getCurrentTheme
   };
 
@@ -195,6 +243,15 @@
         window.ClownPalette.toggle();
       }
       return;
+    }
+
+    // Check for Random Theme Shortcut ('R' or 'r')
+    if (e.key.toLowerCase() === 'r' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      if (!isTypingContext(target)) {
+        e.preventDefault();
+        randomTheme();
+        return;
+      }
     }
 
     // Check for Theme Cycle Shortcut ('T' or 't')
@@ -296,6 +353,14 @@
       keywords: 'github repo source code git studio2201'
     },
     {
+      id: 'act-theme-random',
+      title: 'Action: Randomize Theme Palette (R)',
+      category: 'Theme Engine',
+      desc: 'Pick a random theme palette from the 7 Omarchy presets',
+      action: () => randomTheme(),
+      keywords: 'theme random randomize palette color shuffle switch'
+    },
+    {
       id: 'act-theme',
       title: 'Action: Cycle Next Theme (T)',
       category: 'Theme Engine',
@@ -386,6 +451,19 @@
         }
       },
       keywords: 'next track skip frequency cycle ambient'
+    },
+    {
+      id: 'track-fix-everything',
+      title: 'Track: We Can Fix Everything — Kevin Koontz',
+      category: 'Audio Track',
+      desc: 'Authentic Omarchy chill lo-fi soundtrack by Kevin Koontz',
+      action: () => {
+        if (window.ClownAudio && typeof window.ClownAudio.play === 'function') {
+          window.ClownAudio.setTrack(0);
+          window.ClownAudio.play();
+        }
+      },
+      keywords: 'kevin koontz we can fix everything music audio track chill ambient lo-fi omarchy soundtrack'
     },
     {
       id: 'track-lab01',
@@ -709,15 +787,18 @@
     if (isInitialized) return;
     isInitialized = true;
 
-    // 1. Restore & Apply Theme
-    const initialTheme = getStoredTheme();
+    // 1. Initial Load: Pick a random theme palette from the 7 Omarchy presets
+    const initialTheme = getRandomTheme(false);
     applyTheme(initialTheme);
 
-    // 2. Setup Theme Button in Header
+    // 2. Start Ambient Auto-Changer (periodic random theme morphing)
+    startAutoThemeTimer();
+
+    // 3. Setup Theme Button in Header: click picks a random theme
     const themeBtn = document.getElementById('theme-toggle-btn');
     if (themeBtn) {
       themeBtn.addEventListener('click', () => {
-        cycleTheme();
+        randomTheme();
       });
     }
 

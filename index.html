@@ -362,7 +362,7 @@
 
       <div class="footer-bottom">
         <div class="footer-shortcuts">
-          <span class="shortcut-item"><kbd>T</kbd> Theme</span>
+          <span class="shortcut-item"><kbd>T</kbd> / <kbd>R</kbd> Theme</span>
           <span class="shortcut-divider">·</span>
           <span class="shortcut-item"><kbd>⌘K</kbd> Search</span>
           <span class="shortcut-divider">·</span>
@@ -377,19 +377,22 @@
 
   <!-- Shell Container: Floating Audio Player Pill -->
   <aside id="floating-audio-pill" class="floating-audio-pill" aria-label="Floating Ambient Audio Player">
-    <button id="audio-play-btn" class="audio-play-btn" aria-label="Play ambient frequencies" title="Play / Pause Ambient Audio (Space)">
-      <svg id="audio-play-icon" class="audio-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-        <polygon points="5,3 19,12 5,21"/>
-      </svg>
-      <svg id="audio-pause-icon" class="audio-icon hidden" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-        <rect x="6" y="4" width="4" height="16"/>
-        <rect x="14" y="4" width="4" height="16"/>
-      </svg>
+    <button id="audio-play-btn" class="audio-play-btn" aria-label="Play We Can Fix Everything by Kevin Koontz" title="Play / Pause Ambient Audio (Space)">
+      <img src="music/kevin_koontz-we_can_fix_everything.webp" alt="We Can Fix Everything" class="audio-art-img" width="38" height="38">
+      <span class="audio-play-overlay">
+        <svg id="audio-play-icon" class="audio-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+          <polygon points="5,3 19,12 5,21"/>
+        </svg>
+        <svg id="audio-pause-icon" class="audio-icon hidden" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+          <rect x="6" y="4" width="4" height="16"/>
+          <rect x="14" y="4" width="4" height="16"/>
+        </svg>
+      </span>
     </button>
 
     <div id="audio-track-info" class="audio-track-info">
-      <span id="audio-track-title" class="audio-track-title">LAB-01: Carrier Drift</span>
-      <span id="audio-track-freq" class="audio-track-freq">55Hz Sub · 432Hz Carrier</span>
+      <span id="audio-track-title" class="audio-track-title">We Can Fix Everything</span>
+      <span id="audio-track-freq" class="audio-track-freq">Kevin Koontz</span>
     </div>
 
     <div id="audio-eq-bars" class="audio-eq-bars" aria-hidden="true" title="Real-time Analyser Equalizer">
