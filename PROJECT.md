@@ -44,7 +44,7 @@
 | M2 | Procedural Web Audio & Floating Player | Implement audio.js (4 generative modes), floating audio pill, and AnalyserNode EQ bars | M1 | COMPLETE |
 | M3 | Command Palette & Fuzzy Navigation | Implement Cmd+K fuzzy modal, keyboard navigation, and catalog in app.js and style.css | M1 | COMPLETE |
 | M4 | E2E Test Suite & Adversarial Hardening | Comprehensive test suite (Tiers 1-5), test runner, and 100% pass verification with double-run parity | M1, M2, M3 | COMPLETE |
-| M5 | Git Deployment & Edge Verification | Push to main, verify Pages build, verify edge HTTP/2 200, and Sentinel completion report | M4 | IN_PROGRESS |
+| M5 | Git Deployment & Edge Verification | Push to main, verify Pages build, verify edge HTTP/2 200, and Sentinel completion report | M4 | COMPLETE |
 
 ## Interface Contracts
 

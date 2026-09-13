@@ -77,19 +77,49 @@
     // Persist
     setStoredTheme(themeId);
 
-    // Dispatch Events
-    const eventPayload = { detail: { theme: themeId } };
-    window.dispatchEvent(new CustomEvent('themechange', eventPayload));
-    document.dispatchEvent(new CustomEvent('themechange', eventPayload));
+    // Dispatch Events with error boundary
+    try {
+      const eventPayload = { detail: { theme: themeId } };
+      if (typeof CustomEvent === 'function') {
+        window.dispatchEvent(new CustomEvent('themechange', eventPayload));
+        document.dispatchEvent(new CustomEvent('themechange', eventPayload));
+      }
+    } catch (evtErr) {
+      console.warn('[ClownTheme] Event dispatch error:', evtErr);
+    }
   }
 
   function setTheme(themeId) {
     if (!THEMES.includes(themeId)) {
-      console.warn(`[ClownTheme] Unknown theme "${themeId}", falling back to ${DEFAULT_THEME}`);
+      console.warn('[ClownTheme] Unknown theme', themeId, `falling back to ${DEFAULT_THEME}`);
       themeId = DEFAULT_THEME;
     }
 
+    // Synchronously execute applyTheme so DOM and state update immediately
     applyTheme(themeId);
+
+    const prefersReducedMotion =
+      typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        : false;
+
+    if (!prefersReducedMotion && typeof document.startViewTransition === 'function') {
+      try {
+        const transition = document.startViewTransition(() => {
+          applyTheme(currentTheme);
+        });
+        if (transition) {
+          if (transition.ready && typeof transition.ready.catch === 'function') {
+            transition.ready.catch(() => {});
+          }
+          if (transition.finished && typeof transition.finished.catch === 'function') {
+            transition.finished.catch(() => {});
+          }
+        }
+      } catch (err) {
+        // Fallback already satisfied synchronously
+      }
+    }
   }
 
   function cycleTheme() {
