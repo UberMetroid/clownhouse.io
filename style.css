@@ -853,7 +853,7 @@ code, pre, kbd {
   transition: background-color var(--transition-theme), border-color var(--transition-theme), box-shadow var(--transition-theme);
 }
 
-/* Stage Select Card */
+/* Stage Select Card - Uniform Size across all cards */
 .stage-card {
   position: relative;
   display: flex;
@@ -861,12 +861,16 @@ code, pre, kbd {
   align-items: center;
   justify-content: space-between;
   gap: 0.35rem;
-  padding: 0.45rem 0.55rem;
+  padding: 0.45rem 0.45rem;
   background-color: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 6px;
-  min-width: 98px;
-  min-height: 84px;
+  width: 104px;
+  min-width: 104px;
+  max-width: 104px;
+  flex: 0 0 104px;
+  height: 86px;
+  box-sizing: border-box;
   text-align: center;
   cursor: pointer;
   outline: none;
@@ -1078,6 +1082,29 @@ code, pre, kbd {
   flex-direction: column;
   align-items: center;
   gap: 0.1rem;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Scrolling Web Address Container & Marquee */
+.card-title-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  scrollbar-width: none;
+}
+
+.card-title-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.stage-card.has-overflow-title .card-title-scroll {
+  justify-content: flex-start;
 }
 
 .card-title {
@@ -1087,7 +1114,30 @@ code, pre, kbd {
   color: var(--text-primary);
   white-space: nowrap;
   letter-spacing: -0.01em;
+  display: inline-block;
   transition: color var(--transition-fast);
+}
+
+.stage-card .card-title.marquee-title {
+  animation: stageTitleMarquee 5.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+.stage-card:hover .card-title.marquee-title,
+.stage-card:focus-visible .card-title.marquee-title {
+  animation-duration: 3.2s;
+}
+
+@keyframes stageTitleMarquee {
+  0%, 18% {
+    transform: translateX(0);
+  }
+  48%, 68% {
+    transform: translateX(var(--scroll-distance, -42px));
+  }
+  92%, 100% {
+    transform: translateX(0);
+  }
 }
 
 .card-sub {
@@ -1655,13 +1705,17 @@ code, pre, kbd {
   }
 
   .stage-card {
-    min-width: 82px;
-    padding: 0.4rem 0.45rem;
+    width: 86px;
+    min-width: 86px;
+    max-width: 86px;
+    flex: 0 0 86px;
+    height: 78px;
+    padding: 0.4rem 0.35rem;
   }
 
   .card-portrait {
     width: 50px;
-    height: 36px;
+    height: 34px;
   }
 }
 
@@ -1719,9 +1773,13 @@ code, pre, kbd {
   }
 
   .stage-card {
-    min-width: 58px;
-    min-height: 52px;
-    padding: 0.35rem 0.25rem;
+    width: 66px;
+    min-width: 66px;
+    max-width: 66px;
+    flex: 0 0 66px;
+    height: 60px;
+    min-height: 60px;
+    padding: 0.35rem 0.2rem;
   }
 
   .card-kicker {

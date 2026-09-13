@@ -147,6 +147,10 @@ execute_all_suites() {
   echo -e "${BOLD}${CYAN}--- Suite 8: Milestone M3 Dual-Trigger Theme Randomizer (Node) ---${RESET}"
   node tests/test_m3_theme_randomizer.js || fails=$((fails + 1))
 
+  echo ""
+  echo -e "${BOLD}${CYAN}--- Suite 9: Stage Select Dock Uniform Size & Marquee Audit (Node) ---${RESET}"
+  node tests/test_stage_card_uniform_size.js || fails=$((fails + 1))
+
   return ${fails}
 }
 
