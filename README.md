@@ -19,7 +19,7 @@ Welcome to **clownhouse.io**, an authentic 1982 retro-computing terminal hub and
   - Type `SYS 64738` to initiate a warm reboot.
 
 ## 🌐 Primary Mainframe Destinations
-1. **[OpenOODA.org](https://openooda.org)**: Autonomous Agentic Architecture & OODA Loop Systems.
+1. **[openOODA.org](https://openooda.org)**: Autonomous Agentic Architecture & OODA Loop Systems.
 2. **[Necrometer.dev](https://necrometer.dev)**: Developer Telemetry, Metrics & System Observability.
 3. **[Bumtrips.com](https://bumtrips.com)**: Beatniks, Bumtrips & Bullshit — Underground Audio & Counter-Culture.
 

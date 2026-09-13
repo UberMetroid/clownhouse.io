@@ -25,7 +25,7 @@
 
   // Primary destinations map
   const DESTINATIONS = {
-    '10': { name: 'OPEN-OODA.ORG', url: 'https://openooda.org', blocks: 1024 },
+    '10': { name: 'openOODA.org', url: 'https://openooda.org', blocks: 1024 },
     '20': { name: 'NECROMETER.DEV', url: 'https://necrometer.dev', blocks: 512 },
     '30': { name: 'BUMTRIPS.COM', url: 'https://bumtrips.com', blocks: 808 },
     '40': { name: 'REACTLE.CLOWNHOUSE.IO', url: 'https://reactle.clownhouse.io', blocks: 200 },
@@ -320,7 +320,7 @@
           playBootChime();
           setTimeout(() => {
             terminalHistory.innerHTML = '';
-            printLine('**** CLOWNHOUSE 64 BASIC V2.1 (1982) ****', 'highlight-line');
+            printLine('**** CLOWNHOUSE.IO BASIC V2.1 (1982) ****', 'highlight-line');
             printLine('64K RAM SYSTEM  38911 BASIC BYTES FREE');
             printLine('READY.');
           }, 600);
