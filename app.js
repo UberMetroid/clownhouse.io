@@ -135,12 +135,12 @@
   }
 
   // --- Public Interface Contract: window.ClownTheme ---
-  window.ClownTheme = {
-    THEMES: [...THEMES],
+  window.ClownTheme = Object.freeze({
+    THEMES: Object.freeze([...THEMES]),
     setTheme,
     cycleTheme,
     getCurrentTheme
-  };
+  });
 
   // Legacy/Convenience namespace
   window.clownhouse = {
@@ -164,6 +164,26 @@
 
   function handleKeydown(e) {
     const target = e.target;
+    const isPaletteOpen = paletteModal && !paletteModal.classList.contains('hidden');
+
+    // Global Escape Handler: If modal is open, Escape closes it regardless of focus target
+    if (e.key === 'Escape' && isPaletteOpen) {
+      e.preventDefault();
+      if (window.ClownPalette) {
+        window.ClownPalette.close();
+      }
+      return;
+    }
+
+    // When modal is open, suppress background single-key action shortcuts (like 'T')
+    if (isPaletteOpen && !(e.metaKey || e.ctrlKey)) {
+      return;
+    }
+
+    // Ignore keydown auto-repeat to prevent strobe/runaway cycling when keys are held
+    if (e.repeat) {
+      return;
+    }
 
     // Check for Command Palette Shortcut (Cmd+K, Ctrl+K, or /)
     const isCmdK = (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k';
@@ -547,14 +567,18 @@
 
     function executeItem(item) {
       if (!item) return;
-      if (item.action) {
-        item.action();
-      } else if (item.url) {
-        if (item.external) {
-          window.open(item.url, '_blank', 'noopener,noreferrer');
-        } else {
-          window.location.href = item.url;
+      try {
+        if (typeof item.action === 'function') {
+          item.action();
+        } else if (item.url) {
+          if (item.external) {
+            window.open(item.url, '_blank', 'noopener,noreferrer');
+          } else {
+            window.location.href = item.url;
+          }
         }
+      } catch (actionErr) {
+        console.warn('[ClownPalette] Action execution error:', actionErr);
       }
     }
 
@@ -601,7 +625,10 @@
       close: closePalette,
       toggle: togglePalette,
       search: (q) => {
-        const tokens = q.trim().toLowerCase().split(/\s+/);
+        if (typeof q !== 'string') return [];
+        const trimmed = q.trim().toLowerCase();
+        if (!trimmed) return [...PALETTE_CATALOG];
+        const tokens = trimmed.split(/\s+/);
         return PALETTE_CATALOG.filter((item) => {
           const text = `${item.title} ${item.category} ${item.desc} ${item.keywords || ''}`.toLowerCase();
           return tokens.every((token) => text.includes(token));
