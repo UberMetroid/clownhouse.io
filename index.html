@@ -1,597 +1,74 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="tokyo-night">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#1a1b26" id="theme-color-meta">
-  <title>CLOWNHOUSE // Jeryd</title>
-  <meta name="description" content="Personal software laboratory &amp; project hub by Jeryd. Featuring openOODA.org, necrometer.dev, and bumtrips.com.">
-
-  <!-- Favicon & Stylesheet -->
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="style.css">
-  <script defer src="audio/state.js"></script>
-  <script defer src="audio/catalog.js"></script>
-  <script defer src="audio/graph.js"></script>
-  <script defer src="audio/transport.js"></script>
-  <script defer src="audio/ui.js"></script>
-  <script defer src="audio/sfx.js"></script>
-  <script defer src="audio.js"></script>
-  <script defer src="app.js"></script>
-
-  <!-- Structured Data: JSON-LD Semantic Graph -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Person",
-        "@id": "https://clownhouse.io/#jeryd",
-        "name": "Jeryd",
-        "alternateName": "UberMetroid",
-        "url": "https://clownhouse.io",
-        "sameAs": [
-          "https://github.com/UberMetroid",
-          "https://github.com/openOODA"
-        ]
-      },
-      {
-        "@type": "WebSite",
-        "@id": "https://clownhouse.io/#website",
-        "url": "https://clownhouse.io",
-        "name": "CLOWNHOUSE.IO",
-        "description": "Personal software laboratory & projects by Jeryd.",
-        "author": {
-          "@id": "https://clownhouse.io/#jeryd"
-        },
-        "hasPart": [
-          {
-            "@type": "SoftwareApplication",
-            "name": "openOODA",
-            "url": "https://openooda.org",
-            "applicationCategory": "DeveloperApplication",
-            "description": "Autonomous Agentic Architecture & Sovereign Systems Language."
-          },
-          {
-            "@type": "SoftwareApplication",
-            "name": "necrometer.dev",
-            "url": "https://necrometer.dev",
-            "applicationCategory": "DeveloperApplication",
-            "description": "Developer Telemetry, Metrics & Observability Matrix."
-          },
-          {
-            "@type": "AudioObject",
-            "name": "Beatniks, Bumtrips & Bullshit",
-            "url": "https://bumtrips.com",
-            "description": "Underground Audio, Psychedelia & Counter-Culture Podcast."
-          }
-        ]
-      }
-    ]
-  }
-  </script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex">
+    <meta name="description" content="clownhouse.io — check back later.">
+    <title>CLOWNHOUSE.IO</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <style>
+        :root {
+            --bg: #0a0812;
+            --card: #14101f;
+            --edge: #322a4d;
+            --violet: #b78cff;
+            --phos: #7dffa8;
+            --dim: #8a80a8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; }
+        body {
+            background: var(--bg);
+            color: var(--dim);
+            font-family: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            text-align: center;
+            padding: 3rem 4rem;
+            background: var(--card);
+            border: 1px solid var(--edge);
+            border-radius: 10px;
+            box-shadow: 0 0 60px rgba(183, 140, 255, 0.07);
+        }
+        .word {
+            font-size: clamp(1.4rem, 5vw, 2.2rem);
+            letter-spacing: 0.35em;
+            color: var(--violet);
+            text-shadow: 0 0 12px rgba(183, 140, 255, 0.5);
+            margin-bottom: 1.4rem;
+        }
+        .line {
+            font-size: 0.95rem;
+            letter-spacing: 0.12em;
+            color: var(--phos);
+            text-shadow: 0 0 8px rgba(125, 255, 168, 0.35);
+        }
+        .line::after {
+            content: "_";
+            animation: blink 1.1s steps(1) infinite;
+        }
+        .sig {
+            margin-top: 2.2rem;
+            font-size: 0.72rem;
+            letter-spacing: 0.2em;
+        }
+        .sig a { color: var(--dim); text-decoration: none; }
+        .sig a:hover { color: var(--violet); }
+        @keyframes blink { 50% { opacity: 0; } }
+        @media (prefers-reduced-motion: reduce) {
+            .line::after { animation: none; }
+        }
+    </style>
 </head>
 <body>
-  <!-- Surreal Ambient Visual Chaos Engine Overlay -->
-  <div id="chaos-overlay" class="chaos-overlay" aria-hidden="true">
-    <canvas id="chaos-canvas" class="chaos-canvas"></canvas>
-    <div id="chaos-apparitions" class="chaos-apparitions"></div>
-    <div id="chaos-flares" class="chaos-flares"></div>
-  </div>
-
-  <!-- Top Navigation Header -->
-  <header id="site-header" class="site-header">
-    <div class="header-container">
-      <div class="header-left">
-        <a href="#hero" class="brand-link" aria-label="CLOWNHOUSE Home">
-          <svg class="brand-glyph" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" stroke-width="2"/>
-            <circle cx="12" cy="12" r="3" fill="var(--accent)"/>
-          </svg>
-          <span class="brand-text">CLOWNHOUSE<span class="brand-tld">.IO</span></span>
-          <span class="brand-pulse" title="System Operational"></span>
-        </a>
-      </div>
-
-      <nav class="header-nav" aria-label="Primary Navigation">
-        <a href="#projects" class="nav-anchor">Projects</a>
-        <a href="#services" class="nav-anchor">Cluster</a>
-      </nav>
-
-      <div class="header-right">
-        <button id="theme-toggle-btn" class="header-control-btn theme-btn" aria-label="Cycle theme palette" title="Cycle theme palette (Press 'T')">
-          <svg class="control-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"/>
-            <line x1="12" y1="1" x2="12" y2="3"/>
-            <line x1="12" y1="21" x2="12" y2="23"/>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-            <line x1="1" y1="12" x2="3" y2="12"/>
-            <line x1="21" y1="12" x2="23" y2="12"/>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-          </svg>
-          <span id="theme-btn-label" class="theme-label">tokyo-night</span>
-          <kbd class="shortcut-key">T</kbd>
-        </button>
-
-        <button id="palette-toggle-btn" class="header-control-btn palette-btn" aria-label="Open command palette" title="Command Palette (Cmd+K / Ctrl+K)">
-          <svg class="control-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
-          <span class="palette-label">Search</span>
-          <kbd class="shortcut-key">⌘K</kbd>
-        </button>
-
-        <a href="https://github.com/studio2201/clownhouse.io" class="header-control-btn github-btn" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository" title="GitHub Repository">
-          <svg class="control-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-          </svg>
-        </a>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main Content Area -->
-  <main class="main-content">
-    <!-- Hero Section -->
-    <section id="hero" class="hero-section">
-      <div class="hero-container">
-        <h1 class="hero-title">
-          CLOWNHOUSE<span class="hero-dot">.</span>
-        </h1>
-
-        <p class="hero-byline">
-          by <span class="hero-author">Jeryd</span>
-        </p>
-
-        <p class="hero-tagline">
-          Personal projects, software &amp; underground frequencies.
-        </p>
-
-        <div class="hero-actions">
-          <a href="https://openooda.org" class="action-pill primary-pill" target="_blank" rel="noopener noreferrer">
-            <span>openOODA.org</span>
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-          </a>
-          <a href="https://necrometer.dev" class="action-pill" target="_blank" rel="noopener noreferrer">
-            <span>necrometer.dev</span>
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-          </a>
-          <a href="https://bumtrips.com" class="action-pill" target="_blank" rel="noopener noreferrer">
-            <span>bumtrips.com</span>
-            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-          </a>
-          <button id="hero-palette-btn" class="action-pill palette-pill" aria-label="Open Command Palette">
-            <span>⌘K Search</span>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Featured Projects Section -->
-    <section id="projects" class="section projects-section">
-      <div class="section-container">
-        <div class="section-header">
-          <h2 class="section-title">Projects</h2>
-          <p class="section-subtitle">Things I'm actively building and experimenting with.</p>
-        </div>
-
-        <div class="projects-grid">
-          <!-- Card 1: openOODA.org -->
-          <article id="featured-openooda" class="editorial-card project-card">
-            <div class="card-header">
-              <span class="card-kicker">Autonomous Systems</span>
-              <h3 class="card-title">openOODA.org</h3>
-              <p class="card-tagline">Autonomous Agentic Architecture &amp; Sovereign Systems Language</p>
-            </div>
-
-            <p class="card-copy">
-              A capability-secure systems language and deterministic runtime built for autonomous AI agent loops. Zero ambient authority with explicit, unforgeable capability tokens and verifiable effect boundaries.
-            </p>
-
-            <div class="status-tags">
-              <span class="tag">Autonomous Agents</span>
-              <span class="tag">Capability Security</span>
-              <span class="tag">Deterministic Loop</span>
-            </div>
-
-            <div class="card-actions">
-              <a href="https://openooda.org" class="card-btn primary-btn" target="_blank" rel="noopener noreferrer" aria-label="Launch openOODA.org in new window">
-                <span>Launch openOODA.org</span>
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-              </a>
-              <a href="https://github.com/openOODA" class="card-btn secondary-btn" target="_blank" rel="noopener noreferrer" aria-label="View openOODA GitHub Repository">
-                <span>GitHub</span>
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-              </a>
-            </div>
-          </article>
-
-          <!-- Card 2: necrometer.dev -->
-          <article id="featured-necrometer" class="editorial-card project-card">
-            <div class="card-header">
-              <span class="card-kicker">Developer Observability</span>
-              <h3 class="card-title">necrometer.dev</h3>
-              <p class="card-tagline">Developer Telemetry, Metrics &amp; Observability Matrix</p>
-            </div>
-
-            <p class="card-copy">
-              How dead is your code? A precision developer telemetry instrument calculating codebase decay, PR stagnation, and commit lifecycles via a zero-server client-side architecture.
-            </p>
-
-            <div class="status-tags">
-              <span class="tag">Codebase Telemetry</span>
-              <span class="tag">Observability</span>
-              <span class="tag">Zero-Server</span>
-            </div>
-
-            <div class="card-actions">
-              <a href="https://necrometer.dev" class="card-btn primary-btn" target="_blank" rel="noopener noreferrer" aria-label="Launch necrometer.dev in new window">
-                <span>Exhume Metrics</span>
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-              </a>
-            </div>
-          </article>
-
-          <!-- Card 3: bumtrips.com -->
-          <article id="featured-bumtrips" class="editorial-card project-card">
-            <div class="card-header">
-              <span class="card-kicker">Underground Audio</span>
-              <h3 class="card-title">bumtrips.com</h3>
-              <p class="card-tagline">Beatniks, Bumtrips &amp; Bullshit — Underground Audio &amp; Counter-Culture</p>
-            </div>
-
-            <p class="card-copy">
-              An auditory journey through literature, consciousness, and counter-culture. Field recordings, unfiltered conversations, and experimental audio frequencies.
-            </p>
-
-            <div class="status-tags">
-              <span class="tag">Field Audio</span>
-              <span class="tag">Counter-Culture</span>
-              <span class="tag">Transmissions</span>
-            </div>
-
-            <div class="card-actions">
-              <a href="https://bumtrips.com" class="card-btn primary-btn" target="_blank" rel="noopener noreferrer" aria-label="Launch bumtrips.com in new window">
-                <span>Listen to Transmissions</span>
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-              </a>
-              <a href="https://anchor.fm/s/4431c4ac/podcast/rss" class="card-btn secondary-btn" target="_blank" rel="noopener noreferrer" aria-label="Podcast RSS Feed">
-                <span>RSS Feed</span>
-                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-              </a>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- Labs & Cluster Services Section -->
-    <section id="services" class="section services-section">
-      <span id="cluster" class="anchor-target" aria-hidden="true"></span>
-      <div class="section-container">
-        <div class="section-header">
-          <h2 class="section-title">Cluster &amp; Services</h2>
-          <p class="section-subtitle">Active subdomains and endpoints.</p>
-        </div>
-
-        <div class="services-grid">
-          <!-- Service Card 1: reactle.clownhouse.io -->
-          <article id="service-reactle" class="editorial-card service-card">
-            <div class="service-header">
-              <span class="card-kicker">Subdomain</span>
-              <h3 class="service-title">Reactle</h3>
-              <p class="service-subhead">Wordle-Style Word Game</p>
-            </div>
-            <p class="service-description">
-              A clean, lightweight terminal-style word guessing game.
-            </p>
-            <div class="service-meta">
-              <span class="meta-label">ENDPOINT:</span>
-              <span class="meta-value">reactle.clownhouse.io</span>
-            </div>
-            <a href="https://reactle.clownhouse.io" class="card-btn primary-btn service-btn" target="_blank" rel="noopener noreferrer">
-              <span>Play Reactle</span>
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-            </a>
-          </article>
-
-          <!-- Service Card 2: giggle.clownhouse.io -->
-          <article id="service-giggle" class="editorial-card service-card">
-            <div class="service-header">
-              <span class="card-kicker">Subdomain</span>
-              <h3 class="service-title">Giggle</h3>
-              <p class="service-subhead">Private Metasearch Node</p>
-            </div>
-            <p class="service-description">
-              Dedicated SearXNG privacy metasearch instance with zero tracking.
-            </p>
-            <div class="service-meta">
-              <span class="meta-label">ENDPOINT:</span>
-              <span class="meta-value">giggle.clownhouse.io</span>
-            </div>
-            <a href="https://giggle.clownhouse.io" class="card-btn primary-btn service-btn" target="_blank" rel="noopener noreferrer">
-              <span>Query Node</span>
-              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
-            </a>
-          </article>
-
-          <!-- Service Card 3: jeryd@clownhouse.io -->
-          <article id="service-email" class="editorial-card service-card">
-            <div class="service-header">
-              <span class="card-kicker">Contact</span>
-              <h3 class="service-title">Email</h3>
-              <p class="service-subhead">Direct Ingress</p>
-            </div>
-            <p class="service-description">
-              Direct email communication via Cloudflare Email Routing.
-            </p>
-            <div class="service-meta">
-              <span class="meta-label">ENDPOINT:</span>
-              <span class="meta-value">jeryd@clownhouse.io</span>
-            </div>
-            <a href="mailto:jeryd@clownhouse.io" class="card-btn primary-btn service-btn">
-              <span>Send Email ✉</span>
-            </a>
-          </article>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Site Footer -->
-  <footer id="site-footer" class="site-footer">
-    <div class="footer-container">
-      <div class="footer-top">
-        <div class="footer-brand">
-          <div class="footer-title">CLOWNHOUSE.IO</div>
-          <p class="footer-bio">Projects &amp; experiments by Jeryd.</p>
-          <div class="footer-attribution">&copy; 2026 CLOWNHOUSE.IO — Built by Jeryd</div>
-        </div>
-
-        <div class="footer-links-col">
-          <span class="footer-col-title">PROJECTS</span>
-          <a href="https://openooda.org" target="_blank" rel="noopener noreferrer">openOODA.org</a>
-          <a href="https://necrometer.dev" target="_blank" rel="noopener noreferrer">necrometer.dev</a>
-          <a href="https://bumtrips.com" target="_blank" rel="noopener noreferrer">bumtrips.com</a>
-        </div>
-
-        <div class="footer-links-col">
-          <span class="footer-col-title">CLUSTER</span>
-          <a href="https://reactle.clownhouse.io" target="_blank" rel="noopener noreferrer">reactle.clownhouse.io</a>
-          <a href="https://giggle.clownhouse.io" target="_blank" rel="noopener noreferrer">giggle.clownhouse.io</a>
-          <a href="mailto:jeryd@clownhouse.io">jeryd@clownhouse.io</a>
-        </div>
-
-        <div class="footer-links-col">
-          <span class="footer-col-title">LINKS</span>
-          <a href="https://github.com/UberMetroid" target="_blank" rel="noopener noreferrer">GitHub (@UberMetroid)</a>
-          <a href="https://github.com/studio2201/clownhouse.io" target="_blank" rel="noopener noreferrer">Repository</a>
-          <a href="https://anchor.fm/s/4431c4ac/podcast/rss" target="_blank" rel="noopener noreferrer">Podcast RSS</a>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <div class="footer-shortcuts">
-          <span class="shortcut-item"><kbd>T</kbd> / <kbd>R</kbd> Theme</span>
-          <span class="shortcut-divider">·</span>
-          <span class="shortcut-item"><kbd>⌘K</kbd> Search</span>
-          <span class="shortcut-divider">·</span>
-          <span class="shortcut-item"><kbd>Space</kbd> Audio</span>
-        </div>
-        <div class="footer-edge-meta">
-          Served via Cloudflare Anycast · Pure Static HTML5 / CSS3 / ES6
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Mega Man X Stage Select Persistent Cyber-Dock -->
-  <nav id="stage-select-dock" class="stage-select-dock" aria-label="Mega Man X Stage Select Project Launcher">
-    <div class="stage-dock-grid">
-      <a id="dock-openooda" class="stage-card" href="https://openooda.org" target="_blank" rel="noopener noreferrer" tabindex="0" aria-label="Stage Select: openOODA.org [CORE-01]">
-        <div class="card-bracket bracket-tl" aria-hidden="true"></div>
-        <div class="card-bracket bracket-tr" aria-hidden="true"></div>
-        <div class="card-bracket bracket-bl" aria-hidden="true"></div>
-        <div class="card-bracket bracket-br" aria-hidden="true"></div>
-        <div class="card-kicker">[CORE-01]</div>
-        <div class="card-portrait">
-          <div class="scanlines-shader" aria-hidden="true"></div>
-          <div class="targeting-reticle" aria-hidden="true">
-            <span class="reticle-corner reticle-tl"></span>
-            <span class="reticle-corner reticle-tr"></span>
-            <span class="reticle-corner reticle-bl"></span>
-            <span class="reticle-corner reticle-br"></span>
-            <span class="reticle-crosshair"></span>
-          </div>
-          <div class="energy-charge-meter" aria-hidden="true">
-            <span class="charge-tick"></span>
-            <span class="charge-tick"></span>
-            <span class="charge-tick"></span>
-            <span class="charge-tick"></span>
-          </div>
-          <div class="card-title-scroll">
-            <span class="card-title">openOODA.org</span>
-          </div>
-        </div>
-      </a>
-
-      <a id="dock-bumtrips" class="stage-card" href="https://bumtrips.com" target="_blank" rel="noopener noreferrer" tabindex="0" aria-label="Stage Select: bumtrips.com [AUDIO-02]">
-        <div class="card-bracket bracket-tl" aria-hidden="true"></div>
-        <div class="card-bracket bracket-tr" aria-hidden="true"></div>
-        <div class="card-bracket bracket-bl" aria-hidden="true"></div>
-        <div class="card-bracket bracket-br" aria-hidden="true"></div>
-        <div class="card-kicker">[AUDIO-02]</div>
-        <div class="card-portrait">
-          <div class="scanlines-shader" aria-hidden="true"></div>
-          <div class="targeting-reticle" aria-hidden="true">
-            <span class="reticle-corner reticle-tl"></span>
-            <span class="reticle-corner reticle-tr"></span>
-            <span class="reticle-corner reticle-bl"></span>
-            <span class="reticle-corner reticle-br"></span>
-            <span class="reticle-crosshair"></span>
-          </div>
-          <div class="energy-charge-meter" aria-hidden="true">
-            <span class="charge-tick"></span>
-            <span class="charge-tick"></span>
-            <span class="charge-tick"></span>
-            <span class="charge-tick"></span>
-          </div>
-          <div class="card-title-scroll">
-            <span class="card-title">bumtrips.com</span>
-          </div>
-        </div>
-      </a>
-
-      <a id="dock-necrometer" class="stage-card" href="https://necrometer.dev" target="_blank" rel="noopener noreferrer" tabindex="0" aria-label="Stage Select: necrometer.dev [METRIC-03]">
-        <div class="card-bracket bracket-tl" aria-hidden="true"></div>
-        <div class="card-bracket bracket-tr" aria-hidden="true"></div>
-        <div class="card-bracket bracket-bl" aria-hidden="true"></div>
-        <div class="card-bracket bracket-br" aria-hidden="true"></div>
-        <div class="card-kicker">[METRIC-03]</div>
-        <div class="card-portrait">
-          <div class="scanlines-shader" aria-hidden="true"></div>
-          <div class="targeting-reticle" aria-hidden="true">
-            <span class="reticle-corner reticle-tl"></span>
-            <span class="reticle-corner reticle-tr"></span>
-            <span class="reticle-corner reticle-bl"></span>
-            <span class="reticle-corner reticle-br"></span>
-            <span class="reticle-crosshair"></span>
-          </div>
-          <div class="energy-charge-meter" aria-hidden="true">
-            <span class="charge-tick"></span>
-            <span class="charge-tick"></span>
-            <span class="charge-tick"></span>
-            <span class="charge-tick"></span>
-          </div>
-          <div class="card-title-scroll">
-            <span class="card-title">necrometer.dev</span>
-          </div>
-        </div>
-      </a>
-
-      <a id="dock-giggle" class="stage-card" href="https://giggle.clownhouse.io" target="_blank" rel="noopener noreferrer" tabindex="0" aria-label="Stage Select: giggle.clownhouse.io [COMPUTE-04]">
-        <div class="card-bracket bracket-tl" aria-hidden="true"></div>
-        <div class="card-bracket bracket-tr" aria-hidden="true"></div>
-        <div class="card-bracket bracket-bl" aria-hidden="true"></div>
-        <div class="card-bracket bracket-br" aria-hidden="true"></div>
-        <div class="card-kicker">[COMPUTE-04]</div>
-        <div class="card-portrait">
-          <div class="scanlines-shader" aria-hidden="true"></div>
-          <div class="targeting-reticle" aria-hidden="true">
-            <span class="reticle-corner reticle-tl"></span>
-            <span class="reticle-corner reticle-tr"></span>
-            <span class="reticle-corner reticle-bl"></span>
-            <span class="reticle-corner reticle-br"></span>
-            <span class="reticle-crosshair"></span>
-          </div>
-          <div class="energy-charge-meter" aria-hidden="true">
-            <span class="charge-tick"></span>
-            <span class="charge-tick"></span>
-            <span class="charge-tick"></span>
-            <span class="charge-tick"></span>
-          </div>
-          <div class="card-title-scroll">
-            <span class="card-title">giggle.clownhouse.io</span>
-          </div>
-        </div>
-      </a>
-
-      <a id="dock-reactle" class="stage-card" href="https://reactle.clownhouse.io" target="_blank" rel="noopener noreferrer" tabindex="0" aria-label="Stage Select: reactle.clownhouse.io [TERMINAL-05]">
-        <div class="card-bracket bracket-tl" aria-hidden="true"></div>
-        <div class="card-bracket bracket-tr" aria-hidden="true"></div>
-        <div class="card-bracket bracket-bl" aria-hidden="true"></div>
-        <div class="card-bracket bracket-br" aria-hidden="true"></div>
-        <div class="card-kicker">[TERMINAL-05]</div>
-        <div class="card-portrait">
-          <div class="scanlines-shader" aria-hidden="true"></div>
-          <div class="targeting-reticle" aria-hidden="true">
-            <span class="reticle-corner reticle-tl"></span>
-            <span class="reticle-corner reticle-tr"></span>
-            <span class="reticle-corner reticle-bl"></span>
-            <span class="reticle-corner reticle-br"></span>
-            <span class="reticle-crosshair"></span>
-          </div>
-          <div class="energy-charge-meter" aria-hidden="true">
-            <span class="charge-tick"></span>
-            <span class="charge-tick"></span>
-            <span class="charge-tick"></span>
-            <span class="charge-tick"></span>
-          </div>
-          <div class="card-title-scroll">
-            <span class="card-title">reactle.clownhouse.io</span>
-          </div>
-        </div>
-      </a>
-    </div>
-  </nav>
-
-  <!-- Shell Container: Floating Audio Player Pill -->
-  <aside id="floating-audio-pill" class="floating-audio-pill" aria-label="Floating Ambient Audio Player">
-    <button id="audio-play-btn" class="audio-play-btn" aria-label="Play procedural ambient audio" title="Play / Pause Ambient Audio (Space)">
-      <img src="favicon.svg" alt="clownhouse.io" class="audio-art-img" width="38" height="38">
-      <span class="audio-play-overlay">
-        <svg id="audio-play-icon" class="audio-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-          <polygon points="5,3 19,12 5,21"/>
-        </svg>
-        <svg id="audio-pause-icon" class="audio-icon hidden" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-          <rect x="6" y="4" width="4" height="16"/>
-          <rect x="14" y="4" width="4" height="16"/>
-        </svg>
-      </span>
-    </button>
-
-    <div id="audio-track-info" class="audio-track-info">
-      <span id="audio-track-title" class="audio-track-title">Carrier Drift</span>
-      <span id="audio-track-freq" class="audio-track-freq">LAB-01 · 55Hz Sub / 432Hz Carrier</span>
-    </div>
-
-    <div id="audio-eq-bars" class="audio-eq-bars" aria-hidden="true" title="Real-time Analyser Equalizer">
-      <span class="eq-bar bar-1"></span>
-      <span class="eq-bar bar-2"></span>
-      <span class="eq-bar bar-3"></span>
-      <span class="eq-bar bar-4"></span>
-    </div>
-
-    <button id="audio-mute-btn" class="audio-mute-btn" aria-label="Toggle mute" title="Mute / Unmute Audio">
-      <svg id="audio-unmuted-icon" class="audio-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/>
-        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-      </svg>
-      <svg id="audio-muted-icon" class="audio-icon hidden" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" fill="currentColor"/>
-        <line x1="23" y1="9" x2="17" y2="15"/>
-        <line x1="17" y1="9" x2="23" y2="15"/>
-      </svg>
-    </button>
-  </aside>
-
-  <!-- Shell Container: Command Palette Modal -->
-  <div id="command-palette-modal" class="command-palette-modal hidden" role="dialog" aria-modal="true" aria-labelledby="palette-input">
-    <div class="palette-backdrop" id="palette-backdrop"></div>
-    <div class="palette-dialog" id="palette-dialog">
-      <div class="palette-search-box">
-        <svg class="palette-search-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"/>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        <input type="text" id="palette-input" placeholder="Type a command, project, theme, or service..." autocomplete="off" spellcheck="false">
-        <kbd class="palette-esc-badge" id="palette-close-badge">ESC</kbd>
-      </div>
-
-      <div id="palette-results" class="palette-results" role="listbox">
-        <!-- Results populated dynamically by app.js -->
-      </div>
-
-      <div class="palette-footer">
-        <span class="palette-hint"><kbd>↑</kbd> <kbd>↓</kbd> Navigate</span>
-        <span class="palette-hint"><kbd>↵</kbd> Select</span>
-        <span class="palette-hint"><kbd>ESC</kbd> Close</span>
-      </div>
-    </div>
-  </div>
+    <main class="card">
+        <h1 class="word">CLOWNHOUSE.IO</h1>
+        <p class="line">check back later</p>
+        <p class="sig"><a href="https://studio2201.com">A STUDIO2201 WORK</a></p>
+    </main>
 </body>
 </html>
