@@ -112,7 +112,7 @@ function auditCleanSlateNegative() {
 // -----------------------------------------------------------------------------
 function auditAudioSfxHardening() {
   console.log('\n--- 3. Audio SFX Prototype Hardening & Fallback ---');
-  const audioSrc = fs.readFileSync(path.join(PROJECT_ROOT, 'audio.js'), 'utf-8');
+  const audioSrc = fs.readFileSync(path.join(PROJECT_ROOT, 'audio/sfx.js'), 'utf-8');
 
   // Verify Object.create(null) and fail-closed prototype guards
   const hasProtoGuard = audioSrc.includes('VALID_SFX_MAP') &&

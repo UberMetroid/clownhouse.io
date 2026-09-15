@@ -15,7 +15,7 @@
   - Trigger 2: Scroll velocity and stop detector with 4.0s anti-strobe cooldown.
   - Cinematic 800ms smooth cross-fades via CSS custom properties.
 - **Audio Soundtrack & Real-Time Equalizer (`window.ClownAudio`)**:
-  - Chrono Trigger soundtrack (*Corridors of Time* & *Wind Scene* by Yasunori Mitsuda) locally hosted in `music/` and streamed via HTML5 Audio + Web Audio `AnalyserNode`.
+  - Four procedural frequency modes (LAB-01 *Carrier Drift*, LAB-02 *Cybernetic Drone*, LAB-03 *Necrometer 528Hz*, LAB-04 *Velvet Frequency*) synthesized at runtime via Web Audio `AnalyserNode`. Zero binary audio assets.
   - 4-bar equalizer dynamically animated in `#floating-audio-pill`.
   - Autoplay safe (muted by default), anti-pop 30ms gain ramps, Spacebar shortcut, and prototype-pollution immune 16-bit sound effects.
 - **Testing & Deployment**:
@@ -106,5 +106,5 @@
 - `index.html`: Main document with semantic landmarks, `#stage-select-dock`, `#chaos-overlay`, `#floating-audio-pill`, `#command-palette-modal`.
 - `style.css`: 7 Omarchy palettes, cybernetic stage-select dock styles, scanlines, reticles, chaos engine styling, responsive breakpoints.
 - `app.js`: Application controller, theme randomizer (time + scroll), chaos engine (`window.ClownChaos`), command palette.
-- `audio.js`: Chrono Trigger streaming, Web Audio AnalyserNode EQ, 16-bit synthesized sound effects (`playSfx`).
+- `audio.js` + `audio/`: Procedural audio engine — `state`, `catalog` (4 LAB patches), `graph` (patch player), `transport`, `ui` (EQ + pill sync), `sfx` (16-bit `playSfx`).
 - `tests/`: Automated test suite (Python + Node.js) executed via `bash tests/run_tests.sh`.

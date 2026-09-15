@@ -32,7 +32,7 @@ The master test runner (`bash tests/run_tests.sh`) executes 10 comprehensive tes
 | **Suite 2** | `tests/challenger_m1_theme_stress.js` | Node.js | Theme engine hot-swapping, View Transitions, rapid cycling | 42 |
 | **Suite 2b** | `tests/challenger2_m1_edge_cases.js` | Node.js | Multi-vector edge cases, null/symbol resilience, auto-repeat guards | 25 |
 | **Suite 2c** | `tests/challenger_m1_triple_tap_stress.js` | Node.js | Synchronous contracts, rapid double/triple tap, modal isolation | 10 |
-| **Suite 3** | `tests/test_m2_audio_engine.js` | Node.js (Mock Web Audio) | `window.ClownAudio`, Chrono Trigger tracks, volume clamping, 4-bar EQ, anti-pop ramps | 46 |
+| **Suite 3** | `tests/test_m2_audio_engine.js` | Node.js (Mock Web Audio) | `window.ClownAudio`, 4 procedural LAB patches, volume clamping, 4-bar EQ, anti-pop ramps | 46 |
 | **Suite 4** | `tests/test_m3_command_palette.js` | Node.js | `window.ClownPalette`, 30 catalog items, fuzzy search, shortcuts (`Cmd+K`, `/`) | 43 |
 | **Suite 5** | `tests/challenger_m1_r3_stress.js` | Node.js + Headless Chrome | Single oscillator per hover, Spacebar stage card guard, 50-event burst clicks | 9 |
 | **Suite 6** | `tests/test_m1_challenger2_stage_dock_collision.js` | Node.js + Headless Chrome | Collision-free layout between dock & audio pill across 16 viewports (320px–2560px) | 98 |
