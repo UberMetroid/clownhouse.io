@@ -15,30 +15,40 @@
             --violet: #b78cff;
             --phos: #7dffa8;
             --dim: #8a80a8;
+            --eye-l: #ff2d55;
+            --eye-r: #b78cff;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100%; overflow: hidden; }
 
-        /* The clown — full-page pixel art, barely-there, slow fade. */
-        .clown {
+        /* The clown — full-page pixel art, always faintly present,
+           breathing 0.11–0.17. Eyes are overlay divs that track
+           the pointer inside their sockets. */
+        .clown-wrap {
             position: fixed;
             top: 50%;
             left: 50%;
             height: 100vh;
-            width: auto;
-            max-width: none;
+            aspect-ratio: 48 / 95;
             transform: translate(-50%, -50%);
-            image-rendering: pixelated;
             opacity: 0;
-            animation: haunt 12s ease-in 2s forwards;
+            animation: haunt 6s ease-in forwards,
+                       breathe 9s ease-in-out 6s infinite alternate;
             pointer-events: none;
             user-select: none;
         }
-        @keyframes haunt {
-            from { opacity: 0; }
-            to   { opacity: 0.13; }
+        .clown {
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
+            display: block;
         }
-        /* Vignette — drowns the clown's edges back into the dark. */
+        @keyframes haunt  { from { opacity: 0; } to { opacity: 0.14; } }
+        @keyframes breathe {
+            from { opacity: 0.11; }
+            to   { opacity: 0.17; }
+        }
+        /* Vignette — drowns her edges back into the dark. */
         body::after {
             content: "";
             position: fixed;
@@ -50,6 +60,17 @@
             );
             pointer-events: none;
         }
+
+        /* Pupils — socket centers measured from clown.png (48x95). */
+        .pupil {
+            position: absolute;
+            width: 5.5%;
+            height: 3.4%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.16s ease-out;
+        }
+        .pupil.l { left: 37.5%; top: 21.6%; background: var(--eye-l); box-shadow: 0 0 14px 3px var(--eye-l); }
+        .pupil.r { left: 70.8%; top: 21.6%; background: var(--eye-r); box-shadow: 0 0 14px 3px var(--eye-r); }
 
         body {
             background: var(--bg);
@@ -116,18 +137,23 @@
         @keyframes blink { 50% { opacity: 0; } }
 
         @media (prefers-reduced-motion: reduce) {
-            .clown { animation: none; opacity: 0.13; }
+            .clown-wrap { animation: none; opacity: 0.14; }
             .ticker span {
                 animation: none;
                 position: static;
                 display: none;
             }
             .ticker span:first-child { display: inline; opacity: 1; transform: none; }
+            .ticker span::after { animation: none; }
         }
     </style>
 </head>
 <body>
-    <img class="clown" src="clown.png" alt="" aria-hidden="true">
+    <div class="clown-wrap" aria-hidden="true">
+        <img class="clown" src="clown.png" alt="">
+        <i class="pupil l" data-x="0.375" data-y="0.216"></i>
+        <i class="pupil r" data-x="0.708" data-y="0.216"></i>
+    </div>
     <main class="card">
         <h1 class="word">CLOWNHOUSE.IO</h1>
         <p class="ticker" aria-label="check back later">
@@ -141,5 +167,31 @@
             <span>soon, sweetheart</span>
         </p>
     </main>
+    <script>
+        // Eyes track the pointer — each pupil leans toward the cursor,
+        // travel clamped inside its socket. The only JS on the page.
+        (() => {
+            if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            const wrap = document.querySelector('.clown-wrap');
+            const ps = [...document.querySelectorAll('.pupil')].map(p => ({
+                el: p, x: parseFloat(p.dataset.x), y: parseFloat(p.dataset.y)
+            }));
+            const MX = 0.055, MY = 0.012; // travel limits, fraction of wrap
+            addEventListener('pointermove', e => {
+                const r = wrap.getBoundingClientRect();
+                for (const p of ps) {
+                    const cx = r.left + r.width * p.x;
+                    const cy = r.top + r.height * p.y;
+                    const dx = e.clientX - cx, dy = e.clientY - cy;
+                    const d = Math.hypot(dx, dy) || 1;
+                    p.el.style.transform =
+                        `translate(-50%,-50%) translate(${dx / d * r.width * MX}px,${dy / d * r.height * MY}px)`;
+                }
+            }, { passive: true });
+            addEventListener('pointerleave', () => {
+                for (const p of ps) p.el.style.transform = 'translate(-50%,-50%)';
+            });
+        })();
+    </script>
 </body>
 </html>
