@@ -89,6 +89,16 @@
             border: 1px solid var(--edge);
             border-radius: 10px;
             box-shadow: 0 0 60px rgba(183, 140, 255, 0.07);
+            /* Drifts left-to-right across the viewport, fully exits,
+               holds 0.5s out of frame, sweeps back left. 11s loop. */
+            animation: drift 11s linear infinite;
+        }
+        @keyframes drift {
+            0%     { transform: translateX(calc(-55vw - 50%)); }
+            45.45% { transform: translateX(calc( 55vw + 50%)); }
+            50%    { transform: translateX(calc( 55vw + 50%)); }
+            95.45% { transform: translateX(calc(-55vw - 50%)); }
+            100%   { transform: translateX(calc(-55vw - 50%)); }
         }
         .word {
             font-size: clamp(1.4rem, 5vw, 2.2rem);
@@ -138,6 +148,7 @@
 
         @media (prefers-reduced-motion: reduce) {
             .clown-wrap { animation: none; opacity: 0.14; }
+            .card { animation: none; }
             .ticker span {
                 animation: none;
                 position: static;
