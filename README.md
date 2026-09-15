@@ -58,3 +58,11 @@ clownhouse.io features 7 bespoke color palettes extracted directly from Omarchy 
 ---
 
 &copy; 2026 CLOWNHOUSE.IO // Studio 2201 — Built by Jeryd.
+
+---
+
+<div align="center">
+
+[![Necrometer](necrometer.svg)](https://necrometer.dev/?u=studio2201)
+
+</div>
