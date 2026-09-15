@@ -542,7 +542,10 @@ async function runTestSuite() {
     record('4.1 Synchronous update across data-theme, meta theme-color, and localStorage for all 7 themes', metaAndStorageCheck.allPass, JSON.stringify(metaAndStorageCheck.failedChecks));
 
     // 4.2 Verify CSS custom property --transition-theme is 800ms cubic-bezier
-    const cssContent = fs.readFileSync(path.join(PROJECT_ROOT, 'style.css'), 'utf8');
+    // style.css is an @import manifest over styles/ — resolve it fully
+    const manifest = fs.readFileSync(path.join(PROJECT_ROOT, 'style.css'), 'utf8');
+    const cssContent = manifest + [...manifest.matchAll(/@import url\("([^"]+)"\)/g)]
+      .map(m => fs.readFileSync(path.join(PROJECT_ROOT, m[1]), 'utf8')).join('\n');
     const hasTransitionThemeVar = cssContent.includes('--transition-theme: 800ms cubic-bezier(0.16, 1, 0.3, 1);');
     record('4.2 style.css defines --transition-theme: 800ms cubic-bezier(0.16, 1, 0.3, 1);', hasTransitionThemeVar);
 

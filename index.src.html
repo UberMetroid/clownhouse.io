@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="tokyo-night">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1a1b26" id="theme-color-meta">
+  <title>CLOWNHOUSE // Jeryd</title>
+  <meta name="description" content="Personal software laboratory &amp; project hub by Jeryd. Featuring openOODA.org, necrometer.dev, and bumtrips.com.">
+
+  <!-- Favicon & Stylesheet -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="audio/state.js"></script>
+  <script defer src="audio/catalog.js"></script>
+  <script defer src="audio/graph.js"></script>
+  <script defer src="audio/transport.js"></script>
+  <script defer src="audio/ui.js"></script>
+  <script defer src="audio/sfx.js"></script>
+  <script defer src="audio.js"></script>
+  <script defer src="app.js"></script>
+
+  <!-- Structured Data: JSON-LD Semantic Graph -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://clownhouse.io/#jeryd",
+        "name": "Jeryd",
+        "alternateName": "UberMetroid",
+        "url": "https://clownhouse.io",
+        "sameAs": [
+          "https://github.com/UberMetroid",
+          "https://github.com/openOODA"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://clownhouse.io/#website",
+        "url": "https://clownhouse.io",
+        "name": "CLOWNHOUSE.IO",
+        "description": "Personal software laboratory & projects by Jeryd.",
+        "author": {
+          "@id": "https://clownhouse.io/#jeryd"
+        },
+        "hasPart": [
+          {
+            "@type": "SoftwareApplication",
+            "name": "openOODA",
+            "url": "https://openooda.org",
+            "applicationCategory": "DeveloperApplication",
+            "description": "Autonomous Agentic Architecture & Sovereign Systems Language."
+          },
+          {
+            "@type": "SoftwareApplication",
+            "name": "necrometer.dev",
+            "url": "https://necrometer.dev",
+            "applicationCategory": "DeveloperApplication",
+            "description": "Developer Telemetry, Metrics & Observability Matrix."
+          },
+          {
+            "@type": "AudioObject",
+            "name": "Beatniks, Bumtrips & Bullshit",
+            "url": "https://bumtrips.com",
+            "description": "Underground Audio, Psychedelia & Counter-Culture Podcast."
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <!-- Surreal Ambient Visual Chaos Engine Overlay -->
+  <div id="chaos-overlay" class="chaos-overlay" aria-hidden="true">
+    <canvas id="chaos-canvas" class="chaos-canvas"></canvas>
+    <div id="chaos-apparitions" class="chaos-apparitions"></div>
+    <div id="chaos-flares" class="chaos-flares"></div>
+  </div>
+
+  <!-- INCLUDE: sections/header.html -->
+  <!-- INCLUDE: sections/hero.html -->
+  <!-- INCLUDE: sections/projects.html -->
+  <!-- INCLUDE: sections/services.html -->
+  <!-- INCLUDE: sections/footer.html -->
+  <!-- INCLUDE: sections/dock.html -->
+  <!-- INCLUDE: sections/pill.html -->
+  <!-- INCLUDE: sections/palette.html -->
+</html>

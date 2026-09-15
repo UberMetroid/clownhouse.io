@@ -1,0 +1,208 @@
+/* --- Hero Section --- */
+.hero-section {
+  padding: 5rem 1.5rem 4rem;
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+}
+
+.hero-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 860px;
+}
+
+.hero-status-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  padding: 0.3rem 0.75rem;
+  background-color: color-mix(in srgb, var(--bg-surface) 80%, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--pill-radius);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.status-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+}
+
+.hero-title {
+  font-size: clamp(3rem, 9vw, 6rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+}
+
+.hero-dot {
+  color: var(--accent);
+}
+
+.hero-byline {
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+  color: var(--text-muted);
+  letter-spacing: -0.01em;
+}
+
+.hero-author {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.hero-tagline {
+  font-size: 1.15rem;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+  color: var(--text-secondary);
+  max-width: 620px;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 38px;
+  padding: 0 1rem;
+  border-radius: var(--pill-radius);
+  border: 1px solid var(--border);
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: var(--font-mono);
+  transition: border-color var(--transition-theme), background-color var(--transition-theme), color var(--transition-theme), transform var(--transition-fast);
+}
+
+.action-pill:hover {
+  border-color: var(--border-hover);
+  background-color: var(--bg-surface-2);
+  transform: translateY(-1px);
+}
+
+.primary-pill {
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  color: var(--accent);
+}
+
+.primary-pill:hover {
+  border-color: var(--accent);
+  background-color: color-mix(in srgb, var(--accent) 12%, var(--bg-surface));
+}
+
+.palette-pill {
+  color: var(--text-secondary);
+}
+
+/* --- Section Containers & Headers --- */
+.section {
+  padding: 4.5rem 1.5rem;
+  border-top: 1px solid var(--border);
+  transition: border-color var(--transition-theme);
+}
+
+.section-container {
+  max-width: var(--max-content-width);
+  margin: 0 auto;
+}
+
+.section-header {
+  margin-bottom: 2.25rem;
+  max-width: 720px;
+}
+
+.section-title {
+  font-size: clamp(1.6rem, 3.5vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+/* --- Labs & Cluster Services Section --- */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.service-card {
+  height: 100%;
+}
+
+.service-header {
+  margin-bottom: 0.75rem;
+}
+
+.service-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+}
+
+.service-subhead {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.service-description {
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.service-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 0.4rem 0.65rem;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  transition: background-color var(--transition-theme), border-color var(--transition-theme);
+}
+
+.meta-label {
+  color: var(--text-muted);
+}
+
+.meta-value {
+  color: var(--accent);
+}
+
+.service-btn {
+  margin-top: auto;
+  width: fit-content;
+}
+

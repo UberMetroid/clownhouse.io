@@ -214,8 +214,10 @@ async function runAudit() {
   const subTextCount = (html.match(/class="card-sub"/g) || []).length;
   record('index.html contains 0 .card-sub flavor text elements', subTextCount === 0, `Found: ${subTextCount}`);
 
-  // 2. Static CSS Audit
-  const css = fs.readFileSync(path.join(PROJECT_ROOT, 'style.css'), 'utf-8');
+  // 2. Static CSS Audit — style.css is an @import manifest over styles/
+  const manifest = fs.readFileSync(path.join(PROJECT_ROOT, 'style.css'), 'utf-8');
+  const css = manifest + [...manifest.matchAll(/@import url\("([^"]+)"\)/g)]
+    .map(m => fs.readFileSync(path.join(PROJECT_ROOT, m[1]), 'utf-8')).join('\n');
   const hasFixedCardWidth = css.includes('width: 172px') && css.includes('flex: 0 0 172px');
   record('style.css defines uniform fixed width (172px) on .stage-card', hasFixedCardWidth);
   const hasMarqueeKeyframes = css.includes('@keyframes stageTitleMarquee');

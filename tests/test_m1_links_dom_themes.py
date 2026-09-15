@@ -24,6 +24,17 @@ APP_JS_PATH = os.path.join(PROJECT_ROOT, "app.js")
 FAVICON_SVG_PATH = os.path.join(PROJECT_ROOT, "favicon.svg")
 
 
+def load_css() -> str:
+    """style.css is an @import manifest over styles/ — resolve it fully."""
+    with open(STYLE_CSS_PATH, "r", encoding="utf-8") as f:
+        manifest = f.read()
+    parts = [manifest]
+    for rel in re.findall(r'@import url\("([^"]+)"\)', manifest):
+        with open(os.path.join(PROJECT_ROOT, rel), "r", encoding="utf-8") as f:
+            parts.append(f.read())
+    return "\n".join(parts)
+
+
 class IndexHTMLParser(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -271,8 +282,7 @@ class TestM1CleanSlateNegativeAssertion(unittest.TestCase):
     def setUpClass(cls):
         with open(INDEX_HTML_PATH, "r", encoding="utf-8") as f:
             cls.html_content = f.read()
-        with open(STYLE_CSS_PATH, "r", encoding="utf-8") as f:
-            cls.css_content = f.read()
+        cls.css_content = load_css()
 
     def test_zero_legacy_theme_names_in_index_html(self):
         """Assert zero occurrences of legacy theme names in index.html."""
@@ -337,8 +347,7 @@ class TestM1CSSThemeEngineTokens(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        with open(STYLE_CSS_PATH, "r", encoding="utf-8") as f:
-            cls.css_content = f.read()
+        cls.css_content = load_css()
 
         # Parse [data-theme="..."] rules
         theme_pattern = re.compile(r"\[data-theme=[\"\x27]?([a-zA-Z0-9_-]+)[\"\x27]?\]\s*\{([^}]+)\}", re.MULTILINE)
@@ -456,8 +465,7 @@ class TestM1StageSelectDockAndChaosOverlay(unittest.TestCase):
     def setUpClass(cls):
         with open(INDEX_HTML_PATH, "r", encoding="utf-8") as f:
             cls.html_content = f.read()
-        with open(STYLE_CSS_PATH, "r", encoding="utf-8") as f:
-            cls.css_content = f.read()
+        cls.css_content = load_css()
         cls.parser = IndexHTMLParser()
         cls.parser.feed(cls.html_content)
 
@@ -526,8 +534,7 @@ class TestM1StructuralInvariantsAndAdversarial(unittest.TestCase):
     def setUpClass(cls):
         with open(INDEX_HTML_PATH, "r", encoding="utf-8") as f:
             cls.html_content = f.read()
-        with open(STYLE_CSS_PATH, "r", encoding="utf-8") as f:
-            cls.css_content = f.read()
+        cls.css_content = load_css()
         cls.parser = IndexHTMLParser()
         cls.parser.feed(cls.html_content)
 
@@ -620,8 +627,7 @@ class TestM1AntiVacuityMutationGate(unittest.TestCase):
 
     def test_mutation_corrupted_css_token_detected(self):
         """Mutate style.css to corrupt --accent token with invalid color; verify token validator fails."""
-        with open(STYLE_CSS_PATH, "r", encoding="utf-8") as f:
-            css = f.read()
+        css = load_css()
         mutated_css = css.replace('--accent: #9ece6a;', '--accent: not-a-valid-hex-color;')
         self.assertNotEqual(mutated_css, css, "Mutation setup failed")
 
@@ -667,8 +673,7 @@ class TestM1AntiVacuityMutationGate(unittest.TestCase):
 
     def test_mutation_chaos_overlay_pointer_events_detected(self):
         """Mutate style.css to strip pointer-events from #chaos-overlay; verify probe fails."""
-        with open(STYLE_CSS_PATH, "r", encoding="utf-8") as f:
-            css = f.read()
+        css = load_css()
         mutated_css = re.sub(r'(#chaos-overlay[^{]*\{[^}]*?)pointer-events:\s*none[^;]*;', r'\1/* removed */', css)
         self.assertNotEqual(mutated_css, css, "Mutation setup failed")
 
