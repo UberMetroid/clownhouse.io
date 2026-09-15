@@ -1,5 +1,7 @@
 # CLOWNHOUSE.IO // Software Laboratory
 
+> A [studio2201](https://studio2201.github.io) work.
+
 Welcome to **clownhouse.io** — the personal software laboratory, sovereign agentic systems testbed, and underground audio frequency outpost of **Jeryd** ([@UberMetroid](https://github.com/UberMetroid)).
 
 Engineered with the minimalist editorial aesthetic, high-contrast typography, and responsive card layouts of [omarchy.org](https://omarchy.org).
