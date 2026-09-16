@@ -2,10 +2,10 @@
 """clownhouse // pixel house generator.
 
 Draws the full-page background: a dark house silhouette with a clown
-face lit in the tower window -> house.png. The pupil overlays in
-index.html sit over the eye sockets and track the pointer; their
-data-x/data-y fractions are the measured centers printed at the end.
-Re-run to regenerate; the PNG is the committed artifact.
+face lit in the lower-right annex window -> house.png. The pupil
+overlays in index.html sit over the eye sockets and track the pointer;
+their data-x/data-y fractions are the measured centers printed at the
+end. Re-run to regenerate; the PNG is the committed artifact.
 """
 from PIL import Image
 
@@ -22,7 +22,6 @@ DOOR   = (26, 9, 22)
 GROUND = (12, 8, 22)
 
 SKIN   = (212, 200, 228) # clown face
-SHADE  = (96, 84, 128)   # face shade
 HAIR   = (110, 80, 24)   # hair deep (blonde)
 HAIR_L = (228, 182, 80)  # hair lit
 EYE    = (14, 8, 24)     # eye socket

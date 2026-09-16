@@ -10,7 +10,7 @@
     <style>
         :root {
             --bg: #0a0812;
-            --card: #14101f;
+            --card: rgba(20, 16, 31, 0.82);
             --edge: #322a4d;
             --violet: #b78cff;
             --phos: #7dffa8;
@@ -22,7 +22,7 @@
         html, body { height: 100%; overflow: hidden; }
 
         /* The house — full-page pixel art, always faintly present,
-           breathing 0.14–0.22. The clown watches from the tower
+           breathing 0.14–0.22. The clown watches from the annex
            window; her eyes are overlay divs that track the pointer. */
         .house-wrap {
             position: fixed;
@@ -40,7 +40,7 @@
             image-rendering: pixelated;
             display: block;
         }
-        @keyframes haunt  { from { opacity: 0; } to { opacity: 0.18; } }
+        @keyframes haunt  { from { opacity: 0; } to { opacity: 0.14; } }
         @keyframes breathe {
             from { opacity: 0.14; }
             to   { opacity: 0.22; }
@@ -58,16 +58,18 @@
             pointer-events: none;
         }
 
-        /* Pupils — socket centers measured from house.png (96x54). */
+        /* Pupils — positions come from data-x/data-y (measured by
+           house.py); the stylesheet only owns size and color. */
         .pupil {
             position: absolute;
             width: 0.9%;
             height: 1.6%;
+            visibility: hidden; /* revealed once JS sets left/top */
             transform: translate(-50%, -50%);
             transition: transform 0.16s ease-out;
         }
-        .pupil.l { left: 86.5%; top: 72.2%; background: var(--eye-l); box-shadow: 0 0 8px 2px var(--eye-l); }
-        .pupil.r { left: 88.5%; top: 72.2%; background: var(--eye-r); box-shadow: 0 0 8px 2px var(--eye-r); }
+        .pupil.l { background: var(--eye-l); box-shadow: 0 0 8px 2px var(--eye-l); }
+        .pupil.r { background: var(--eye-r); box-shadow: 0 0 8px 2px var(--eye-r); }
 
         body {
             background: var(--bg);
@@ -81,8 +83,8 @@
             position: relative;
             z-index: 1;
             text-align: center;
-            padding: 3rem 4rem;
-            background: rgba(20, 16, 31, 0.82);
+            padding: 3rem clamp(1.2rem, 8vw, 4rem);
+            background: var(--card);
             border: 1px solid var(--edge);
             border-radius: 10px;
             box-shadow: 0 0 60px rgba(183, 140, 255, 0.07);
@@ -130,27 +132,37 @@
     </main>
     <script>
         (() => {
+            const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
             // Eyes track the pointer — each pupil leans toward the
-            // cursor, travel clamped inside its socket.
+            // cursor, travel clamped inside its socket. Pupil home
+            // positions come from data-x/data-y (single source of truth).
             const wrap = document.querySelector('.house-wrap');
             const ps = [...document.querySelectorAll('.pupil')].map(p => ({
                 el: p, x: parseFloat(p.dataset.x), y: parseFloat(p.dataset.y)
             }));
-            const MX = 0.003, MY = 0.006; // travel limits, fraction of wrap
-            addEventListener('pointermove', e => {
-                const r = wrap.getBoundingClientRect();
-                for (const p of ps) {
-                    const cx = r.left + r.width * p.x;
-                    const cy = r.top + r.height * p.y;
-                    const dx = e.clientX - cx, dy = e.clientY - cy;
-                    const d = Math.hypot(dx, dy) || 1;
-                    p.el.style.transform =
-                        `translate(-50%,-50%) translate(${dx / d * r.width * MX}px,${dy / d * r.height * MY}px)`;
-                }
-            }, { passive: true });
-            addEventListener('pointerleave', () => {
-                for (const p of ps) p.el.style.transform = 'translate(-50%,-50%)';
-            });
+            for (const p of ps) {
+                p.el.style.left = p.x * 100 + '%';
+                p.el.style.top  = p.y * 100 + '%';
+                p.el.style.visibility = 'visible';
+            }
+            if (!reduced) {
+                const MX = 0.003, MY = 0.006; // travel limits, fraction of wrap
+                addEventListener('pointermove', e => {
+                    const r = wrap.getBoundingClientRect();
+                    for (const p of ps) {
+                        const cx = r.left + r.width * p.x;
+                        const cy = r.top + r.height * p.y;
+                        const dx = e.clientX - cx, dy = e.clientY - cy;
+                        const d = Math.hypot(dx, dy) || 1;
+                        p.el.style.transform =
+                            `translate(-50%,-50%) translate(${dx / d * r.width * MX}px,${dy / d * r.height * MY}px)`;
+                    }
+                }, { passive: true });
+                addEventListener('pointerleave', () => {
+                    for (const p of ps) p.el.style.transform = 'translate(-50%,-50%)';
+                });
+            }
 
             // Typewriter — types each phrase, holds, deletes, next.
             const out = document.getElementById('typed');
@@ -165,7 +177,7 @@
                 'the mirror room is empty', 'come back when the lights flicker',
                 'she’s in the walls', 'the music box is winding'
             ];
-            if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            if (reduced) {
                 out.textContent = PHRASES[0];
                 return;
             }
