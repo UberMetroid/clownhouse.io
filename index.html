@@ -21,32 +21,29 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100%; overflow: hidden; }
 
-        /* The clown — full-page pixel art, always faintly present,
-           breathing 0.11–0.17. Eyes are overlay divs that track
-           the pointer inside their sockets. */
-        .clown-wrap {
+        /* The house — full-page pixel art, always faintly present,
+           breathing 0.14–0.22. The clown watches from the tower
+           window; her eyes are overlay divs that track the pointer. */
+        .house-wrap {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            height: 100vh;
-            aspect-ratio: 50 / 97;
-            transform: translate(-50%, -50%);
+            inset: 0;
             opacity: 0;
             animation: haunt 6s ease-in forwards,
                        breathe 9s ease-in-out 6s infinite alternate;
             pointer-events: none;
             user-select: none;
         }
-        .clown {
+        .house {
             width: 100%;
             height: 100%;
+            object-fit: fill;
             image-rendering: pixelated;
             display: block;
         }
-        @keyframes haunt  { from { opacity: 0; } to { opacity: 0.14; } }
+        @keyframes haunt  { from { opacity: 0; } to { opacity: 0.18; } }
         @keyframes breathe {
-            from { opacity: 0.11; }
-            to   { opacity: 0.17; }
+            from { opacity: 0.14; }
+            to   { opacity: 0.22; }
         }
         /* Vignette — drowns her edges back into the dark. */
         body::after {
@@ -61,16 +58,16 @@
             pointer-events: none;
         }
 
-        /* Pupils — socket centers measured from clown.png (48x95). */
+        /* Pupils — socket centers measured from house.png (96x54). */
         .pupil {
             position: absolute;
-            width: 5.5%;
-            height: 3.4%;
+            width: 1.7%;
+            height: 2.8%;
             transform: translate(-50%, -50%);
             transition: transform 0.16s ease-out;
         }
-        .pupil.l { left: 35%; top: 20.6%; background: var(--eye-l); box-shadow: 0 0 14px 3px var(--eye-l); }
-        .pupil.r { left: 67%; top: 20.6%; background: var(--eye-r); box-shadow: 0 0 14px 3px var(--eye-r); }
+        .pupil.l { left: 15.1%; top: 45.4%; background: var(--eye-l); box-shadow: 0 0 10px 2px var(--eye-l); }
+        .pupil.r { left: 18.2%; top: 45.4%; background: var(--eye-r); box-shadow: 0 0 10px 2px var(--eye-r); }
 
         body {
             background: var(--bg);
@@ -116,16 +113,16 @@
         @keyframes blink { 50% { opacity: 0; } }
 
         @media (prefers-reduced-motion: reduce) {
-            .clown-wrap { animation: none; opacity: 0.14; }
+            .house-wrap { animation: none; opacity: 0.18; }
             .line::after { animation: none; }
         }
     </style>
 </head>
 <body>
-    <div class="clown-wrap" aria-hidden="true">
-        <img class="clown" src="clown.png" alt="">
-        <i class="pupil l" data-x="0.350" data-y="0.206"></i>
-        <i class="pupil r" data-x="0.670" data-y="0.206"></i>
+    <div class="house-wrap" aria-hidden="true">
+        <img class="house" src="house.png" alt="">
+        <i class="pupil l" data-x="0.151" data-y="0.454"></i>
+        <i class="pupil r" data-x="0.182" data-y="0.454"></i>
     </div>
     <main class="card">
         <h1 class="word">CLOWNHOUSE.IO</h1>
@@ -135,11 +132,11 @@
         (() => {
             // Eyes track the pointer — each pupil leans toward the
             // cursor, travel clamped inside its socket.
-            const wrap = document.querySelector('.clown-wrap');
+            const wrap = document.querySelector('.house-wrap');
             const ps = [...document.querySelectorAll('.pupil')].map(p => ({
                 el: p, x: parseFloat(p.dataset.x), y: parseFloat(p.dataset.y)
             }));
-            const MX = 0.055, MY = 0.012; // travel limits, fraction of wrap
+            const MX = 0.006, MY = 0.012; // travel limits, fraction of wrap
             addEventListener('pointermove', e => {
                 const r = wrap.getBoundingClientRect();
                 for (const p of ps) {
