@@ -2,7 +2,7 @@
 """clownhouse // pixel house generator.
 
 Draws the full-page background: a dark house silhouette with a clown
-face lit in the lower-right annex window -> house.png. The pupil
+face lit in a first-floor window beside the door -> house.png. The pupil
 overlays in index.html sit over the eye sockets and track the pointer;
 their data-x/data-y fractions are the measured centers printed at the
 end. Re-run to regenerate; the PNG is the committed artifact.
@@ -75,7 +75,7 @@ rect(22, 15, 22, 49, EDGE)
 # dark windows
 for cx in (32, 42, 58, 68):
     window(cx, 29, 35)
-for cx in (32, 42, 60, 70):
+for cx in (32, 42, 70):
     window(cx, 39, 46)
 # door + steps
 rect(46, 41, 52, 49, DOOR)
@@ -85,19 +85,18 @@ rect(44, 50, 54, 51, GROUND)
 # ground
 rect(0, 50, 95, 53, GROUND)
 
-# tower window — dark, like the rest
+# tower + annex windows — dark, like the rest
 window(16, 20, 30, 8)
+window(84, 36, 43)
 
-# --- clown in the lower-right annex window (half size) ---
-rect(81, 35, 87, 44, FRAME)          # window frame
-rect(82, 36, 86, 43, GLOW)           # lit interior
-put(82, 36, HAIR_L); put(86, 36, HAIR_L)  # hair tufts
-put(82, 37, HAIR);   put(86, 37, HAIR)
-rect(83, 37, 85, 42, SKIN)           # face
-put(83, 39, EYE);    put(85, 39, EYE)     # sockets
-put(84, 40, NOSE)
-put(82, 41, MOUTH);  put(83, 41, MOUTH)   # grin
-put(84, 41, MOUTH);  put(85, 41, MOUTH); put(86, 41, MOUTH)
+# --- clown in the first-floor window beside the door (quarter size) ---
+rect(57, 38, 63, 47, FRAME)          # window frame
+rect(58, 39, 62, 46, GLOW)           # lit interior
+put(59, 40, HAIR_L); put(61, 40, HAIR_L)  # hair tufts
+rect(59, 41, 61, 44, SKIN)           # face
+put(59, 42, EYE);    put(61, 42, EYE)     # sockets
+put(60, 43, NOSE)
+put(59, 44, MOUTH);  put(60, 44, MOUTH); put(61, 44, MOUTH)  # grin
 
 img.save("house.png")
 print("wrote house.png", img.size)
