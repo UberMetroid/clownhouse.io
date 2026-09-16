@@ -1,10 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect width="64" height="64" rx="14" fill="#13141c"/>
-  <rect x="1" y="1" width="62" height="62" rx="13" fill="none" stroke="#24283b" stroke-width="1.5"/>
-  <!-- Omarchy Editorial Geometric Core Monogram: Stylized C & Laboratory Node -->
-  <path d="M42 20H26C21.5817 20 18 23.5817 18 28V36C18 40.4183 21.5817 44 26 44H42" fill="none" stroke="#9ece6a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- Central Pulse Node -->
-  <circle cx="33" cy="32" r="3.5" fill="#c0caf5"/>
-  <!-- Quantum Accent Orbit Line -->
-  <path d="M42 28L36 32L42 36" fill="none" stroke="#89b4fa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <rect width="16" height="16" fill="#0a0812"/>
+  <!-- pixel house: roof peak, body, one lit window -->
+  <path d="M8 1l7 6h-2v7H3V7H1z" fill="#241a3a"/>
+  <rect x="10" y="9" width="3" height="3" fill="#3d5a36"/>
+  <rect x="10" y="10" width="1" height="1" fill="#ff2d55"/>
+  <rect x="12" y="10" width="1" height="1" fill="#b78cff"/>
 </svg>
