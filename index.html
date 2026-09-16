@@ -115,6 +115,15 @@
         }
         @keyframes blink { 50% { opacity: 0; } }
 
+        /* FX canvas — atmosphere layer above everything; fx.js draws
+           lightning, beams, fog, stars, gnats. Reduced-motion: off. */
+        #fx {
+            position: fixed;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+
         @media (prefers-reduced-motion: reduce) {
             .house-wrap { animation: none; opacity: 0.18; }
             .line::after { animation: none; }
@@ -131,6 +140,8 @@
         <h1 class="word">CLOWNHOUSE.IO</h1>
         <p class="line" aria-label="check back later"><span id="typed"></span></p>
     </main>
+    <canvas id="fx" aria-hidden="true"></canvas>
+    <script src="fx.js" defer></script>
     <script>
         (() => {
             const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
