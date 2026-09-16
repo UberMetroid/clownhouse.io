@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """clownhouse // pixel clown generator.
 
-Draws the background clown face on a 46x64 grid and writes clown.png.
-Palette is site-matched: violet hair, phosphor-tinged pale face, red
-nose/mouth. Re-run to regenerate; the PNG is the committed artifact.
+Draws the background clown on a ~50x95 grid and writes clown.png.
+Palette is site-matched: blonde hair, phosphor-tinged pale face, red
+nose/mouth, low-cut dress. Re-run to regenerate; the PNG is committed.
 """
 from PIL import Image
 
 
 PAL = {
     " ": None,                # transparent
-    "h": (58, 16, 46),        # hair deep
-    "H": (122, 26, 78),       # hair lit
+    "h": (110, 80, 24),       # hair deep (blonde)
+    "H": (228, 182, 80),      # hair lit (blonde)
     "f": (212, 200, 228),     # face lit
     "F": (150, 138, 178),     # face mid
     "s": (96, 84, 128),       # face shade
@@ -89,42 +89,44 @@ GRID = [
     " rRr  rR         rRrRr  RrRr         Rr   rRr  ",
     "rRr  rR           rRr    Rr           Rr   rRr ",
     "Rr  rR             r      r            Rr   rR ",
-    "   rR           ffs        sff          Rr     ",
-    "  rR          fffsss      sssfff         Rr    ",
-    "           fffffsss        sssfffff            ",
-    "         fffffffsss         sssfffffff         ",
-    "       fffffffffss           ssfffffffff       ",
-    "      ffffffffffs              sffffffffff     ",
-    "     ffffffffff                  ffffffffff    ",
-    "    ffffffffff                    fffffffff    ",
-    "   fffffffff                       fffffffff   ",
-    "  qffffffff                         ffffffffq  ",
-    " qqffffff   q                       q  fffffqq ",
-    " qqffff   fqqf                     fqqf  fffqq ",
-    "qqqff   ffqq ff                   ff qqff ffqqq",
-    "qqq    ffq   fff                 fff   qff qqq ",
-    "qq    ffq   fssff   d           ffssf   qff qq ",
-    "qq   ffq   ffsssff  dd         ffsssff   qff qq",
-    "q   ffq   ffsssssff ddd       ffsssssff   qff q",
-    "q   fq   ffssssssff dd dd     ffssssssff   qf q",
-    "qq  fq   ffssssssf ddd  ddd   fssssssff   qf qq",
-    "qq qfq   fssssssf ddd    ddd   fssssssf   qfqqq",
-    "qqqfq    fsssssf ddd      ddd   fsssssf    qfqq",
-    "qqqq     fssssf ddd        ddd   fssssf    qqqq",
-    "qqqq     fsssf ddd          ddd   fsssf    qqqq",
-    "qqqqq    fsssf dd            dd   fsssf   qqqqq",
-    "qqqqq    fsssf d              d   fsssf   qqqqq",
-    "qqqqqq   fsssf d              d  fsssf   qqqqqq",
-    "qqqqqq   fsssf dd            dd  fsssf   qqqqqq",
-    "qqqqqq    fsssf ddd        ddd  fsssf   qqqqqq ",
-    "qqqqqqq   fsssf  ddd      ddd  fsssf   qqqqqqq ",
-    "qqqqqqq   fssssf  ddd    ddd  fssssf  qqqqqqq  ",
-    "qqqqqqqq  fssssff  ddd  ddd  ffssssf qqqqqqqq  ",
-    "qqqqqqqq   fssffff   dddd   ffffssf qqqqqqqq   ",
-    "qqqqqqqqq  ffffffffffffffffffffff qqqqqqqqq    ",
-    "qqqqqqqqq   ffffffffffffffffffff qqqqqqqqqq    ",
-    "qqqqqqqqqq                      qqqqqqqqqq     ",
-    "qqqqqqqqqq                      qqqqqqqqqq     ",
+    "   rR          fffss        ssfff          Rr     ",
+    "  rR         fffffsss      sssfffff         Rr    ",
+    "           fffffffsss    sssfffffff            ",
+    "         fffffffffsss    sssfffffffff          ",
+    "       fffffffffffss      ssffffffffff        ",
+    "      fffffffffffs            sffffffffff      ",
+    "     fffffffffffs              sffffffffff     ",
+    "    fffffffffffs                sffffffffff    ",
+    "   fffffffffffs                  sffffffffff   ",
+    "  qffffffffffs                    sffffffffffq  ",
+    " qqffffffffffs                    sffffffffffqq ",
+    " qqfffffffffs                      sfffffffffqq ",
+    "qqqffffffffff                      ffffffffffqqq",
+    "qqqffffffffff                      ffffffffffqqq",
+    "qqqfffffffff d                    d fffffffffqqq",
+    "qqqffffffff dd                    dd ffffffffqqq",
+    "qqqffffff ddd                      ddd ffffffqqq",
+    "qqqfffff ddd                        ddd fffffqqq",
+    "qq ffff sdd                          dds ffff qq",
+    "qq fff sdd                            dds fff qq",
+    "q  fff sdd                            dds fff  q",
+    "q  fff sdd                            dds fff  q",
+    "q  fff sdd                            dds fff  q",
+    "q  fff sdd                            dds fff  q",
+    "qq fff sdd                            dds fff qq",
+    "qq fff sdd                            dds fff qq",
+    "qqqfff sdd                            dds fffqqq",
+    "qqqffff sdd                          dds ffffqqq",
+    "qqqqffff sdd                        dds ffffqqqq",
+    "qqqqqffff sdd                      dds ffffqqqqq",
+    "qqqqqqffff  sdd                  dds  ffffqqqqqq",
+    "qqqqqqqffff   sdd            dds   ffffqqqqqqq",
+    "qqqqqqqqffff    sdd      dds    ffffqqqqqqqq",
+    "qqqqqqqqqffff    sdd  dds    ffffqqqqqqqqq",
+    "qqqqqqqqqqffff    sdddds    ffffqqqqqqqqqq",
+    "qqqqqqqqqqqffff           ffffqqqqqqqqqqq",
+    "qqqqqqqqqqqqffff         ffffqqqqqqqqqqqq",
+    "qqqqqqqqqqqqqffff       ffffqqqqqqqqqqqqq",
     # yapf: enable
 ]
 
