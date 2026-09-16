@@ -1,5 +1,5 @@
 // clownhouse // fx.js — canvas atmosphere layer.
-// Ground fog, shooting stars, and gnats that swarm the pointer.
+// Ground fog and gnats that swarm the pointer.
 // All additive ('lighter' composite) so they read as light, not
 // sprites. Skipped entirely under prefers-reduced-motion.
 // Zero dependencies.
@@ -29,34 +29,12 @@
         s: 0.7 + Math.random() * 1.6, x: 0, y: 0
     }));
 
-    let stars = [];                     // shooting stars
-
     function frame(ts) {
         const dt = Math.min((ts - last) / 1000 || 0.016, 0.05);
         last = ts;
         const t = ts / 1000;
         ctx.clearRect(0, 0, w, h);
         ctx.globalCompositeOperation = 'lighter';
-
-        // shooting stars — occasional diagonal streaks across the sky
-        if (Math.random() < dt * 0.1 && stars.length < 3)
-            stars.push({
-                x: Math.random() * w, y: Math.random() * h * 0.25,
-                vx: 380 + Math.random() * 320, vy: 140 + Math.random() * 90,
-                life: 0
-            });
-        stars = stars.filter(s => (s.life += dt) < 1.1);
-        ctx.lineWidth = 1.5;
-        for (const s of stars) {
-            s.x += s.vx * dt; s.y += s.vy * dt;
-            const a = Math.sin(Math.min(s.life / 1.1, 1) * Math.PI) * 0.8;
-            const tx = s.x - s.vx * 0.14, ty = s.y - s.vy * 0.14;
-            const sg = ctx.createLinearGradient(s.x, s.y, tx, ty);
-            sg.addColorStop(0, `rgba(235,240,255,${a})`);
-            sg.addColorStop(1, 'rgba(235,240,255,0)');
-            ctx.strokeStyle = sg;
-            ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(tx, ty); ctx.stroke();
-        }
 
         // fog puffs — radial gradients breathing along the ground
         for (const p of puffs) {
