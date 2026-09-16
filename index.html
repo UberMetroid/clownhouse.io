@@ -15,16 +15,12 @@
             --violet: #b78cff;
             --phos: #7dffa8;
             --dim: #8a80a8;
-            --eye-l: #ff2d55;
-            --eye-r: #b78cff;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100%; overflow: hidden; }
 
         /* The house — full-page pixel art, always faintly present,
-           breathing 0.14–0.22. The clown watches from the first-floor
-           window beside the door; her eyes are overlay divs that
-           track the pointer. */
+           breathing 0.14–0.22. */
         .house-wrap {
             position: fixed;
             inset: 0;
@@ -46,7 +42,7 @@
             from { opacity: 0.14; }
             to   { opacity: 0.22; }
         }
-        /* Vignette — drowns her edges back into the dark. */
+        /* Vignette — drowns the edges back into the dark. */
         body::after {
             content: "";
             position: fixed;
@@ -58,19 +54,6 @@
             );
             pointer-events: none;
         }
-
-        /* Pupils — positions come from data-x/data-y (measured by
-           house.py); the stylesheet only owns size and color. */
-        .pupil {
-            position: absolute;
-            width: 0.9%;
-            height: 1.6%;
-            visibility: hidden; /* revealed once JS sets left/top */
-            transform: translate(-50%, -50%);
-            transition: transform 0.16s ease-out;
-        }
-        .pupil.l { background: var(--eye-l); box-shadow: 0 0 8px 2px var(--eye-l); }
-        .pupil.r { background: var(--eye-r); box-shadow: 0 0 8px 2px var(--eye-r); }
 
         body {
             background: var(--bg);
@@ -133,8 +116,6 @@
 <body>
     <div class="house-wrap" aria-hidden="true">
         <img class="house" src="house.png" alt="">
-        <i class="pupil l" data-x="0.615" data-y="0.778"></i>
-        <i class="pupil r" data-x="0.635" data-y="0.778"></i>
     </div>
     <main class="card">
         <h1 class="word">CLOWNHOUSE.IO</h1>
@@ -145,36 +126,6 @@
     <script>
         (() => {
             const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-            // Eyes track the pointer — each pupil leans toward the
-            // cursor, travel clamped inside its socket. Pupil home
-            // positions come from data-x/data-y (single source of truth).
-            const wrap = document.querySelector('.house-wrap');
-            const ps = [...document.querySelectorAll('.pupil')].map(p => ({
-                el: p, x: parseFloat(p.dataset.x), y: parseFloat(p.dataset.y)
-            }));
-            for (const p of ps) {
-                p.el.style.left = p.x * 100 + '%';
-                p.el.style.top  = p.y * 100 + '%';
-                p.el.style.visibility = 'visible';
-            }
-            if (!reduced) {
-                const MX = 0.003, MY = 0.006; // travel limits, fraction of wrap
-                addEventListener('pointermove', e => {
-                    const r = wrap.getBoundingClientRect();
-                    for (const p of ps) {
-                        const cx = r.left + r.width * p.x;
-                        const cy = r.top + r.height * p.y;
-                        const dx = e.clientX - cx, dy = e.clientY - cy;
-                        const d = Math.hypot(dx, dy) || 1;
-                        p.el.style.transform =
-                            `translate(-50%,-50%) translate(${dx / d * r.width * MX}px,${dy / d * r.height * MY}px)`;
-                    }
-                }, { passive: true });
-                addEventListener('pointerleave', () => {
-                    for (const p of ps) p.el.style.transform = 'translate(-50%,-50%)';
-                });
-            }
 
             // Typewriter — types each phrase, holds, deletes, next.
             const out = document.getElementById('typed');

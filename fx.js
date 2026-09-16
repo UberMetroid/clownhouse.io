@@ -1,5 +1,5 @@
 // clownhouse // fx.js — canvas atmosphere layer.
-// Lightning strobes, a god-beam spilling from the lit window, ground
+// Lightning strobes, a god-beam sweeping down from the sky, ground
 // fog, shooting stars, and gnats that swarm the pointer. All additive
 // ('lighter' composite) so they read as light, not sprites.
 // Skipped entirely under prefers-reduced-motion. Zero dependencies.
@@ -55,20 +55,20 @@
             ctx.fillRect(0, 0, w, h);
         }
 
-        // god beam — light spilling from her window, slowly sweeping
-        const wx = w * 0.625, wy = h * 0.79;
-        const sweep = Math.sin(t * 0.21) * 0.3 + Math.sin(t * 0.07) * 0.12;
+        // god beam — moonlit shaft sweeping down across the house
+        const bx = w * (0.3 + 0.4 * (Math.sin(t * 0.11) * 0.5 + 0.5));
+        const sweep = Math.sin(t * 0.21) * 0.25 + Math.sin(t * 0.07) * 0.1;
         ctx.save();
-        ctx.translate(wx, wy);
-        ctx.rotate(0.35 + sweep);
-        const bg = ctx.createLinearGradient(0, 0, 0, h * 0.45);
-        bg.addColorStop(0, 'rgba(190,230,170,0.10)');
-        bg.addColorStop(1, 'rgba(190,230,170,0)');
+        ctx.translate(bx, -h * 0.05);
+        ctx.rotate(sweep);
+        const bg = ctx.createLinearGradient(0, 0, 0, h * 1.1);
+        bg.addColorStop(0, 'rgba(190,205,255,0.09)');
+        bg.addColorStop(1, 'rgba(190,205,255,0)');
         ctx.fillStyle = bg;
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.lineTo(-h * 0.055, h * 0.45);
-        ctx.lineTo(h * 0.055, h * 0.45);
+        ctx.lineTo(-h * 0.05, h * 1.1);
+        ctx.lineTo(h * 0.05, h * 1.1);
         ctx.fill();
         ctx.restore();
 

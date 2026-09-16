@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 """clownhouse // pixel house generator.
 
-Draws the full-page background: a dark house silhouette with a clown
-face lit in a first-floor window beside the door -> house.png. The pupil
-overlays in index.html sit over the eye sockets and track the pointer;
-their data-x/data-y fractions are the measured centers printed at the
-end. Re-run to regenerate; the PNG is the committed artifact.
+Draws the full-page background: a dark house silhouette -> house.png.
+Re-run to regenerate; the PNG is the committed artifact.
 """
 from PIL import Image
 
@@ -17,16 +14,8 @@ ROOF   = (10, 6, 18)
 ROOF_E = (32, 18, 48)    # roof rim light
 PANE   = (8, 5, 15)      # dark window glass
 FRAME  = (48, 32, 70)    # window frame
-GLOW   = (56, 78, 54)    # clown window glow (sickly green)
 DOOR   = (26, 9, 22)
 GROUND = (12, 8, 22)
-
-SKIN   = (212, 200, 228) # clown face
-HAIR   = (110, 80, 24)   # hair deep (blonde)
-HAIR_L = (228, 182, 80)  # hair lit
-EYE    = (14, 8, 24)     # eye socket
-NOSE   = (212, 38, 74)
-MOUTH  = (40, 8, 24)
 
 img = Image.new("RGBA", (W, H))
 px = img.load()
@@ -75,7 +64,7 @@ rect(22, 15, 22, 49, EDGE)
 # dark windows
 for cx in (32, 42, 58, 68):
     window(cx, 29, 35)
-for cx in (32, 42, 70):
+for cx in (32, 42, 60, 70):
     window(cx, 39, 46)
 # door + steps
 rect(46, 41, 52, 49, DOOR)
@@ -85,28 +74,9 @@ rect(44, 50, 54, 51, GROUND)
 # ground
 rect(0, 50, 95, 53, GROUND)
 
-# tower + annex windows — dark, like the rest
+# tower + annex windows
 window(16, 20, 30, 8)
 window(84, 36, 43)
 
-# --- clown in the first-floor window beside the door (quarter size) ---
-rect(57, 38, 63, 47, FRAME)          # window frame
-rect(58, 39, 62, 46, GLOW)           # lit interior
-put(59, 40, HAIR_L); put(61, 40, HAIR_L)  # hair tufts
-rect(59, 41, 61, 44, SKIN)           # face
-put(59, 42, EYE);    put(61, 42, EYE)     # sockets
-put(60, 43, NOSE)
-put(59, 44, MOUTH);  put(60, 44, MOUTH); put(61, 44, MOUTH)  # grin
-
 img.save("house.png")
 print("wrote house.png", img.size)
-
-eyes = [(x, y) for y in range(H) for x in range(W) if px[x, y][:3] == EYE]
-mid = (min(x for x, _ in eyes) + max(x for x, _ in eyes)) / 2
-ls = sorted(x for x, y in eyes if x < mid)
-rs = sorted(x for x, y in eyes if x > mid)
-lx = (min(ls) + max(ls)) / 2 / W
-rx = (min(rs) + max(rs)) / 2 / W
-cy = sum(y for _, y in eyes) / len(eyes) / H
-print("pupil l: data-x=%.3f data-y=%.3f" % (lx, cy))
-print("pupil r: data-x=%.3f data-y=%.3f" % (rx, cy))
