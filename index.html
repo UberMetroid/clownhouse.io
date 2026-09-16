@@ -89,16 +89,6 @@
             border: 1px solid var(--edge);
             border-radius: 10px;
             box-shadow: 0 0 60px rgba(183, 140, 255, 0.07);
-            /* Drifts left-to-right across the viewport, fully exits,
-               holds 0.5s out of frame, sweeps back left. 11s loop. */
-            animation: drift 11s linear infinite;
-        }
-        @keyframes drift {
-            0%     { transform: translateX(calc(-55vw - 50%)); }
-            45.45% { transform: translateX(calc( 55vw + 50%)); }
-            50%    { transform: translateX(calc( 55vw + 50%)); }
-            95.45% { transform: translateX(calc(-55vw - 50%)); }
-            100%   { transform: translateX(calc(-55vw - 50%)); }
         }
         .word {
             font-size: clamp(1.4rem, 5vw, 2.2rem);
@@ -108,54 +98,26 @@
             margin-bottom: 1.4rem;
         }
 
-        /* Ticker — each phrase scrolls up in, holds, scrolls up out.
-           8 phrases x 4s = 32s cycle; nth-child delays stagger. */
-        .ticker {
-            position: relative;
-            height: 1.5em;
-            overflow: hidden;
+        /* Typewriter line — JS types/deletes into #typed, cursor
+           blinks at the end. Fixed height so the card never jumps. */
+        .line {
+            min-height: 1.5em;
             font-size: 0.95rem;
             letter-spacing: 0.12em;
             color: var(--phos);
             text-shadow: 0 0 8px rgba(125, 255, 168, 0.35);
+            white-space: nowrap;
         }
-        .ticker span {
-            position: absolute;
-            left: 0;
-            right: 0;
-            opacity: 0;
-            transform: translateY(130%);
-            animation: tick 32s cubic-bezier(0.25, 0.8, 0.3, 1) infinite;
-        }
-        .ticker span::after {
-            content: " _";
+        .line::after {
+            content: "_";
+            margin-left: 0.15em;
             animation: blink 1.1s steps(1) infinite;
-        }
-        .ticker span:nth-child(2) { animation-delay: 4s; }
-        .ticker span:nth-child(3) { animation-delay: 8s; }
-        .ticker span:nth-child(4) { animation-delay: 12s; }
-        .ticker span:nth-child(5) { animation-delay: 16s; }
-        .ticker span:nth-child(6) { animation-delay: 20s; }
-        .ticker span:nth-child(7) { animation-delay: 24s; }
-        .ticker span:nth-child(8) { animation-delay: 28s; }
-        @keyframes tick {
-            0%    { opacity: 0; transform: translateY(130%); }
-            3.5%  { opacity: 1; transform: translateY(0); }
-            9.5%  { opacity: 1; transform: translateY(0); }
-            12.5%, 100% { opacity: 0; transform: translateY(-130%); }
         }
         @keyframes blink { 50% { opacity: 0; } }
 
         @media (prefers-reduced-motion: reduce) {
             .clown-wrap { animation: none; opacity: 0.14; }
-            .card { animation: none; }
-            .ticker span {
-                animation: none;
-                position: static;
-                display: none;
-            }
-            .ticker span:first-child { display: inline; opacity: 1; transform: none; }
-            .ticker span::after { animation: none; }
+            .line::after { animation: none; }
         }
     </style>
 </head>
@@ -167,22 +129,12 @@
     </div>
     <main class="card">
         <h1 class="word">CLOWNHOUSE.IO</h1>
-        <p class="ticker" aria-label="check back later">
-            <span>check back later</span>
-            <span>come back soon</span>
-            <span>not yet, darling</span>
-            <span>the house is dark</span>
-            <span>still cooking</span>
-            <span>knock again later</span>
-            <span>something stirs below</span>
-            <span>soon, sweetheart</span>
-        </p>
+        <p class="line" aria-label="check back later"><span id="typed"></span></p>
     </main>
     <script>
-        // Eyes track the pointer — each pupil leans toward the cursor,
-        // travel clamped inside its socket. The only JS on the page.
         (() => {
-            if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            // Eyes track the pointer — each pupil leans toward the
+            // cursor, travel clamped inside its socket.
             const wrap = document.querySelector('.clown-wrap');
             const ps = [...document.querySelectorAll('.pupil')].map(p => ({
                 el: p, x: parseFloat(p.dataset.x), y: parseFloat(p.dataset.y)
@@ -202,6 +154,31 @@
             addEventListener('pointerleave', () => {
                 for (const p of ps) p.el.style.transform = 'translate(-50%,-50%)';
             });
+
+            // Typewriter — types each phrase, holds, deletes, next.
+            const out = document.getElementById('typed');
+            const PHRASES = [
+                'check back later', 'come back soon', 'not yet, darling',
+                'the house is dark', 'still cooking', 'knock again later',
+                'something stirs below', 'soon, sweetheart'
+            ];
+            if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                out.textContent = PHRASES[0];
+                return;
+            }
+            let i = 0, pos = 0, del = false;
+            (function tick() {
+                const s = PHRASES[i];
+                pos += del ? -1 : 1;
+                out.textContent = s.slice(0, pos);
+                if (!del && pos === s.length) { del = true; return setTimeout(tick, 1600); }
+                if (del && pos === 0) {
+                    del = false;
+                    i = (i + 1) % PHRASES.length;
+                    return setTimeout(tick, 380);
+                }
+                setTimeout(tick, del ? 32 : 65);
+            })();
         })();
     </script>
 </body>
