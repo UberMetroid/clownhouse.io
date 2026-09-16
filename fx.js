@@ -1,8 +1,8 @@
 // clownhouse // fx.js — canvas atmosphere layer.
-// Lightning strobes, a god-beam sweeping down from the sky, ground
-// fog, shooting stars, and gnats that swarm the pointer. All additive
-// ('lighter' composite) so they read as light, not sprites.
-// Skipped entirely under prefers-reduced-motion. Zero dependencies.
+// Ground fog, shooting stars, and gnats that swarm the pointer.
+// All additive ('lighter' composite) so they read as light, not
+// sprites. Skipped entirely under prefers-reduced-motion.
+// Zero dependencies.
 (() => {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
@@ -30,7 +30,6 @@
     }));
 
     let stars = [];                     // shooting stars
-    let flash = 0, flashX = 0.5;        // lightning envelope
 
     function frame(ts) {
         const dt = Math.min((ts - last) / 1000 || 0.016, 0.05);
@@ -38,39 +37,6 @@
         const t = ts / 1000;
         ctx.clearRect(0, 0, w, h);
         ctx.globalCompositeOperation = 'lighter';
-
-        // lightning — rare trigger, strobe re-strikes while decaying
-        if (Math.random() < dt * 0.08) { flash = 1; flashX = Math.random(); }
-        if (flash > 0.02) {
-            if (flash < 0.5 && Math.random() < dt * 14)
-                flash = Math.min(flash + 0.3, 0.9);
-            flash *= Math.pow(0.02, dt);
-            ctx.fillStyle = `rgba(200,185,255,${flash * 0.13})`;
-            ctx.fillRect(0, 0, w, h);
-            const g = ctx.createRadialGradient(
-                flashX * w, -h * 0.1, 0, flashX * w, -h * 0.1, h);
-            g.addColorStop(0, `rgba(220,205,255,${flash * 0.35})`);
-            g.addColorStop(1, 'rgba(220,205,255,0)');
-            ctx.fillStyle = g;
-            ctx.fillRect(0, 0, w, h);
-        }
-
-        // god beam — moonlit shaft sweeping down across the house
-        const bx = w * (0.3 + 0.4 * (Math.sin(t * 0.11) * 0.5 + 0.5));
-        const sweep = Math.sin(t * 0.21) * 0.25 + Math.sin(t * 0.07) * 0.1;
-        ctx.save();
-        ctx.translate(bx, -h * 0.05);
-        ctx.rotate(sweep);
-        const bg = ctx.createLinearGradient(0, 0, 0, h * 1.1);
-        bg.addColorStop(0, 'rgba(190,205,255,0.09)');
-        bg.addColorStop(1, 'rgba(190,205,255,0)');
-        ctx.fillStyle = bg;
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(-h * 0.05, h * 1.1);
-        ctx.lineTo(h * 0.05, h * 1.1);
-        ctx.fill();
-        ctx.restore();
 
         // shooting stars — occasional diagonal streaks across the sky
         if (Math.random() < dt * 0.1 && stars.length < 3)
