@@ -61,13 +61,13 @@
         /* Pupils — socket centers measured from house.png (96x54). */
         .pupil {
             position: absolute;
-            width: 1.7%;
-            height: 2.8%;
+            width: 0.9%;
+            height: 1.6%;
             transform: translate(-50%, -50%);
             transition: transform 0.16s ease-out;
         }
-        .pupil.l { left: 15.1%; top: 45.4%; background: var(--eye-l); box-shadow: 0 0 10px 2px var(--eye-l); }
-        .pupil.r { left: 18.2%; top: 45.4%; background: var(--eye-r); box-shadow: 0 0 10px 2px var(--eye-r); }
+        .pupil.l { left: 86.5%; top: 72.2%; background: var(--eye-l); box-shadow: 0 0 8px 2px var(--eye-l); }
+        .pupil.r { left: 88.5%; top: 72.2%; background: var(--eye-r); box-shadow: 0 0 8px 2px var(--eye-r); }
 
         body {
             background: var(--bg);
@@ -121,8 +121,8 @@
 <body>
     <div class="house-wrap" aria-hidden="true">
         <img class="house" src="house.png" alt="">
-        <i class="pupil l" data-x="0.151" data-y="0.454"></i>
-        <i class="pupil r" data-x="0.182" data-y="0.454"></i>
+        <i class="pupil l" data-x="0.865" data-y="0.722"></i>
+        <i class="pupil r" data-x="0.885" data-y="0.722"></i>
     </div>
     <main class="card">
         <h1 class="word">CLOWNHOUSE.IO</h1>
@@ -136,7 +136,7 @@
             const ps = [...document.querySelectorAll('.pupil')].map(p => ({
                 el: p, x: parseFloat(p.dataset.x), y: parseFloat(p.dataset.y)
             }));
-            const MX = 0.006, MY = 0.012; // travel limits, fraction of wrap
+            const MX = 0.003, MY = 0.006; // travel limits, fraction of wrap
             addEventListener('pointermove', e => {
                 const r = wrap.getBoundingClientRect();
                 for (const p of ps) {

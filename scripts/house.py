@@ -78,8 +78,6 @@ for cx in (32, 42, 58, 68):
     window(cx, 29, 35)
 for cx in (32, 42, 60, 70):
     window(cx, 39, 46)
-window(84, 36, 43)
-
 # door + steps
 rect(46, 41, 52, 49, DOOR)
 rect(45, 40, 53, 40, EDGE)
@@ -88,20 +86,19 @@ rect(44, 50, 54, 51, GROUND)
 # ground
 rect(0, 50, 95, 53, GROUND)
 
-# --- clown in the tower window ---
-rect(11, 19, 21, 32, FRAME)          # window frame
-rect(12, 20, 20, 31, GLOW)           # lit interior
-for x in (12, 13, 19, 20):           # hair tufts spilling out
-    put(x, 20, HAIR_L)
-    put(x, 21, HAIR)
-rect(13, 21, 19, 30, SKIN)           # face
-put(13, 22, HAIR); put(19, 22, HAIR)
-rect(14, 24, 15, 25, EYE)            # left socket
-rect(17, 24, 18, 25, EYE)            # right socket
-put(16, 27, NOSE)
-for x in range(13, 20):              # wide grin
-    put(x, 29, MOUTH)
-put(13, 28, MOUTH); put(19, 28, MOUTH)
+# tower window — dark, like the rest
+window(16, 20, 30, 8)
+
+# --- clown in the lower-right annex window (half size) ---
+rect(81, 35, 87, 44, FRAME)          # window frame
+rect(82, 36, 86, 43, GLOW)           # lit interior
+put(82, 36, HAIR_L); put(86, 36, HAIR_L)  # hair tufts
+put(82, 37, HAIR);   put(86, 37, HAIR)
+rect(83, 37, 85, 42, SKIN)           # face
+put(83, 39, EYE);    put(85, 39, EYE)     # sockets
+put(84, 40, NOSE)
+put(82, 41, MOUTH);  put(83, 41, MOUTH)   # grin
+put(84, 41, MOUTH);  put(85, 41, MOUTH); put(86, 41, MOUTH)
 
 img.save("house.png")
 print("wrote house.png", img.size)
