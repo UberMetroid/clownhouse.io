@@ -4,22 +4,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
-    <meta name="description" content="clownhouse.io — check back later.">
+    <meta name="description" content="clownhouse.io — 404 not found.">
     <meta name="theme-color" content="#0a0812">
-    <link rel="canonical" href="https://clownhouse.io/">
-    <title>CLOWNHOUSE.IO</title>
+    <title>404 · CLOWNHOUSE.IO</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <meta property="og:site_name" content="clownhouse.io">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://clownhouse.io/">
-    <meta property="og:title" content="CLOWNHOUSE.IO">
-    <meta property="og:description" content="check back later.">
+    <meta property="og:url" content="https://clownhouse.io/404.html">
+    <meta property="og:title" content="404 · CLOWNHOUSE.IO">
+    <meta property="og:description" content="you wandered into the wrong room, darling.">
     <meta property="og:image" content="https://clownhouse.io/house.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="CLOWNHOUSE.IO">
-    <meta name="twitter:description" content="check back later.">
+    <meta name="twitter:title" content="404 · CLOWNHOUSE.IO">
+    <meta name="twitter:description" content="you wandered into the wrong room, darling.">
     <meta name="twitter:image" content="https://clownhouse.io/house.png">
     <style>
         :root {
@@ -33,8 +32,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100%; overflow: hidden; }
 
-        /* The house — full-page pixel art, always faintly present,
-           breathing 0.14–0.22. */
         .house-wrap {
             position: fixed;
             inset: 0;
@@ -56,7 +53,6 @@
             from { opacity: 0.14; }
             to   { opacity: 0.22; }
         }
-        /* Vignette — drowns the edges back into the dark. */
         body::after {
             content: "";
             position: fixed;
@@ -68,7 +64,6 @@
             );
             pointer-events: none;
         }
-
         body {
             background: var(--bg);
             color: var(--dim);
@@ -94,9 +89,6 @@
             text-shadow: 0 0 12px rgba(183, 140, 255, 0.5);
             margin-bottom: 1.4rem;
         }
-
-        /* Typewriter line — JS types/deletes into #typed, cursor
-           blinks at the end. Fixed height so the card never jumps. */
         .line {
             min-height: 1.5em;
             font-size: 0.95rem;
@@ -104,6 +96,7 @@
             color: var(--phos);
             text-shadow: 0 0 8px rgba(125, 255, 168, 0.35);
             white-space: nowrap;
+            margin-bottom: 2rem;
         }
         .line::after {
             content: "_";
@@ -112,15 +105,30 @@
         }
         @keyframes blink { 50% { opacity: 0; } }
 
-        /* FX canvas — atmosphere layer above everything; fx.js draws
-           fog and gnats. Reduced-motion: off. */
+        .door-btn {
+            display: inline-block;
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            color: var(--dim);
+            text-decoration: none;
+            border: 1px solid var(--edge);
+            padding: 8px 18px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .door-btn:hover {
+            color: var(--violet);
+            border-color: var(--violet);
+            background: rgba(183, 140, 255, 0.08);
+            box-shadow: 0 0 15px rgba(183, 140, 255, 0.2);
+        }
+
         #fx {
             position: fixed;
             inset: 0;
             z-index: 3;
             pointer-events: none;
         }
-
         @media (prefers-reduced-motion: reduce) {
             .house-wrap { animation: none; opacity: 0.18; }
             .line::after { animation: none; }
@@ -132,27 +140,21 @@
         <img class="house" src="house.png" alt="">
     </div>
     <main class="card">
-        <h1 class="word">CLOWNHOUSE.IO</h1>
-        <p class="line" aria-label="check back later"><span id="typed"></span></p>
+        <h1 class="word">404</h1>
+        <p class="line" aria-label="wrong room, darling"><span id="typed"></span></p>
+        <a class="door-btn" href="/">← the front door</a>
     </main>
     <canvas id="fx" aria-hidden="true"></canvas>
     <script src="fx.js" defer></script>
     <script>
         (() => {
             const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-            // Typewriter — types each phrase, holds, deletes, next.
             const out = document.getElementById('typed');
             const PHRASES = [
-                'check back later', 'come back soon', 'not yet, darling',
-                'the house is dark', 'still cooking', 'knock again later',
-                'something stirs below', 'soon, sweetheart',
-                'the clown isn’t ready', 'she’s still painting her face',
-                'the tent flap is sewn shut', 'no laughing yet',
-                'hush — she can hear you', 'the balloons aren’t filled',
-                'she’s counting to ten', 'wait by the red balloon',
-                'the mirror room is empty', 'come back when the lights flicker',
-                'she’s in the walls', 'the music box is winding'
+                'wrong room, darling', 'nothing here but dust',
+                'this door wasn’t on the blueprint', 'she was never in this room',
+                'turn around', 'the hallway ended twenty steps ago',
+                'step back into the light', 'you weren’t supposed to open this'
             ];
             if (reduced) {
                 out.textContent = PHRASES[0];
@@ -163,7 +165,7 @@
                 const s = PHRASES[i];
                 pos += del ? -1 : 1;
                 out.textContent = s.slice(0, pos);
-                if (!del && pos === s.length) { del = true; return setTimeout(tick, 1600); }
+                if (!del && pos === s.length) { del = true; return setTimeout(tick, 1800); }
                 if (del && pos === 0) {
                     del = false;
                     i = (i + 1) % PHRASES.length;
