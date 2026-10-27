@@ -389,7 +389,7 @@
     { id: 6, name: 'MUSIC ROOM (1F)', cx: 60, y0: 39, y1: 46, w: 4 },
     { id: 7, name: 'VESTIBULE (1F)', cx: 70, y0: 39, y1: 46, w: 4 },
     { id: 8, name: 'BELFRY SPIRE', cx: 15, y0: 20, y1: 29, w: 6 },
-    { id: 9, name: 'EAST ANNEX', cx: 84, y0: 36, y1: 43, w: 4 }
+    { id: 9, name: 'EAST ANNEX', cx: 84, y0: 36, y1: 46, w: 4 }
   ];
 
   (function buildManor() {
@@ -912,22 +912,20 @@
             var winPulse = 0.5 + 0.5 * Math.sin(sec * 2.1 + winId * 1.7);
 
             // When Music Box is playing, render animated pixel Equalizer Bar Chart across all ground-floor windows (winId === 4, 5, 6, 7, 9)
+            // using a unified house-level floor baseline (eqBottomY = 46) and fixed house-height scale (eqMaxRows = 8)
+            // so the music reaches the exact same physical house height regardless of any individual window's dimensions.
             if (musicPlaying && isGroundFloorWindow(winId) && winId !== clownWinIdx) {
-              var mWin = WINDOWS[winId];
-              var mhw = Math.floor(mWin.w / 2);
-              var barIdx = Math.max(0, mx - (mWin.cx - mhw));
-              var totalRows = mWin.y1 - mWin.y0 + 1;
-              var rowFromBottom = mWin.y1 - my; // 0 at bottom sill, 7 at top arch
-              var phaseOff = (winId === 4) ? 0.0 : (winId === 5 ? 1.3 : (winId === 6 ? 2.6 : (winId === 7 ? 3.9 : 5.2)));
-              var ampScale = (winId === 6) ? 1.0 : 0.88;
-              var wave = Math.abs(Math.sin(sec * 6.8 + musicStep * 0.85 + barIdx * 1.35 + phaseOff)) * 0.68 +
-                         Math.abs(Math.cos(sec * 11.2 - barIdx * 1.9 + musicStep * 0.5 + phaseOff * 0.5)) * 0.32;
-              var barHeight = Math.max(1, Math.min(totalRows, Math.round((0.18 + 0.82 * wave * ampScale) * totalRows)));
-              if (rowFromBottom < barHeight) {
-                var isPeak = (rowFromBottom === barHeight - 1);
+              var eqBottomY = 46;
+              var eqMaxRows = 8; // spans house rows my = 39..46 uniformly across the entire ground floor
+              var houseRowFromFloor = eqBottomY - my;
+              var wave = Math.abs(Math.sin(sec * 6.8 + musicStep * 0.85 + mx * 0.65)) * 0.68 +
+                         Math.abs(Math.cos(sec * 11.2 - mx * 0.95 + musicStep * 0.5)) * 0.32;
+              var barHeight = Math.max(1, Math.min(eqMaxRows, Math.round((0.18 + 0.82 * wave) * eqMaxRows)));
+              if (houseRowFromFloor >= 0 && houseRowFromFloor < barHeight) {
+                var isPeak = (houseRowFromFloor === barHeight - 1);
                 ctx.fillStyle = isPeak
                   ? '#ffffff'
-                  : (rowFromBottom >= Math.floor(totalRows * 0.6)
+                  : (houseRowFromFloor >= Math.floor(eqMaxRows * 0.6)
                     ? ('rgb(' + hotRgb + ')')
                     : '#50fa7b');
               } else {
