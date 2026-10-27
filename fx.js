@@ -1,7 +1,7 @@
 /**
- * fx.js — Interactive Bayer-Dithered Pixel CLOWNHOUSE Canvas Stage,
+ * fx.js (v4.0.0) — Interactive Bayer-Dithered Pixel CLOWNHOUSE Canvas Stage,
  * Indexed Pixel Haunted Manor & Grounds, Watching Heterochromia Clown,
- * Pointer-Tracked Card Spotlight, Zero-Dep Web Audio Arcade Console,
+ * Window-Clipped Interior Wisps, Ground-Floor Web Audio Music-Box & Spectrum EQ,
  * and 8-Bit Retro Theme Palette Switcher.
  */
 (function () {
