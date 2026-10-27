@@ -231,18 +231,12 @@
       ensureAudio();
       tickMusicBox();
       musicTimer = setInterval(tickMusicBox, 260);
-      if (window.clownhousePushWhisper) {
-        window.clownhousePushWhisper('the porcelain music box begins to turn in the music room...');
-      }
     } else {
       if (musicTimer) {
         clearInterval(musicTimer);
         musicTimer = null;
       }
       updateEqBar();
-      if (window.clownhousePushWhisper) {
-        window.clownhousePushWhisper('the music box clicks shut in the dark');
-      }
     }
   }
 
@@ -543,14 +537,12 @@
       if (!target || target === document.body || target === document.documentElement || target === canvas) return false;
       var node = target.nodeType === 3 ? target.parentElement : target;
       if (!node || typeof node.closest !== 'function') return false;
-      if (node.id === 'spotlight-canvas' || node.classList.contains('stage-wrap') || node.classList.contains('wordmark-hero')) return false;
+      if (node.id === 'spotlight-canvas') return false;
       return Boolean(node.closest(TEXT_SEL));
     }
 
     var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var dpr = 1, width = 0, height = 0, cellPx = 8, gridCols = 0, gridRows = 0;
-    var wmWidth = ACTIVE_WORDMARK[0].length, wmHeight = ACTIVE_WORDMARK.length, wmRows = ACTIVE_WORDMARK;
-    var wmOriginX = 0, wmOriginY = 0;
 
     var mouse = { x: -2000, y: -2000, active: false, lastMove: 0 };
     var smoothMouse = { x: -2000, y: -2000, strength: 0 };
@@ -569,26 +561,27 @@
     var lastClownJump = 0;
     var rafId = 0, isVisible = true;
 
-    function moveClownToNewRoom(reason) {
+    function isGroundFloorWindow(winId) {
+      return winId === 4 || winId === 5 || winId === 6 || winId === 7 || winId === 9;
+    }
+
+    function moveClownToNewRoom() {
       var now = performance.now();
       if (now - lastClownJump < 420) return;
       lastClownJump = now;
       var next = clownWinIdx;
-      while (next === clownWinIdx || (musicPlaying && next === 6)) {
+      while (next === clownWinIdx || (musicPlaying && isGroundFloorWindow(next))) {
         next = Math.floor(Math.random() * WINDOWS.length);
       }
       clownWinIdx = next;
       playChimeSound();
-      if (window.clownhousePushWhisper) {
-        var winName = WINDOWS[clownWinIdx].name.toLowerCase();
-        window.clownhousePushWhisper(reason || ('footsteps scurry toward the ' + winName));
-      }
       wakeRender();
     }
 
     window.clownhouseEvictClownFromMusicRoom = function () {
-      if (clownWinIdx === 6) {
-        moveClownToNewRoom('the music box chime startles her out of the music room!');
+      if (isGroundFloorWindow(clownWinIdx)) {
+        lastClownJump = 0;
+        moveClownToNewRoom();
       }
     };
 
@@ -628,9 +621,6 @@
     window.clownhouseTriggerStorm = function () {
       playThunderSound();
       spawnLightningBolt(width * (0.28 + Math.random() * 0.44), height * 0.58);
-      if (window.clownhousePushWhisper) {
-        window.clownhousePushWhisper('thunder splits the belfry — count the seconds');
-      }
     };
 
     window.clownhouseTriggerKnock = function () {
@@ -643,9 +633,7 @@
       ripples.push({ x: doorX, y: doorY, born: now, maxR: 320 * dpr, dur: 900 });
       if (ripples.length > 6) ripples.shift();
       if (Math.random() < 0.65) {
-        moveClownToNewRoom('three knocks echo through the floorboards...');
-      } else if (window.clownhousePushWhisper) {
-        window.clownhousePushWhisper('nobody answers the oak door — yet the latch is warm');
+        moveClownToNewRoom();
       }
       wakeRender();
     };
@@ -659,20 +647,10 @@
         canvas.height = height;
       }
       var targetW = Math.min(width * 0.90, 880 * dpr);
-      var baseCols = Math.max(wmWidth, CLOWNHOUSE_WORDMARK[0].length);
+      var baseCols = CLOWNHOUSE_WORDMARK[0].length;
       cellPx = Math.max(4, Math.floor(targetW / baseCols));
       gridCols = Math.ceil(width / cellPx) + 1;
       gridRows = Math.ceil(height / cellPx) + 1;
-
-      var heroEl = document.getElementById('wordmark-hero');
-      if (heroEl) {
-        var rect = heroEl.getBoundingClientRect();
-        wmOriginX = Math.round((width - wmWidth * cellPx) * 0.5);
-        wmOriginY = Math.round((rect.top + rect.height * 0.5) * dpr - (wmHeight * cellPx) * 0.5);
-      } else {
-        wmOriginX = -99999;
-        wmOriginY = -99999;
-      }
 
       if (reducedMotion) render(performance.now());
     }
@@ -716,7 +694,7 @@
       if (!isOverText) {
         var hoveredWin = hitTestWindow(px, py);
         if (hoveredWin === clownWinIdx) {
-          moveClownToNewRoom('she ducked behind the velvet curtain!');
+          moveClownToNewRoom();
         }
       }
 
@@ -735,15 +713,12 @@
       if (!isOverText) {
         var clickedWin = hitTestWindow(px, py);
         if (clickedWin >= 0) {
-          if (clickedWin === clownWinIdx || (musicPlaying && clickedWin === 6)) {
-            moveClownToNewRoom('you tapped the glass — she vanished into another room!');
+          if (clickedWin === clownWinIdx || (musicPlaying && isGroundFloorWindow(clickedWin))) {
+            moveClownToNewRoom();
           } else {
             clownWinIdx = clickedWin;
             lastClownJump = performance.now();
             playChimeSound();
-            if (window.clownhousePushWhisper) {
-              window.clownhousePushWhisper('something peers out from the ' + WINDOWS[clickedWin].name.toLowerCase());
-            }
           }
           ripples.push({ x: px, y: py, born: performance.now(), maxR: 260 * dpr, dur: 820 });
         } else {
@@ -866,20 +841,14 @@
       var gazeDx = lookTargetX - clownCenterX > 24 * dpr ? 1 : (lookTargetX - clownCenterX < -24 * dpr ? -1 : 0);
       var gazeDy = lookTargetY - clownCenterY > 24 * dpr ? 1 : (lookTargetY - clownCenterY < -24 * dpr ? -1 : 0);
 
-      var heroVisible = wmOriginX > -9000 && wmOriginY > -9000;
-
       for (var r = 0; r < gridRows; r++) {
         var py = r * cellPx;
         var my = Math.floor(((r + 0.5) / gridRows) * MANOR_H);
         if (my >= MANOR_H) my = MANOR_H - 1;
-        var wmRow = heroVisible ? Math.floor((py - wmOriginY) / cellPx) : -1;
-        var hasWordRow = heroVisible && wmRow >= 0 && wmRow < wmHeight;
 
         for (var c = 0; c < gridCols; c++) {
           var px = c * cellPx;
           var cx = px + cellPx * 0.5, cy = py + cellPx * 0.5;
-          var wmCol = hasWordRow ? Math.floor((px - wmOriginX) / cellPx) : -1;
-          var isWord = hasWordRow && wmCol >= 0 && wmCol < wmWidth && wmRows[wmRow] && wmRows[wmRow].charAt(wmCol) === '1';
 
           // Compute Exterior Spotlight (Pointer Torch + Storm Flash) and Interior Wisp Glow
           var spot = stormIntensity * 0.65;
@@ -907,18 +876,6 @@
             if (dsqR >= rp.minRSq && dsqR <= rp.maxRSq) {
               ripGlow = Math.max(ripGlow, (1 - Math.abs(Math.sqrt(dsqR) - rp.r) / ringW) * rp.amp);
             }
-          }
-
-          if (isWord) {
-            // 3-tier vertical arcade shading (#ffffff top cap -> --hot mid -> --phosphor base) + shockwave boost
-            var wBoost = spot * 1.1 + wispInside * 0.35 + ripGlow * 1.6 + stormIntensity * 0.9;
-            ctx.fillStyle = (wmRow < 5 || wBoost > 0.85)
-              ? '#ffffff'
-              : (wmRow < 11 || wBoost > 0.35)
-                ? ('rgb(' + hotRgb + ')')
-                : ('rgb(' + midRgb + ')');
-            ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
-            continue;
           }
 
           var dither = BAYER[(r & 7) * 8 + (c & 7)] / 64;
@@ -954,35 +911,28 @@
             var winId = tile - 10;
             var winPulse = 0.5 + 0.5 * Math.sin(sec * 2.1 + winId * 1.7);
 
-            // When Music Box is playing, render animated pixel Equalizer Bar Chart inside the Music Room (winId === 6)
-            // and subtle synchronized harmonic bars in Drawing Room (winId === 5) & Vestibule (winId === 7)
-            if (musicPlaying && (winId === 6 || winId === 5 || winId === 7) && winId !== clownWinIdx) {
+            // When Music Box is playing, render animated pixel Equalizer Bar Chart across all ground-floor windows (winId === 4, 5, 6, 7, 9)
+            if (musicPlaying && isGroundFloorWindow(winId) && winId !== clownWinIdx) {
               var mWin = WINDOWS[winId];
               var mhw = Math.floor(mWin.w / 2);
               var barIdx = Math.max(0, mx - (mWin.cx - mhw));
               var totalRows = mWin.y1 - mWin.y0 + 1;
               var rowFromBottom = mWin.y1 - my; // 0 at bottom sill, 7 at top arch
-              var phaseOff = (winId === 6) ? 0 : (winId === 5 ? 1.9 : 3.7);
-              var ampScale = (winId === 6) ? 1.0 : 0.68;
+              var phaseOff = (winId === 4) ? 0.0 : (winId === 5 ? 1.3 : (winId === 6 ? 2.6 : (winId === 7 ? 3.9 : 5.2)));
+              var ampScale = (winId === 6) ? 1.0 : 0.88;
               var wave = Math.abs(Math.sin(sec * 6.8 + musicStep * 0.85 + barIdx * 1.35 + phaseOff)) * 0.68 +
-                         Math.abs(Math.cos(sec * 11.2 - barIdx * 1.9 + musicStep * 0.5)) * 0.32;
+                         Math.abs(Math.cos(sec * 11.2 - barIdx * 1.9 + musicStep * 0.5 + phaseOff * 0.5)) * 0.32;
               var barHeight = Math.max(1, Math.min(totalRows, Math.round((0.18 + 0.82 * wave * ampScale) * totalRows)));
               if (rowFromBottom < barHeight) {
                 var isPeak = (rowFromBottom === barHeight - 1);
-                if (winId === 6) {
-                  ctx.fillStyle = isPeak
-                    ? '#ffffff'
-                    : (rowFromBottom >= Math.floor(totalRows * 0.6)
-                      ? ('rgb(' + hotRgb + ')')
-                      : '#50fa7b');
-                } else {
-                  ctx.fillStyle = isPeak ? colorSpotHigh : colorSpotMid;
-                }
+                ctx.fillStyle = isPeak
+                  ? '#ffffff'
+                  : (rowFromBottom >= Math.floor(totalRows * 0.6)
+                    ? ('rgb(' + hotRgb + ')')
+                    : '#50fa7b');
               } else {
-                // Warm backlit music room interior behind the bars
-                ctx.fillStyle = (winId === 6)
-                  ? ('rgba(' + midRgb + ',' + (0.20 + wispInside * 0.35).toFixed(2) + ')')
-                  : '#0b0716';
+                // Warm backlit ground-floor interior behind the equalizer bars
+                ctx.fillStyle = 'rgba(' + midRgb + ',' + (0.20 + wispInside * 0.35).toFixed(2) + ')';
               }
               ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
             } else if (winId === clownWinIdx) {
@@ -1001,13 +951,11 @@
               ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
             }
           } else {
-            // Solid Haunted Manor Architecture (Brickwork, Shingles, Fence, Trees, Door)
-            // Walls occlude interior wisps; window frames (tile === 5) catch interior wisp spill + Music Room frame glow
-            var musicFrameBoost = (musicPlaying && tile === 5 && mx >= 56 && mx <= 64 && my >= 38 && my <= 47) ? 0.55 : 0;
-            var interiorBleed = (tile === 5) ? (wispInside * 0.88 + musicFrameBoost) : ((tile === 1 || tile === 2) ? (wispInside * 0.10) : 0);
-            var mLit = 0.20 + spot * 0.95 + interiorBleed + ripGlow * 0.90 + fogEnergy * 0.45;
+            // Solid Haunted Manor Architecture (Brickwork, Shingles, Window Borders, Fence, Trees, Door)
+            // Exterior walls and outer window borders (tile === 5) completely occlude interior wisps!
+            var mLit = 0.20 + spot * 0.95 + ripGlow * 0.90 + fogEnergy * 0.45;
             if (tile === 2 || tile === 4 || tile === 5) {
-              // Rim-lit edges, gargoyles, and window frames
+              // Rim-lit edges, gargoyles, and exterior window borders
               ctx.fillStyle = (mLit > 0.65)
                 ? colorSpotHigh
                 : (mLit > 0.32 ? colorSpotMid : manorEdgeCol);
@@ -1116,26 +1064,14 @@
         }
       }
 
-      // --- Render Interior Will-o'-the-Wisp Orbs (Occluded by Manor Walls, Vivid Through Windows) ---
+      // --- Render Interior Will-o'-the-Wisp Orbs (Strictly Visible ONLY Inside Internal Window Panes: tile >= 10 && tile < 20) ---
       for (var w = 0; w < meshCount; w++) {
         var wCol = Math.round(meshOrbs[w].x / cellPx);
         var wRow = Math.round(meshOrbs[w].y / cellPx);
         var wx = wCol * cellPx;
         var wy = wRow * cellPx;
 
-        // Check how close the wisp is to any manor window pane
-        var bestWinFactor = 0;
-        for (var winIdx = 0; winIdx < WINDOWS.length; winIdx++) {
-          var winObj = WINDOWS[winIdx];
-          var wcy = (winObj.y0 + winObj.y1) * 0.5;
-          var dxW = Math.max(0, Math.abs(meshOrbs[w].mx - winObj.cx) - winObj.w * 0.65);
-          var dyW = Math.max(0, Math.abs(meshOrbs[w].my - wcy) - (winObj.y1 - winObj.y0) * 0.65);
-          var dW = Math.hypot(dxW, dyW);
-          var wf = Math.max(0, 1 - dW / 4.2);
-          if (wf > bestWinFactor) bestWinFactor = wf;
-        }
-
-        // Draw individual wisp cross pixels, brightly visible inside window panes/frames and faint behind walls
+        // Draw individual wisp cross pixels ONLY when inside the internal window glass pane square (tile >= 10 && tile < 20)
         var wOffsets = [
           { dc: 0, dr: 0, core: true },
           { dc: -1, dr: 0, core: false },
@@ -1150,19 +1086,11 @@
           var pmy = Math.floor(((pr + 0.5) / gridRows) * MANOR_H);
           if (pmx < 0 || pmx >= MANOR_W || pmy < 0 || pmy >= MANOR_H) continue;
           var ptile = manorGrid[pmy * MANOR_W + pmx];
-          var inPane = (ptile >= 10 && ptile < 20);
-          var inFrame = (ptile === 5);
-          var inWall = (ptile === 1 || ptile === 2 || ptile === 3 || ptile === 6);
-          if (!inPane && !inFrame && !inWall) continue;
+          if (ptile < 10 || ptile >= 20) continue;
 
-          var pAlpha = inPane
-            ? 0.96
-            : (inFrame
-              ? (0.45 + 0.40 * bestWinFactor)
-              : (0.10 + 0.18 * bestWinFactor));
           ctx.fillStyle = wOffsets[wo].core
-            ? ('rgba(255,255,255,' + pAlpha.toFixed(2) + ')')
-            : ('rgba(' + hotRgb + ',' + (pAlpha * 0.85).toFixed(2) + ')');
+            ? 'rgba(255,255,255,0.96)'
+            : ('rgba(' + hotRgb + ',0.85)');
           ctx.fillRect(pc * cellPx, pr * cellPx, cellPx - 1, cellPx - 1);
         }
 
@@ -1171,12 +1099,40 @@
         var wCenterTile = (cMx >= 0 && cMx < MANOR_W && cMy >= 0 && cMy < MANOR_H)
           ? manorGrid[cMy * MANOR_W + cMx]
           : 0;
-        var wCenterInWindow = (wCenterTile >= 10 && wCenterTile < 20) || (wCenterTile === 5);
+        var wCenterInPane = (wCenterTile >= 10 && wCenterTile < 20);
 
-        // Crisp glowing reticle halo only when the wisp center passes behind a window pane or frame
-        if (wCenterInWindow && bestWinFactor > 0.25) {
+        // Crisp glowing reticle clipped strictly to the internal window pane square (never on tile === 5 border)
+        if (wCenterInPane) {
+          var minPc = wCol, maxPc = wCol, minPr = wRow, maxPr = wRow;
+          while (minPc > 0) {
+            var testMxL = Math.floor((((minPc - 1 + shakeCols) + 0.5) / gridCols) * MANOR_W);
+            if (testMxL >= 0 && testMxL < MANOR_W && manorGrid[cMy * MANOR_W + testMxL] === wCenterTile) minPc--;
+            else break;
+          }
+          while (maxPc < gridCols - 1) {
+            var testMxR = Math.floor((((maxPc + 1 + shakeCols) + 0.5) / gridCols) * MANOR_W);
+            if (testMxR >= 0 && testMxR < MANOR_W && manorGrid[cMy * MANOR_W + testMxR] === wCenterTile) maxPc++;
+            else break;
+          }
+          while (minPr > 0) {
+            var testMyT = Math.floor(((minPr - 1 + 0.5) / gridRows) * MANOR_H);
+            if (testMyT >= 0 && testMyT < MANOR_H && manorGrid[testMyT * MANOR_W + cMx] === wCenterTile) minPr--;
+            else break;
+          }
+          while (maxPr < gridRows - 1) {
+            var testMyB = Math.floor(((maxPr + 1 + 0.5) / gridRows) * MANOR_H);
+            if (testMyB >= 0 && testMyB < MANOR_H && manorGrid[testMyB * MANOR_W + cMx] === wCenterTile) maxPr++;
+            else break;
+          }
+          var paneX0 = minPc * cellPx;
+          var paneY0 = minPr * cellPx;
+          var paneW = (maxPc - minPc + 1) * cellPx - 1;
+          var paneH = (maxPr - minPr + 1) * cellPx - 1;
           ctx.save();
-          ctx.strokeStyle = 'rgba(' + hotRgb + ',' + ((0.22 + 0.70 * bestWinFactor) * glareCut).toFixed(2) + ')';
+          ctx.beginPath();
+          ctx.rect(paneX0, paneY0, paneW, paneH);
+          ctx.clip();
+          ctx.strokeStyle = 'rgba(' + hotRgb + ',' + (0.85 * glareCut).toFixed(2) + ')';
           ctx.lineWidth = Math.max(1.5, dpr * 1.4);
           var wPad = cellPx * 1.5;
           ctx.strokeRect(wx - wPad, wy - wPad, cellPx + wPad * 2 - 1, cellPx + wPad * 2 - 1);
@@ -1210,81 +1166,8 @@
     });
   }
 
-  // --- Typewriter Whispers + Interactive [1]-[3] Footer Triggers ---
-  function initConsoleAndTypewriter() {
-    var out = document.getElementById('typed');
-    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var defaultPhrases = is404Page
-      ? [
-          'wrong room, darling',
-          'nothing here but dust and greasepaint',
-          'this door wasn’t on the blueprint',
-          'she was never in this room',
-          'turn around slowly',
-          'the hallway ended twenty steps ago',
-          'step back into the lantern light',
-          'you weren’t supposed to open this'
-        ]
-      : [
-          'check back later',
-          'come back soon, darling',
-          'not yet — the house is still waking',
-          'she’s counting to ten in the belfry',
-          'the music box is winding in the dark',
-          'knock three times and watch the windows',
-          'something stirs behind the mirror room',
-          'she’s still painting her face',
-          'the tent flap is sewn shut',
-          'hush — she can hear your cursor',
-          'wait by the violet lantern',
-          'come back when the gable lights flicker'
-        ];
-
-    var i = 0, pos = 0, del = false, timer = null;
-
-    function tick() {
-      if (!out) return;
-      var s = defaultPhrases[i % defaultPhrases.length];
-      pos += del ? -1 : 1;
-      out.textContent = s.slice(0, pos);
-      if (!del && pos >= s.length) {
-        del = true;
-        timer = setTimeout(tick, 1850);
-        return;
-      }
-      if (del && pos <= 0) {
-        del = false;
-        i = (i + 1) % defaultPhrases.length;
-        timer = setTimeout(tick, 340);
-        return;
-      }
-      timer = setTimeout(tick, del ? 28 : 58);
-    }
-
-    window.clownhousePushWhisper = function (msg) {
-      if (!out || !msg) return;
-      if (timer) clearTimeout(timer);
-      defaultPhrases.splice((i + 1) % defaultPhrases.length, 0, msg);
-      if (defaultPhrases.length > 18) defaultPhrases.pop();
-      i = (i + 1) % defaultPhrases.length;
-      pos = 0;
-      del = false;
-      if (reduced) {
-        out.textContent = msg;
-      } else {
-        tick();
-      }
-    };
-
-    if (out) {
-      if (reduced) {
-        out.textContent = defaultPhrases[0];
-      } else {
-        tick();
-      }
-    }
-
-    // Interactive [1]-[3] triggers
+  // --- Interactive [1]-[3] Footer Triggers ---
+  function initConsoleTriggers() {
     var btnKnock = document.getElementById('act-knock');
     var btnMusic = document.getElementById('act-music');
     var btnStorm = document.getElementById('act-storm');
@@ -1322,7 +1205,7 @@
     initPalette();
     renderHeaderWordmark();
     initCanvas();
-    initConsoleAndTypewriter();
+    initConsoleTriggers();
   }
 
   if (document.readyState === 'loading') {

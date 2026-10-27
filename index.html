@@ -88,7 +88,7 @@
       z-index: 1;
     }
 
-    /* Top Scanline Header Bar with Jester Crest + Smart Whisper Typewriter */
+    /* Top Scanline Header Bar with Centered Jester Crest + CLOWNHOUSE Wordmark */
     .site-header {
       position: fixed;
       top: 0;
@@ -114,12 +114,13 @@
       margin: 0 auto;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       gap: 1rem;
     }
-    .brand-left {
+    .header-brand, .brand-left {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 0.65rem;
       flex-shrink: 0;
     }
@@ -146,69 +147,6 @@
       overflow: hidden;
       clip: rect(0, 0, 0, 0);
       white-space: nowrap;
-    }
-
-    /* Smart Whisper Typewriter Line in Header */
-    .header-whisper {
-      flex: 1;
-      max-width: 540px;
-      padding: 0.35rem 0.75rem;
-      background: rgba(4, 3, 8, 0.85);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--phosphor);
-      border-radius: 5px;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      min-width: 0;
-    }
-    .whisper-prompt {
-      color: var(--muted);
-      font-size: 0.74rem;
-      user-select: none;
-      flex-shrink: 0;
-    }
-    .line {
-      flex: 1;
-      min-height: 1.35em;
-      font-size: 0.82rem;
-      letter-spacing: 0.06em;
-      color: var(--emerald);
-      text-shadow: 0 0 8px rgba(80, 250, 123, 0.35);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .line::after {
-      content: "█";
-      margin-left: 0.18em;
-      font-size: 0.78em;
-      color: var(--phosphor);
-      animation: blink 1.05s steps(1) infinite;
-    }
-    @keyframes blink { 50% { opacity: 0; } }
-
-    /* Unobstructed Haunted Manor Stage + Binary Wordmark Anchor in Upper Sky */
-    .stage-wrap {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      max-width: 880px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      pointer-events: none;
-      margin-top: clamp(8px, 2.5vh, 28px);
-    }
-    .wordmark-hero {
-      width: 100%;
-      height: clamp(64px, 11vh, 108px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      pointer-events: none;
-      user-select: none;
     }
 
     /* Bottom Scanline .footer-dock with [1]-[3] Arcade Triggers & 8-Swatch Palette Switcher */
@@ -333,22 +271,8 @@
     }
 
     @media (max-width: 680px) {
-      .site-header-inner {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 6px;
-      }
-      .header-whisper {
-        max-width: 100%;
-      }
-      body {
-        padding-top: 88px;
-      }
       .dock-swatch-label { display: none; }
       .arcade-btn { padding: 4px 7px; font-size: 10px; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .line::after { animation: none; }
     }
   </style>
 </head>
@@ -357,21 +281,13 @@
 
   <header class="site-header">
     <div class="site-header-inner">
-      <div class="brand-left">
+      <div class="header-brand brand-left">
         <img class="crest-emblem" src="favicon.svg" alt="" width="34" height="34">
         <canvas id="header-wordmark" class="header-wordmark" width="342" height="51" aria-label="CLOWNHOUSE"></canvas>
         <h1 class="visually-hidden">CLOWNHOUSE.IO</h1>
       </div>
-      <div class="header-whisper" aria-live="polite">
-        <span class="whisper-prompt">whisper://</span>
-        <p class="line" aria-label="check back later"><span id="typed">check back later</span></p>
-      </div>
     </div>
   </header>
-
-  <main class="stage-wrap">
-    <div class="wordmark-hero" id="wordmark-hero" aria-hidden="true"></div>
-  </main>
 
   <nav class="footer-dock" id="footer-dock" aria-label="Sanctuary Controls and 8-Bit Theme Palette Dock">
     <div class="footer-dock-inner">
