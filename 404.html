@@ -329,7 +329,7 @@
 
     .arcade-triggers {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 7px;
       margin-top: 0.75rem;
     }
@@ -343,7 +343,7 @@
       border: 1.5px solid var(--border-accent);
       box-shadow: 2px 2px 0 0 #000;
       border-radius: 4px;
-      padding: 7px 8px;
+      padding: 7px 6px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -360,9 +360,18 @@
       box-shadow: 2px 2px 0 0 #000, 0 0 12px var(--phosphor-glow);
       transform: translateY(-1px);
     }
+    .arcade-btn.active {
+      background: var(--phosphor);
+      color: #05040a;
+      border-color: #ffffff;
+      box-shadow: 0 0 14px var(--phosphor-glow);
+    }
     .arcade-key {
       color: var(--hot);
       font-weight: 700;
+    }
+    .arcade-btn.active .arcade-key {
+      color: #05040a;
     }
 
     .footer-dock {
@@ -449,7 +458,7 @@
 
     @media (max-width: 600px) {
       .sanctuary-card { padding: 1rem; }
-      .arcade-triggers { grid-template-columns: 1fr; }
+      .arcade-triggers { grid-template-columns: repeat(2, 1fr); }
       .tui-screen-mock { font-size: 10px; padding: 9px 10px; }
       .dock-swatch-label { display: none; }
     }
@@ -494,9 +503,12 @@
       </div>
 
       <div class="arcade-triggers">
-        <a class="door-btn" href="/">&larr; The Front Door</a>
+        <a class="door-btn" href="/">&larr; Front Door</a>
         <button type="button" class="arcade-btn" id="act-knock" title="Knock on the sealed door (Key: 1)">
           <span class="arcade-key">[1]</span> Knock
+        </button>
+        <button type="button" class="arcade-btn" id="act-music" aria-pressed="false" title="Toggle dark music-box synth loop (Key: 2)">
+          <span class="arcade-key">[2]</span> Music Box
         </button>
         <button type="button" class="arcade-btn" id="act-storm" title="Summon lightning bolt (Key: 3)">
           <span class="arcade-key">[3]</span> Storm

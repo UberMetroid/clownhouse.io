@@ -452,23 +452,10 @@
     rect(6, 14, 8, 15, 2); put(5, 13, 4); put(7, 13, 4);
     rect(79, 24, 81, 25, 2); put(82, 23, 4); put(80, 23, 4);
 
-    // 10 Windows
-    for (var i = 0; i < WINDOWS.length; i++) {
-      var w = WINDOWS[i];
-      var hw = Math.floor(w.w / 2);
-      rect(w.cx - hw - 1, w.y0 - 1, w.cx + hw + 1, w.y1 + 1, 5);
-      rect(w.cx - hw, w.y0, w.cx + hw, w.y1, 10 + w.id);
-    }
-
-    // Front Door + Steps
-    rect(46, 41, 52, 49, 6);
-    rect(45, 40, 53, 40, 2);
-    rect(44, 50, 54, 51, 7);
-
     // Ground
     rect(0, 50, 95, 53, 7);
 
-    // Crooked Iron Fence
+    // Crooked Iron Fence (drawn before windows & door so foreground panes stay intact)
     for (var fx = 2; fx < 95; fx += 3) {
       if (fx >= 44 && fx <= 54) continue;
       var fh = (fx % 6 === 0) ? 45 : 46;
@@ -488,6 +475,19 @@
     put(91, 31, 9); put(90, 29, 9);
     put(94, 32, 9); put(95, 30, 9);
     put(91, 37, 9); put(94, 36, 9); put(95, 35, 9);
+
+    // 10 Windows (drawn after fence so 1st-floor window panes and frames are clean)
+    for (var i = 0; i < WINDOWS.length; i++) {
+      var w = WINDOWS[i];
+      var hw = Math.floor(w.w / 2);
+      rect(w.cx - hw - 1, w.y0 - 1, w.cx + hw + 1, w.y1 + 1, 5);
+      rect(w.cx - hw, w.y0, w.cx + hw, w.y1, 10 + w.id);
+    }
+
+    // Front Door + Steps + Lintel
+    rect(46, 41, 52, 49, 6);
+    rect(45, 40, 53, 40, 2);
+    rect(44, 50, 54, 51, 7);
   })();
 
   // --- Bayer 8x8 Dither + Perlin-Style Plasma + Haunted Manor Stage ---
@@ -711,7 +711,8 @@
         canvas.height = height;
       }
       var targetW = Math.min(width * 0.90, 880 * dpr);
-      cellPx = Math.max(4, Math.floor(targetW / wmWidth));
+      var baseCols = Math.max(wmWidth, CLOWNHOUSE_WORDMARK[0].length);
+      cellPx = Math.max(4, Math.floor(targetW / baseCols));
       gridCols = Math.ceil(width / cellPx) + 1;
       gridRows = Math.ceil(height / cellPx) + 1;
 
@@ -730,7 +731,11 @@
     }
 
     function wakeRender() {
-      if (!rafId && !reducedMotion && isVisible) {
+      if (reducedMotion) {
+        render(performance.now());
+        return;
+      }
+      if (!rafId && isVisible) {
         rafId = requestAnimationFrame(render);
       }
     }
@@ -852,7 +857,7 @@
       ctx.fillRect(0, 0, width, height);
 
       var acc = window.clownhouseCurrentAccent || [189, 147, 249];
-      if (!smoothAcc) smoothAcc = [acc[0], acc[1], acc[2]];
+      if (!smoothAcc || reducedMotion) smoothAcc = [acc[0], acc[1], acc[2]];
       smoothAcc[0] += (acc[0] - smoothAcc[0]) * 0.09;
       smoothAcc[1] += (acc[1] - smoothAcc[1]) * 0.09;
       smoothAcc[2] += (acc[2] - smoothAcc[2]) * 0.09;
@@ -1086,7 +1091,8 @@
         var b = bolts[bIdx];
         var bAge = (t - b.born) / b.dur;
         if (bAge >= 1) continue;
-        ctx.fillStyle = bAge < 0.35 ? '#ffffff' : colorSpotHigh;
+        var boltCoreColor = bAge < 0.35 ? '#ffffff' : colorSpotHigh;
+        ctx.fillStyle = boltCoreColor;
         var drawSteppedSegment = function (p1, p2, thick) {
           var dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
           var st = Math.max(2, Math.ceil(dist / (cellPx * 0.75)));
@@ -1098,7 +1104,7 @@
             if (thick && bAge < 0.25) {
               ctx.fillStyle = colorSpotMid;
               ctx.fillRect(bx + cellPx, by, cellPx - 1, cellPx - 1);
-              ctx.fillStyle = '#ffffff';
+              ctx.fillStyle = boltCoreColor;
             }
           }
         };
@@ -1129,14 +1135,14 @@
         ctx.restore();
       }
 
-      if (!reducedMotion && isVisible) {
+      var hasActiveEffects = ripples.length > 0 || bolts.length > 0 || t < stormFlashUntil || t < knockUntil;
+      if (isVisible && (!reducedMotion || hasActiveEffects)) {
         rafId = requestAnimationFrame(render);
       }
     }
 
     window.clownhouseRenderSpotlight = function () {
       wakeRender();
-      if (reducedMotion) render(performance.now());
     };
 
     resize();
