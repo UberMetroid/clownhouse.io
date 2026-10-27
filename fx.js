@@ -761,7 +761,7 @@
       // Wisp 1: First floor grand hall & East Annex (FOYER WEST x=32 <-> DRAWING ROOM x=42 <-> MUSIC ROOM x=60 <-> VESTIBULE x=70 <-> EAST ANNEX x=84)
       var w1t = sec * 0.36 + 2.1;
       var w1mx = 58.5 + 27.5 * Math.sin(w1t);
-      var w1my = 42.2 + 1.8 * Math.sin(w1t * 2.7) - (w1mx > 75 ? 2.4 * ((w1mx - 75) / 11) : 0);
+      var w1my = 42.2 + 1.8 * Math.sin(w1t * 2.7);
       meshOrbs[1].mx = w1mx;
       meshOrbs[1].my = w1my;
 
@@ -845,6 +845,7 @@
         var py = r * cellPx;
         var my = Math.floor(((r + 0.5) / gridRows) * MANOR_H);
         if (my >= MANOR_H) my = MANOR_H - 1;
+        var prevMy = r > 0 ? Math.floor(((r - 0.5) / gridRows) * MANOR_H) : -1;
 
         for (var c = 0; c < gridCols; c++) {
           var px = c * cellPx;
@@ -918,11 +919,12 @@
               var eqBottomY = 46;
               var eqMaxRows = 8; // spans house rows my = 39..46 uniformly across the entire ground floor
               var houseRowFromFloor = eqBottomY - my;
+              var prevHouseRowFromFloor = eqBottomY - prevMy;
               var wave = Math.abs(Math.sin(sec * 6.8 + musicStep * 0.85 + mx * 0.65)) * 0.68 +
                          Math.abs(Math.cos(sec * 11.2 - mx * 0.95 + musicStep * 0.5)) * 0.32;
               var barHeight = Math.max(1, Math.min(eqMaxRows, Math.round((0.18 + 0.82 * wave) * eqMaxRows)));
               if (houseRowFromFloor >= 0 && houseRowFromFloor < barHeight) {
-                var isPeak = (houseRowFromFloor === barHeight - 1);
+                var isPeak = (houseRowFromFloor === barHeight - 1) || (prevHouseRowFromFloor >= barHeight);
                 ctx.fillStyle = isPeak
                   ? '#ffffff'
                   : (houseRowFromFloor >= Math.floor(eqMaxRows * 0.6)
