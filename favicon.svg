@@ -1,6 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-  <rect width="16" height="16" fill="#0a0812"/>
-  <!-- pixel house: roof peak, body, one lit window -->
-  <path d="M8 1l7 6h-2v7H3V7H1z" fill="#241a3a"/>
-  <rect x="10" y="9" width="3" height="3" fill="#3d5a36"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <rect x="6" y="6" width="116" height="116" rx="26" fill="#090710" stroke="#bd93f9" stroke-width="8"/>
+  <!-- Outer gothic manor shield -->
+  <polygon points="64,14 108,42 96,104 64,116 32,104 20,42" fill="#18122b" stroke="#040308" stroke-width="6" stroke-linejoin="round"/>
+  <polygon points="64,14 108,42 96,104 64,116" fill="#110c1f"/>
+  <!-- Three-pronged jester crown / gothic spires -->
+  <polygon points="64,18 76,48 64,56 52,48" fill="#d9b8ff" stroke="#040308" stroke-width="4" stroke-linejoin="round"/>
+  <polygon points="24,30 52,48 44,60 22,48" fill="#bd93f9" stroke="#040308" stroke-width="4" stroke-linejoin="round"/>
+  <polygon points="104,30 76,48 84,60 106,48" fill="#bd93f9" stroke="#040308" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Jester bells at crown tips -->
+  <rect x="60" y="12" width="8" height="8" fill="#ffffff" stroke="#040308" stroke-width="3"/>
+  <rect x="18" y="24" width="8" height="8" fill="#ff2d55" stroke="#040308" stroke-width="3"/>
+  <rect x="102" y="24" width="8" height="8" fill="#bd93f9" stroke="#040308" stroke-width="3"/>
+  <!-- Heterochromia eyes: left crimson (#ff2d55), right violet (#bd93f9) -->
+  <polygon points="32,64 56,68 48,80 28,74" fill="#ff2d55" stroke="#040308" stroke-width="4" stroke-linejoin="round"/>
+  <polygon points="96,64 72,68 80,80 100,74" fill="#bd93f9" stroke="#040308" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Jester diamond grin / manor portal arch -->
+  <path d="M42,92 L54,98 L64,90 L74,98 L86,92" fill="none" stroke="#d9b8ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

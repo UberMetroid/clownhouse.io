@@ -1,71 +1,1308 @@
-// clownhouse // fx.js — canvas atmosphere layer.
-// Ground fog and gnats that swarm the pointer.
-// All additive ('lighter' composite) so they read as light, not
-// sprites. Skipped entirely under prefers-reduced-motion.
-// Zero dependencies.
-(() => {
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+/**
+ * fx.js — Interactive Bayer-Dithered Pixel CLOWNHOUSE Canvas Stage,
+ * Indexed Pixel Haunted Manor & Grounds, Watching Heterochromia Clown,
+ * Pointer-Tracked Card Spotlight, Zero-Dep Web Audio Arcade Console,
+ * and 8-Bit Retro Theme Palette Switcher.
+ */
+(function () {
+  'use strict';
 
-    const cv = document.getElementById('fx');
-    const ctx = cv.getContext('2d');
-    let w, h, mx = -999, my = -999, last = 0;
+  var ACCENTS = [
+    { name: 'Coral', hex: '#ff5555', rgb: [255, 85, 85], hot: '#ff9999', hotRgb: [255, 153, 153] },
+    { name: 'Orange', hex: '#ff7700', rgb: [255, 119, 0], hot: '#ffa040', hotRgb: [255, 160, 64] },
+    { name: 'Amber', hex: '#ffb000', rgb: [255, 176, 0], hot: '#ffd447', hotRgb: [255, 212, 71] },
+    { name: 'Yellow', hex: '#f1fa8c', rgb: [241, 250, 140], hot: '#ffffb0', hotRgb: [255, 255, 176] },
+    { name: 'Emerald', hex: '#50fa7b', rgb: [80, 250, 123], hot: '#a2ffbc', hotRgb: [162, 255, 188] },
+    { name: 'Cyan', hex: '#00e5ff', rgb: [0, 229, 255], hot: '#80f4ff', hotRgb: [128, 244, 255] },
+    { name: 'Blue', hex: '#3b82f6', rgb: [59, 130, 246], hot: '#7cb3ff', hotRgb: [124, 179, 255] },
+    { name: 'Violet', hex: '#bd93f9', rgb: [189, 147, 249], hot: '#d9b8ff', hotRgb: [217, 184, 255] }
+  ];
 
-    const fit = () => { w = cv.width = innerWidth; h = cv.height = innerHeight; };
-    fit();
-    addEventListener('resize', fit);
-    addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
-    addEventListener('pointerleave', () => { mx = my = -999; });
+  // 114x17 binary pixel grid for "CLOWNHOUSE"
+  var CLOWNHOUSE_WORDMARK = [
+    '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+    '000111111000111000000000011111000011100000111001110000111001110000111000011111000011100011100001111110001111111110',
+    '001111111100111000000000111111100011100000111001111000111001110000111000111111100011100011100011111111001111111110',
+    '011100011100111000000001110001110011100000111001111100111001110000111001110001110011100011100111000111001110000000',
+    '011100000000111000000001110001110011100000111001111110111001110000111001110001110011100011100111000000001110000000',
+    '011100000000111000000001110001110011100000111001111111111001110000111001110001110011100011100111100000001110000000',
+    '011100000000111000000001110001110011100100111001111111111001111111111001110001110011100011100011111100001111111000',
+    '011100000000111000000001110001110011101110111001110111111001111111111001110001110011100011100001111110001111111000',
+    '011100000000111000000001110001110011101110111001110011111001111111111001110001110011100011100000001111001111111000',
+    '011100000000111000000001110001110011101110111001110001111001110000111001110001110011100011100000000111001110000000',
+    '011100000000111000000001110001110011111111111001110000111001110000111001110001110011100011100000000111001110000000',
+    '011100000000111000000001110001110011111111111001110000111001110000111001110001110011100011100111000111001110000000',
+    '011100011100111000000001110001110001111011110001110000111001110000111001110001110011100011100111000111001110000000',
+    '001111111100111111111000111111100001110001110001110000111001110000111000111111100001111111000011111110001111111110',
+    '000111111000111111111000011111000001100000110001110000111001110000111000011111000000111110000001111100001111111110',
+    '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+    '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+  ];
 
-    // ground fog — persistent puffs drifting across the lawn
-    const puffs = [...Array(14)].map(() => ({
-        x: Math.random(), y: 0.82 + Math.random() * 0.18,
-        r: 0.07 + Math.random() * 0.12,
-        vx: (Math.random() - 0.5) * 0.02, ph: Math.random() * 6.28
-    }));
+  // 34x17 binary pixel grid for "404"
+  var WORDMARK_404 = [
+    '0000000000000000000000000000000000',
+    '0000001111000011111000000000111100',
+    '0000011111000111111100000001111100',
+    '0000111111001110001110000011111100',
+    '0001110111001110001110000111011100',
+    '0011100111001110001110001110011100',
+    '0111000111001110001110011100011100',
+    '0111000111001110001110011100011100',
+    '0111111111101110001110011111111110',
+    '0111111111101110001110011111111110',
+    '0000000111001110001110000000011100',
+    '0000000111001110001110000000011100',
+    '0000000111001110001110000000011100',
+    '0000000111000111111100000000011100',
+    '0000000111000011111000000000011100',
+    '0000000000000000000000000000000000',
+    '0000000000000000000000000000000000'
+  ];
 
-    // gnats — eased orbiters around the pointer
-    const gnats = [...Array(7)].map((_, i) => ({
-        a: Math.random() * 6.28, r: 14 + i * 6,
-        s: 0.7 + Math.random() * 1.6, x: 0, y: 0
-    }));
+  var is404Page = document.body && document.body.getAttribute('data-page') === '404';
+  var ACTIVE_WORDMARK = is404Page ? WORDMARK_404 : CLOWNHOUSE_WORDMARK;
 
-    function frame(ts) {
-        const dt = Math.min((ts - last) / 1000 || 0.016, 0.05);
-        last = ts;
-        const t = ts / 1000;
-        ctx.clearRect(0, 0, w, h);
-        ctx.globalCompositeOperation = 'lighter';
+  window.ClownhouseWordmark = {
+    width: ACTIVE_WORDMARK[0].length,
+    height: ACTIVE_WORDMARK.length,
+    rows: ACTIVE_WORDMARK
+  };
 
-        // fog puffs — radial gradients breathing along the ground
-        for (const p of puffs) {
-            p.x += p.vx * dt;
-            if (p.x < -0.15) p.x = 1.15;
-            if (p.x > 1.15) p.x = -0.15;
-            const a = 0.05 + 0.03 * Math.sin(t * 0.3 + p.ph);
-            const fg = ctx.createRadialGradient(
-                p.x * w, p.y * h, 0, p.x * w, p.y * h, p.r * w);
-            fg.addColorStop(0, `rgba(130,110,170,${a})`);
-            fg.addColorStop(1, 'rgba(130,110,170,0)');
-            ctx.fillStyle = fg;
-            ctx.fillRect(p.x * w - p.r * w, p.y * h - p.r * h,
-                         p.r * w * 2, p.r * h * 2);
-        }
+  // --- Zero-Dependency Web Audio 16-Bit Synth Engine ---
+  var audioCtx = null;
+  var musicPlaying = false;
+  var musicTimer = null;
+  var musicStep = 0;
 
-        // gnats — swarm the pointer with jittered orbits
-        if (mx > -100) {
-            ctx.fillStyle = 'rgba(200,255,190,0.55)';
-            for (const g of gnats) {
-                g.a += g.s * dt * 2.4;
-                const tx = mx + Math.cos(g.a) * g.r + Math.sin(t * 5 + g.r) * 5;
-                const ty = my + Math.sin(g.a * 1.35) * g.r * 0.7
-                             + Math.cos(t * 4 + g.a) * 5;
-                g.x += (tx - g.x) * Math.min(dt * 9, 1);
-                g.y += (ty - g.y) * Math.min(dt * 9, 1);
-                ctx.fillRect(g.x - 1, g.y - 1, 2, 2);
-            }
-        }
-
-        requestAnimationFrame(frame);
+  function ensureAudio() {
+    if (!audioCtx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) {
+        try { audioCtx = new AC(); } catch (e) {}
+      }
     }
-    requestAnimationFrame(frame);
+    if (audioCtx && audioCtx.state === 'suspended') {
+      try { audioCtx.resume(); } catch (e) {}
+    }
+    return audioCtx;
+  }
+
+  function playKnockSound() {
+    var ac = ensureAudio();
+    if (!ac) return;
+    var now = ac.currentTime;
+    // Three ominous heavy wooden knocks (low triangle + sub thud)
+    var offsets = [0, 0.21, 0.44];
+    for (var i = 0; i < offsets.length; i++) {
+      var t0 = now + offsets[i];
+      var osc = ac.createOscillator();
+      var gain = ac.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(118 - i * 8, t0);
+      osc.frequency.exponentialRampToValueAtTime(34, t0 + 0.14);
+      gain.gain.setValueAtTime(0.32, t0);
+      gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.15);
+      osc.connect(gain);
+      gain.connect(ac.destination);
+      osc.start(t0);
+      osc.stop(t0 + 0.16);
+    }
+  }
+
+  function playChimeSound() {
+    var ac = ensureAudio();
+    if (!ac) return;
+    var now = ac.currentTime;
+    // 16-bit eerie clown darting micro-chime
+    var freqs = [587.33, 698.46, 880.0, 1108.73];
+    for (var i = 0; i < freqs.length; i++) {
+      var t0 = now + i * 0.045;
+      var osc = ac.createOscillator();
+      var gain = ac.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(freqs[i], t0);
+      gain.gain.setValueAtTime(0.06, t0);
+      gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.14);
+      osc.connect(gain);
+      gain.connect(ac.destination);
+      osc.start(t0);
+      osc.stop(t0 + 0.15);
+    }
+  }
+
+  function playThunderSound() {
+    var ac = ensureAudio();
+    if (!ac) return;
+    var now = ac.currentTime;
+    // Stepped 16-bit crack + low rumble
+    var osc = ac.createOscillator();
+    var gain = ac.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(160, now);
+    osc.frequency.exponentialRampToValueAtTime(28, now + 0.55);
+    gain.gain.setValueAtTime(0.20, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.58);
+    osc.connect(gain);
+    gain.connect(ac.destination);
+    osc.start(now);
+    osc.stop(now + 0.6);
+  }
+
+  // Dark Gothic Music Box waltz notes (D harmonic minor / diminished celesta loop)
+  var MELODY_NOTES = [
+    587.33, 698.46, 880.00, 932.33, 880.00, 698.46,
+    554.37, 659.25, 880.00, 1046.50, 880.00, 659.25,
+    587.33, 698.46, 1174.66, 1108.73, 932.33, 880.00,
+    698.46, 659.25, 554.37, 587.33, 440.00, 293.66
+  ];
+  var BASS_NOTES = [
+    146.83, 0, 220.00, 146.83, 0, 220.00,
+    138.59, 0, 220.00, 138.59, 0, 220.00,
+    146.83, 0, 233.08, 174.61, 0, 220.00,
+    164.81, 0, 138.59, 146.83, 0, 146.83
+  ];
+
+  function updateEqBar(step) {
+    var eqEl = document.getElementById('tui-eq-bar');
+    var stateEl = document.getElementById('tui-music-state');
+    if (!eqEl) return;
+    if (!musicPlaying) {
+      eqEl.textContent = '▁▁▁▁▁▁▁▁';
+      if (stateEl) stateEl.textContent = '[ PAUSED  ]';
+      return;
+    }
+    var glyphs = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+    var bar = '';
+    for (var i = 0; i < 8; i++) {
+      var v = Math.floor(Math.abs(Math.sin(step * 0.75 + i * 1.1)) * 7.99);
+      bar += glyphs[v];
+    }
+    eqEl.textContent = bar;
+    if (stateEl) stateEl.textContent = '[ WINDING ]';
+  }
+
+  function tickMusicBox() {
+    if (!musicPlaying) return;
+    var ac = ensureAudio();
+    if (ac) {
+      var now = ac.currentTime;
+      var note = MELODY_NOTES[musicStep % MELODY_NOTES.length];
+      var bass = BASS_NOTES[musicStep % BASS_NOTES.length];
+      if (note > 0) {
+        var osc = ac.createOscillator();
+        var gain = ac.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(note, now);
+        gain.gain.setValueAtTime(0.09, now);
+        gain.gain.exponentialRampToValueAtTime(0.0008, now + 0.34);
+        osc.connect(gain);
+        gain.connect(ac.destination);
+        osc.start(now);
+        osc.stop(now + 0.36);
+
+        // Faint 16-bit celesta overtone
+        var osc2 = ac.createOscillator();
+        var gain2 = ac.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(note * 2, now);
+        gain2.gain.setValueAtTime(0.028, now);
+        gain2.gain.exponentialRampToValueAtTime(0.0005, now + 0.22);
+        osc2.connect(gain2);
+        gain2.connect(ac.destination);
+        osc2.start(now);
+        osc2.stop(now + 0.24);
+      }
+      if (bass > 0) {
+        var bOsc = ac.createOscillator();
+        var bGain = ac.createGain();
+        bOsc.type = 'square';
+        bOsc.frequency.setValueAtTime(bass, now);
+        bGain.gain.setValueAtTime(0.025, now);
+        bGain.gain.exponentialRampToValueAtTime(0.0008, now + 0.28);
+        bOsc.connect(bGain);
+        bGain.connect(ac.destination);
+        bOsc.start(now);
+        bOsc.stop(now + 0.3);
+      }
+    }
+    updateEqBar(musicStep);
+    musicStep++;
+  }
+
+  function toggleMusicBox() {
+    musicPlaying = !musicPlaying;
+    var btn = document.getElementById('act-music');
+    if (btn) {
+      btn.classList.toggle('active', musicPlaying);
+      btn.setAttribute('aria-pressed', musicPlaying ? 'true' : 'false');
+    }
+    if (musicPlaying) {
+      ensureAudio();
+      tickMusicBox();
+      musicTimer = setInterval(tickMusicBox, 260);
+      if (window.clownhousePushWhisper) {
+        window.clownhousePushWhisper('the porcelain music box begins to turn...');
+      }
+    } else {
+      if (musicTimer) {
+        clearInterval(musicTimer);
+        musicTimer = null;
+      }
+      updateEqBar(0);
+      if (window.clownhousePushWhisper) {
+        window.clownhousePushWhisper('the music box clicks shut in the dark');
+      }
+    }
+  }
+
+  // --- Palette & Wordmark Header Rendering ---
+  function applyAccent(a) {
+    if (!a) return;
+    var r = a.rgb[0], g = a.rgb[1], b = a.rgb[2];
+    var hr = a.hotRgb[0], hg = a.hotRgb[1], hb = a.hotRgb[2];
+    window.clownhouseCurrentAccent = a.rgb;
+    window.clownhouseCurrentAccentName = a.name;
+
+    try {
+      localStorage.setItem('clownhouse_accent', a.name.toLowerCase());
+    } catch (e) {}
+
+    var root = document.documentElement;
+    root.style.setProperty('--phosphor', a.hex);
+    root.style.setProperty('--accent', a.hex);
+    root.style.setProperty('--accent-rgb', r + ', ' + g + ', ' + b);
+    root.style.setProperty('--phosphor-dim', 'rgba(' + r + ', ' + g + ', ' + b + ', 0.14)');
+    root.style.setProperty('--phosphor-glow', 'rgba(' + r + ', ' + g + ', ' + b + ', 0.32)');
+    root.style.setProperty('--border-accent', 'rgba(' + r + ', ' + g + ', ' + b + ', 0.42)');
+    root.style.setProperty('--hot', a.hot);
+    root.style.setProperty('--hot-rgb', hr + ', ' + hg + ', ' + hb);
+    root.style.setProperty('--spotlight-border', 'rgba(' + r + ', ' + g + ', ' + b + ', 0.56)');
+    root.style.setProperty('--spotlight-glow', 'rgba(' + hr + ', ' + hg + ', ' + hb + ', 0.94)');
+    root.style.setProperty('--spotlight-inner', 'rgba(' + r + ', ' + g + ', ' + b + ', 0.055)');
+
+    var btns = document.querySelectorAll('[data-accent-name]');
+    for (var i = 0; i < btns.length; i++) {
+      var btn = btns[i];
+      var active = (btn.getAttribute('data-accent-name') || '').toLowerCase() === a.name.toLowerCase();
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-checked', active ? 'true' : 'false');
+      btn.setAttribute('tabindex', active ? '0' : '-1');
+    }
+
+    var swatchLabel = document.getElementById('dock-swatch-name');
+    if (swatchLabel) {
+      swatchLabel.textContent = a.name.toUpperCase();
+    }
+
+    if (window.clownhouseRenderWordmark) {
+      window.clownhouseRenderWordmark();
+    }
+    if (window.clownhouseRenderSpotlight) {
+      window.clownhouseRenderSpotlight();
+    }
+  }
+
+  function renderHeaderWordmark() {
+    var hCanvas = document.getElementById('header-wordmark');
+    if (!hCanvas || !hCanvas.getContext) return;
+    var hCtx = hCanvas.getContext('2d');
+    if (!hCtx) return;
+    var cols = ACTIVE_WORDMARK[0].length, rows = ACTIVE_WORDMARK.length;
+    var scale = 3;
+    hCanvas.width = cols * scale;
+    hCanvas.height = rows * scale;
+    hCtx.clearRect(0, 0, hCanvas.width, hCanvas.height);
+    var acc = window.clownhouseCurrentAccent || [189, 147, 249];
+    var ar = acc[0], ag = acc[1], ab = acc[2];
+    var hr = Math.min(255, Math.round(ar + (255 - ar) * 0.48));
+    var hg = Math.min(255, Math.round(ag + (255 - ag) * 0.48));
+    var hb = Math.min(255, Math.round(ab + (255 - ab) * 0.48));
+    for (var r = 0; r < rows; r++) {
+      var rowStr = ACTIVE_WORDMARK[r];
+      for (var c = 0; c < cols; c++) {
+        if (rowStr.charAt(c) === '1') {
+          hCtx.fillStyle = r < 5
+            ? '#ffffff'
+            : (r < 11
+              ? ('rgb(' + hr + ',' + hg + ',' + hb + ')')
+              : ('rgb(' + ar + ',' + ag + ',' + ab + ')'));
+          hCtx.fillRect(c * scale, r * scale, scale - 0.5, scale - 0.5);
+        }
+      }
+    }
+  }
+  window.clownhouseRenderWordmark = renderHeaderWordmark;
+
+  function initPalette() {
+    var saved = 'violet';
+    try {
+      saved = localStorage.getItem('clownhouse_accent') || 'violet';
+    } catch (e) {}
+    var initial = null;
+    for (var i = 0; i < ACCENTS.length; i++) {
+      if (ACCENTS[i].name.toLowerCase() === saved.toLowerCase()) {
+        initial = ACCENTS[i];
+        break;
+      }
+    }
+    applyAccent(initial || ACCENTS[7]);
+
+    document.addEventListener('click', function (e) {
+      var target = e.target;
+      if (!target || typeof target.closest !== 'function') return;
+      var btn = target.closest('[data-accent-name]');
+      if (!btn) return;
+      var name = btn.getAttribute('data-accent-name') || '';
+      for (var j = 0; j < ACCENTS.length; j++) {
+        if (ACCENTS[j].name.toLowerCase() === name.toLowerCase()) {
+          applyAccent(ACCENTS[j]);
+          break;
+        }
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].indexOf(e.key) === -1) return;
+      var btn = document.activeElement;
+      if (!btn || !btn.matches || !btn.matches('[data-accent-name]')) return;
+      var group = btn.closest('[role="radiogroup"]');
+      if (!group) return;
+      var items = Array.prototype.slice.call(group.querySelectorAll('[data-accent-name]'));
+      var idx = items.indexOf(btn);
+      if (idx === -1) return;
+      e.preventDefault();
+      var next = (e.key === 'ArrowRight' || e.key === 'ArrowDown')
+        ? (idx + 1) % items.length
+        : (idx - 1 + items.length) % items.length;
+      items[next].focus();
+      items[next].click();
+    }, true);
+  }
+
+  // --- Indexed 96x54 Pixel Haunted Manor & Grounds ---
+  // Tile codes:
+  // 0: SKY (Bayer plasma)
+  // 1: INK (Manor brick wall)
+  // 2: EDGE (Lit stone corner / cornice trim)
+  // 3: ROOF (Gabled slate roof & spire)
+  // 4: ROOF_E (Roof rim-light & gargoyles)
+  // 5: FRAME (Window mullion frame)
+  // 6: DOOR (Front manor oak door)
+  // 7: GROUND (Manor lawn & front steps)
+  // 8: FENCE (Crooked wrought-iron pickets)
+  // 9: TREE (Dead gnarled trees)
+  // 10..19: PANE (10 individual manor windows: 0..7 main block, 8 tower, 9 annex)
+  var MANOR_W = 96, MANOR_H = 54;
+  var manorGrid = new Uint8Array(MANOR_W * MANOR_H);
+  var WINDOWS = [
+    { id: 0, name: 'WEST PARLOR (2F)', cx: 32, y0: 29, y1: 35, w: 4 },
+    { id: 1, name: 'GALLERY WEST (2F)', cx: 42, y0: 29, y1: 35, w: 4 },
+    { id: 2, name: 'MIRROR ROOM (2F)', cx: 58, y0: 29, y1: 35, w: 4 },
+    { id: 3, name: 'EAST NURSERY (2F)', cx: 68, y0: 29, y1: 35, w: 4 },
+    { id: 4, name: 'FOYER WEST (1F)', cx: 32, y0: 39, y1: 46, w: 4 },
+    { id: 5, name: 'DRAWING ROOM (1F)', cx: 42, y0: 39, y1: 46, w: 4 },
+    { id: 6, name: 'MUSIC ROOM (1F)', cx: 60, y0: 39, y1: 46, w: 4 },
+    { id: 7, name: 'VESTIBULE (1F)', cx: 70, y0: 39, y1: 46, w: 4 },
+    { id: 8, name: 'BELFRY SPIRE', cx: 15, y0: 20, y1: 29, w: 6 },
+    { id: 9, name: 'EAST ANNEX', cx: 84, y0: 36, y1: 43, w: 4 }
+  ];
+
+  (function buildManor() {
+    function put(x, y, c) {
+      if (x >= 0 && x < MANOR_W && y >= 0 && y < MANOR_H) {
+        manorGrid[y * MANOR_W + x] = c;
+      }
+    }
+    function rect(x0, y0, x1, y1, c) {
+      for (var y = y0; y <= y1; y++) {
+        for (var x = x0; x <= x1; x++) put(x, y, c);
+      }
+    }
+    function peak(cx, ytop, ybase, half, c, edge) {
+      for (var y = ytop; y <= ybase; y++) {
+        var hw = Math.round((y - ytop) * half / (ybase - ytop));
+        for (var x = cx - hw; x <= cx + hw; x++) put(x, y, c);
+        if (edge) {
+          put(cx - hw, y, edge);
+          put(cx + hw, y, edge);
+        }
+      }
+    }
+
+    // Chimney
+    rect(66, 12, 70, 24, 1);
+    rect(65, 10, 71, 12, 2);
+    // Main gable roof & main manor body
+    peak(49, 7, 25, 34, 3, 4);
+    rect(22, 25, 78, 49, 1);
+    rect(22, 25, 22, 49, 2);
+    rect(78, 25, 78, 49, 2);
+    // Right annex + gable
+    rect(80, 31, 89, 49, 1);
+    rect(89, 31, 89, 49, 2);
+    peak(84, 26, 31, 7, 3, 4);
+    // Left Gothic spire + tower body
+    peak(15, 3, 15, 9, 3, 4);
+    rect(9, 15, 22, 49, 1);
+    rect(9, 15, 9, 49, 2);
+    rect(22, 15, 22, 49, 2);
+    // Spire finial cross & gargoyles
+    put(15, 1, 4); put(15, 2, 2); put(14, 2, 4); put(16, 2, 4);
+    rect(6, 14, 8, 15, 2); put(5, 13, 4); put(7, 13, 4);
+    rect(79, 24, 81, 25, 2); put(82, 23, 4); put(80, 23, 4);
+
+    // 10 Windows
+    for (var i = 0; i < WINDOWS.length; i++) {
+      var w = WINDOWS[i];
+      var hw = Math.floor(w.w / 2);
+      rect(w.cx - hw - 1, w.y0 - 1, w.cx + hw + 1, w.y1 + 1, 5);
+      rect(w.cx - hw, w.y0, w.cx + hw, w.y1, 10 + w.id);
+    }
+
+    // Front Door + Steps
+    rect(46, 41, 52, 49, 6);
+    rect(45, 40, 53, 40, 2);
+    rect(44, 50, 54, 51, 7);
+
+    // Ground
+    rect(0, 50, 95, 53, 7);
+
+    // Crooked Iron Fence
+    for (var fx = 2; fx < 95; fx += 3) {
+      if (fx >= 44 && fx <= 54) continue;
+      var fh = (fx % 6 === 0) ? 45 : 46;
+      for (var fy = fh; fy <= 49; fy++) put(fx, fy, 8);
+      put(fx, fh - 1, 4);
+    }
+    rect(1, 48, 43, 48, 8);
+    rect(55, 48, 94, 48, 8);
+
+    // Dead Gnarled Trees (left & right)
+    rect(3, 35, 4, 49, 9);
+    put(2, 34, 9); put(1, 32, 9); put(0, 31, 9);
+    put(5, 34, 9); put(6, 32, 9); put(7, 30, 9);
+    put(2, 38, 9); put(1, 37, 9); put(5, 39, 9);
+
+    rect(92, 33, 93, 49, 9);
+    put(91, 31, 9); put(90, 29, 9);
+    put(94, 32, 9); put(95, 30, 9);
+    put(91, 37, 9); put(94, 36, 9); put(95, 35, 9);
+  })();
+
+  // --- Bayer 8x8 Dither + Perlin-Style Plasma + Haunted Manor Stage ---
+  function initCanvas() {
+    var canvas = document.getElementById('spotlight-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d', { alpha: false });
+    if (!ctx) return;
+
+    var BAYER = [
+      0, 32, 8, 40, 2, 34, 10, 42,
+      48, 16, 56, 24, 50, 18, 58, 26,
+      12, 44, 4, 36, 14, 46, 6, 38,
+      60, 28, 52, 20, 62, 30, 54, 22,
+      3, 35, 11, 43, 1, 33, 9, 41,
+      51, 19, 59, 27, 49, 17, 57, 25,
+      15, 47, 7, 39, 13, 45, 5, 37,
+      63, 31, 55, 23, 61, 29, 53, 21
+    ];
+    var N = 128, smoothAcc = null;
+    var noiseTable = (function () {
+      var seed = 10407530, buf = new Float32Array(N * N);
+      for (var i = 0; i < buf.length; i++) {
+        seed = (seed * 1664525 + 1013904223) >>> 0;
+        buf[i] = seed / 4294967296;
+      }
+      for (var p = 0; p < 2; p++) {
+        var next = new Float32Array(N * N);
+        for (var y = 0; y < N; y++) {
+          for (var x = 0; x < N; x++) {
+            var sum = 0;
+            for (var dy = -1; dy <= 1; dy++) {
+              for (var dx = -1; dx <= 1; dx++) {
+                sum += buf[((y + dy + N) % N) * N + ((x + dx + N) % N)];
+              }
+            }
+            next[y * N + x] = sum / 9;
+          }
+        }
+        buf = next;
+      }
+      var min = Infinity, max = -Infinity;
+      for (var j = 0; j < buf.length; j++) {
+        if (buf[j] < min) min = buf[j];
+        if (buf[j] > max) max = buf[j];
+      }
+      var span = max - min || 1;
+      for (var k = 0; k < buf.length; k++) buf[k] = (buf[k] - min) / span;
+      return buf;
+    })();
+
+    function sampleNoise(x, y) {
+      var ix = Math.floor(x), iy = Math.floor(y), fx = x - ix, fy = y - iy;
+      var x0 = (ix % N + N) % N, y0 = (iy % N + N) % N, x1 = (x0 + 1) % N, y1 = (y0 + 1) % N;
+      var sx = fx * fx * (3 - 2 * fx), sy = fy * fy * (3 - 2 * fy);
+      return (noiseTable[y0 * N + x0] * (1 - sx) + noiseTable[y0 * N + x1] * sx) * (1 - sy) +
+             (noiseTable[y1 * N + x0] * (1 - sx) + noiseTable[y1 * N + x1] * sx) * sy;
+    }
+
+    var TEXT_SEL = 'h1,h2,h3,p,pre,code,label,input,button,a,.spotlight-card,.tui-screen-mock,.footer-dock,.waypoints-drawer';
+
+    function isOverTextElement(target) {
+      if (!target || target === document.body || target === document.documentElement || target === canvas) return false;
+      var node = target.nodeType === 3 ? target.parentElement : target;
+      if (!node || typeof node.closest !== 'function') return false;
+      if (node.id === 'spotlight-canvas' || node.classList.contains('stage-wrap') || node.classList.contains('wordmark-hero')) return false;
+      return Boolean(node.closest(TEXT_SEL));
+    }
+
+    var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var dpr = 1, width = 0, height = 0, cellPx = 8, gridCols = 0, gridRows = 0;
+    var wmWidth = ACTIVE_WORDMARK[0].length, wmHeight = ACTIVE_WORDMARK.length, wmRows = ACTIVE_WORDMARK;
+    var wmOriginX = 0, wmOriginY = 0;
+
+    var mouse = { x: -2000, y: -2000, active: false, lastMove: 0 };
+    var smoothMouse = { x: -2000, y: -2000, strength: 0 };
+    var isOverText = false, smoothText = 0;
+    var meshCount = 3;
+    var meshOrbs = [
+      { x: 0, y: 0, label: 'WISP-I' },
+      { x: 0, y: 0, label: 'WISP-II' },
+      { x: 0, y: 0, label: 'WISP-III' }
+    ];
+    var ripples = [];
+    var bolts = [];
+    var knockUntil = 0;
+    var stormFlashUntil = 0;
+    var clownWinIdx = 8; // Starts watching from the Belfry Spire
+    var lastClownJump = 0;
+    var rafId = 0, isVisible = true;
+    var spotCards = [];
+
+    function updateRoomBadge() {
+      var el = document.getElementById('tui-clown-room');
+      if (el && WINDOWS[clownWinIdx]) {
+        el.textContent = WINDOWS[clownWinIdx].name;
+      }
+    }
+    updateRoomBadge();
+
+    function moveClownToNewRoom(reason) {
+      var now = performance.now();
+      if (now - lastClownJump < 420) return;
+      lastClownJump = now;
+      var next = clownWinIdx;
+      while (next === clownWinIdx) {
+        next = Math.floor(Math.random() * WINDOWS.length);
+      }
+      clownWinIdx = next;
+      updateRoomBadge();
+      playChimeSound();
+      if (window.clownhousePushWhisper) {
+        var winName = WINDOWS[clownWinIdx].name.toLowerCase();
+        window.clownhousePushWhisper(reason || ('footsteps scurry toward the ' + winName));
+      }
+      wakeRender();
+    }
+
+    function spawnLightningBolt(targetX, targetY) {
+      var now = performance.now();
+      var startX = targetX !== undefined ? targetX : (width * (0.2 + Math.random() * 0.6));
+      var endY = targetY !== undefined ? targetY : (height * 0.72);
+      var pts = [];
+      var curX = startX, curY = 0;
+      var steps = 16;
+      var dy = Math.max(cellPx * 3, endY / steps);
+      for (var i = 0; i <= steps; i++) {
+        pts.push({ x: curX, y: curY });
+        curX += (Math.random() - 0.5) * cellPx * 6;
+        curY += dy;
+      }
+      // Secondary branch
+      var branch = [];
+      if (pts.length > 6) {
+        var bStart = pts[5];
+        var bx = bStart.x, by = bStart.y;
+        var bDir = Math.random() < 0.5 ? -1 : 1;
+        for (var j = 0; j < 6; j++) {
+          branch.push({ x: bx, y: by });
+          bx += bDir * (1 + Math.random() * 2.5) * cellPx;
+          by += dy * 0.85;
+        }
+      }
+      bolts.push({ pts: pts, branch: branch, born: now, dur: 620 });
+      if (bolts.length > 4) bolts.shift();
+      ripples.push({ x: startX, y: Math.min(height * 0.65, endY), born: now, maxR: 440 * dpr, dur: 1050 });
+      if (ripples.length > 6) ripples.shift();
+      stormFlashUntil = now + 360;
+      wakeRender();
+    }
+
+    window.clownhouseTriggerStorm = function () {
+      playThunderSound();
+      spawnLightningBolt(width * (0.28 + Math.random() * 0.44), height * 0.58);
+      if (window.clownhousePushWhisper) {
+        window.clownhousePushWhisper('thunder splits the belfry — count the seconds');
+      }
+    };
+
+    window.clownhouseTriggerKnock = function () {
+      var now = performance.now();
+      knockUntil = now + 720;
+      playKnockSound();
+      // Spawn ripple at front door (manor x=49, y=45)
+      var doorX = (49.5 / MANOR_W) * width;
+      var doorY = (45.0 / MANOR_H) * height;
+      ripples.push({ x: doorX, y: doorY, born: now, maxR: 320 * dpr, dur: 900 });
+      if (ripples.length > 6) ripples.shift();
+      var card = document.querySelector('.sanctuary-card');
+      if (card) {
+        card.classList.remove('door-knock-shake');
+        void card.offsetWidth;
+        card.classList.add('door-knock-shake');
+      }
+      if (Math.random() < 0.65) {
+        moveClownToNewRoom('three knocks echo through the floorboards...');
+      } else if (window.clownhousePushWhisper) {
+        window.clownhousePushWhisper('nobody answers the oak door — yet the latch is warm');
+      }
+      wakeRender();
+    };
+
+    function refreshSpotCards() {
+      spotCards = Array.prototype.slice.call(document.querySelectorAll('.spotlight-card'));
+    }
+
+    function syncCardsToLights(lightsList, radiusPx, overInteractive) {
+      if (!spotCards.length) refreshSpotCards();
+      for (var i = 0; i < spotCards.length; i++) {
+        var card = spotCards[i];
+        var r = card.getBoundingClientRect();
+        var bestDistSq = Infinity, bestX = -999, bestY = -999;
+        for (var k = 0; k < lightsList.length; k++) {
+          var ox = lightsList[k].x / dpr, oy = lightsList[k].y / dpr;
+          var dx = ox < r.left ? r.left - ox : (ox > r.right ? ox - r.right : 0);
+          var dy = oy < r.top ? r.top - oy : (oy > r.bottom ? oy - r.bottom : 0);
+          var dSq = dx * dx + dy * dy;
+          if (dSq < bestDistSq) {
+            bestDistSq = dSq;
+            bestX = ox;
+            bestY = oy;
+          }
+        }
+        if (bestDistSq < radiusPx * radiusPx) {
+          card.style.setProperty('--mouse-x', Math.round(bestX - r.left) + 'px');
+          card.style.setProperty('--mouse-y', Math.round(bestY - r.top) + 'px');
+          card.classList.add('spotlight-active');
+          card.classList.toggle('spotlight-over-text', Boolean(overInteractive && bestDistSq === 0));
+        } else {
+          card.classList.remove('spotlight-active', 'spotlight-over-text');
+        }
+      }
+    }
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = Math.round(window.innerWidth * dpr);
+      height = Math.round(window.innerHeight * dpr);
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+      var targetW = Math.min(width * 0.90, 880 * dpr);
+      cellPx = Math.max(4, Math.floor(targetW / wmWidth));
+      gridCols = Math.ceil(width / cellPx) + 1;
+      gridRows = Math.ceil(height / cellPx) + 1;
+
+      var heroEl = document.getElementById('wordmark-hero');
+      if (heroEl) {
+        var rect = heroEl.getBoundingClientRect();
+        wmOriginX = Math.round((width - wmWidth * cellPx) * 0.5);
+        wmOriginY = Math.round((rect.top + rect.height * 0.5) * dpr - (wmHeight * cellPx) * 0.5);
+      } else {
+        wmOriginX = -99999;
+        wmOriginY = -99999;
+      }
+
+      refreshSpotCards();
+      if (reducedMotion) render(performance.now());
+    }
+
+    function wakeRender() {
+      if (!rafId && !reducedMotion && isVisible) {
+        rafId = requestAnimationFrame(render);
+      }
+    }
+
+    function hitTestWindow(px, py) {
+      var mx = Math.floor((px / width) * MANOR_W);
+      var my = Math.floor((py / height) * MANOR_H);
+      if (mx < 0 || mx >= MANOR_W || my < 0 || my >= MANOR_H) return -1;
+      var tile = manorGrid[my * MANOR_W + mx];
+      if (tile >= 10 && tile < 20) return tile - 10;
+      return -1;
+    }
+
+    function onPointerMove(e) {
+      if (!e || e.clientX < 0 || e.clientY < 0 || e.clientX >= window.innerWidth || e.clientY >= window.innerHeight) {
+        deactivate();
+        return;
+      }
+      var px = e.clientX * dpr, py = e.clientY * dpr;
+      if (!mouse.active || smoothMouse.strength < 0.01 || smoothMouse.x < -1000) {
+        smoothMouse.x = px;
+        smoothMouse.y = py;
+      }
+      mouse.x = px;
+      mouse.y = py;
+      mouse.active = true;
+      mouse.lastMove = performance.now();
+      isOverText = isOverTextElement(e.target);
+
+      // If pointer sweeps directly over the clown's current window on the background, dart away!
+      if (!isOverText) {
+        var hoveredWin = hitTestWindow(px, py);
+        if (hoveredWin === clownWinIdx) {
+          moveClownToNewRoom('she ducked behind the velvet curtain!');
+        }
+      }
+
+      if (reducedMotion) render(performance.now()); else wakeRender();
+    }
+
+    function onPointerDown(e) {
+      if (!e) return;
+      var px = e.clientX * dpr, py = e.clientY * dpr;
+      mouse.x = px;
+      mouse.y = py;
+      mouse.active = true;
+      mouse.lastMove = performance.now();
+      isOverText = isOverTextElement(e.target);
+
+      if (!isOverText) {
+        var clickedWin = hitTestWindow(px, py);
+        if (clickedWin >= 0) {
+          if (clickedWin === clownWinIdx) {
+            moveClownToNewRoom('you tapped the glass — she vanished into another room!');
+          } else {
+            clownWinIdx = clickedWin;
+            lastClownJump = performance.now();
+            updateRoomBadge();
+            playChimeSound();
+            if (window.clownhousePushWhisper) {
+              window.clownhousePushWhisper('something peers out from the ' + WINDOWS[clickedWin].name.toLowerCase());
+            }
+          }
+          ripples.push({ x: px, y: py, born: performance.now(), maxR: 260 * dpr, dur: 820 });
+        } else {
+          playThunderSound();
+          spawnLightningBolt(px, py);
+        }
+      } else {
+        ripples.push({ x: px, y: py, born: performance.now(), maxR: 320 * dpr, dur: 850 });
+        if (ripples.length > 6) ripples.shift();
+      }
+      if (reducedMotion) render(performance.now()); else wakeRender();
+    }
+
+    function deactivate() {
+      mouse.active = false;
+      isOverText = false;
+      if (reducedMotion) render(performance.now());
+    }
+
+    function render(t) {
+      rafId = 0;
+      var sec = t * 0.001;
+
+      var targetMouse = mouse.active ? 1 : 0;
+      var targetText = (isOverText && mouse.active) ? 1 : 0;
+      smoothMouse.x += (mouse.x - smoothMouse.x) * 0.22;
+      smoothMouse.y += (mouse.y - smoothMouse.y) * 0.22;
+      smoothMouse.strength += (targetMouse - smoothMouse.strength) * 0.12;
+      if (smoothMouse.strength < 0.005) smoothMouse.strength = 0;
+      smoothText += (targetText - smoothText) * 0.18;
+
+      // Update 3 autonomous orbiting Will-o'-the-Wisp orbs around the Haunted Manor
+      var centerX = width * (0.5 + 0.12 * Math.sin(sec * 0.35));
+      var centerY = height * (0.48 + 0.10 * Math.cos(sec * 0.48));
+      for (var m = 0; m < meshCount; m++) {
+        var ang = sec * (0.38 + m * 0.09) + (m * 2 * Math.PI / meshCount);
+        var radX = width * (0.24 + 0.06 * Math.sin(sec * 0.7 + m));
+        var radY = height * (0.20 + 0.05 * Math.cos(sec * 0.9 + m));
+        meshOrbs[m].x = centerX + Math.cos(ang) * radX;
+        meshOrbs[m].y = centerY + Math.sin(ang) * radY;
+      }
+
+      var allLights = meshOrbs.slice();
+      if (smoothMouse.strength > 0.05) {
+        allLights.push({ x: smoothMouse.x, y: smoothMouse.y });
+      }
+      syncCardsToLights(allLights, 195, isOverText && mouse.active);
+
+      ripples = ripples.filter(function (rp) { return (t - rp.born) < rp.dur; });
+      bolts = bolts.filter(function (b) { return (t - b.born) < b.dur; });
+
+      var stormIntensity = t < stormFlashUntil ? ((stormFlashUntil - t) / 360) : 0;
+      var knockIntensity = t < knockUntil ? ((knockUntil - t) / 720) : 0;
+      var shakeCols = knockIntensity > 0 ? Math.round(Math.sin(t * 0.09) * 1.4) : 0;
+
+      ctx.fillStyle = '#06050b';
+      ctx.fillRect(0, 0, width, height);
+
+      var acc = window.clownhouseCurrentAccent || [189, 147, 249];
+      if (!smoothAcc) smoothAcc = [acc[0], acc[1], acc[2]];
+      smoothAcc[0] += (acc[0] - smoothAcc[0]) * 0.09;
+      smoothAcc[1] += (acc[1] - smoothAcc[1]) * 0.09;
+      smoothAcc[2] += (acc[2] - smoothAcc[2]) * 0.09;
+
+      var ar = Math.round(smoothAcc[0]), ag = Math.round(smoothAcc[1]), ab = Math.round(smoothAcc[2]);
+      var hr = Math.min(255, Math.round(ar + (255 - ar) * 0.45));
+      var hg = Math.min(255, Math.round(ag + (255 - ag) * 0.45));
+      var hb = Math.min(255, Math.round(ab + (255 - ab) * 0.45));
+
+      var textDim = smoothText;
+      var glareCut = 1 - 0.50 * textDim;
+      var hotRgb = hr + ',' + hg + ',' + hb;
+      var midRgb = ar + ',' + ag + ',' + ab;
+      var colorSpotHigh = 'rgba(' + hotRgb + ',' + glareCut.toFixed(2) + ')';
+      var colorSpotMid = 'rgba(' + midRgb + ',' + (0.88 * glareCut).toFixed(2) + ')';
+      var colorFieldHigh = 'rgba(' + midRgb + ',' + (0.28 * (1 - 0.25 * textDim)).toFixed(3) + ')';
+      var colorFieldLow = 'rgba(' + midRgb + ',' + (0.11 * (1 - 0.25 * textDim)).toFixed(3) + ')';
+
+      // Quantized 4-tier Manor Palette (dark -> dim -> mid -> hot)
+      var manorWallDark = '#0d0918';
+      var manorWallMid = 'rgb(' + Math.round(24 + ar * 0.14) + ',' + Math.round(16 + ag * 0.12) + ',' + Math.round(38 + ab * 0.16) + ')';
+      var manorWallLit = 'rgb(' + Math.round(38 + ar * 0.28) + ',' + Math.round(26 + ag * 0.24) + ',' + Math.round(58 + ab * 0.30) + ')';
+      var manorEdgeCol = 'rgb(' + Math.round(52 + ar * 0.42) + ',' + Math.round(36 + ag * 0.38) + ',' + Math.round(76 + ab * 0.44) + ')';
+      var manorRoofDark = '#080510';
+      var manorRoofMid = 'rgb(' + Math.round(16 + ar * 0.10) + ',' + Math.round(10 + ag * 0.08) + ',' + Math.round(26 + ab * 0.12) + ')';
+      var manorDoorCol = knockIntensity > 0 ? colorSpotHigh : 'rgb(' + Math.round(34 + ar * 0.22) + ',12,28)';
+
+      var mouseReach = 225 * (1 - 0.52 * textDim) * dpr;
+      var mouseReachSq = mouseReach * mouseReach;
+      var orbReach = 128 * (1 - 0.45 * textDim) * dpr;
+      var orbReachSq = orbReach * orbReach;
+      var ringW = 28 * dpr;
+
+      var activeRipples = ripples.map(function (rp) {
+        var progress = (t - rp.born) / rp.dur;
+        var curR = rp.maxR * (1 - Math.pow(1 - progress, 3));
+        var minR = Math.max(0, curR - ringW), maxR = curR + ringW;
+        return { x: rp.x, y: rp.y, r: curR, minRSq: minR * minR, maxRSq: maxR * maxR, amp: Math.pow(1 - progress, 1.8) };
+      });
+
+      var ditherThreshold = 0.72 + 0.08 * textDim;
+
+      // Active Clown Window Center in Canvas Pixels (for heterochromia eye tracking)
+      var activeWin = WINDOWS[clownWinIdx] || WINDOWS[8];
+      var clownCenterX = (activeWin.cx / MANOR_W) * width;
+      var clownCenterY = (((activeWin.y0 + activeWin.y1) * 0.5) / MANOR_H) * height;
+      var lookTargetX = mouse.active ? smoothMouse.x : meshOrbs[0].x;
+      var lookTargetY = mouse.active ? smoothMouse.y : meshOrbs[0].y;
+      var gazeDx = lookTargetX - clownCenterX > 24 * dpr ? 1 : (lookTargetX - clownCenterX < -24 * dpr ? -1 : 0);
+      var gazeDy = lookTargetY - clownCenterY > 24 * dpr ? 1 : (lookTargetY - clownCenterY < -24 * dpr ? -1 : 0);
+
+      var heroVisible = wmOriginX > -9000 && wmOriginY > -9000;
+
+      for (var r = 0; r < gridRows; r++) {
+        var py = r * cellPx;
+        var my = Math.floor(((r + 0.5) / gridRows) * MANOR_H);
+        if (my >= MANOR_H) my = MANOR_H - 1;
+        var wmRow = heroVisible ? Math.floor((py - wmOriginY) / cellPx) : -1;
+        var hasWordRow = heroVisible && wmRow >= 0 && wmRow < wmHeight;
+
+        for (var c = 0; c < gridCols; c++) {
+          var px = c * cellPx;
+          var cx = px + cellPx * 0.5, cy = py + cellPx * 0.5;
+          var wmCol = hasWordRow ? Math.floor((px - wmOriginX) / cellPx) : -1;
+          var isWord = hasWordRow && wmCol >= 0 && wmCol < wmWidth && wmRows[wmRow] && wmRows[wmRow].charAt(wmCol) === '1';
+
+          // Compute Spotlight (Pointer Torch + 3 Orbiting Will-o'-the-Wisps + Storm Flash)
+          var spot = stormIntensity * 0.65;
+          if (smoothMouse.strength > 0.01) {
+            var dxm = cx - smoothMouse.x, dym = cy - smoothMouse.y;
+            var dsqM = dxm * dxm + dym * dym;
+            if (dsqM < mouseReachSq) {
+              spot = Math.max(spot, Math.pow(1 - Math.sqrt(dsqM) / mouseReach, 2) * smoothMouse.strength * (1 - 0.55 * textDim));
+            }
+          }
+          for (var m = 0; m < meshCount; m++) {
+            var dxo = cx - meshOrbs[m].x, dyo = cy - meshOrbs[m].y;
+            var dsqO = dxo * dxo + dyo * dyo;
+            if (dsqO < orbReachSq) {
+              spot += Math.pow(1 - Math.sqrt(dsqO) / orbReach, 2) * 0.55;
+            }
+          }
+          if (spot > 1.35) spot = 1.35;
+
+          var ripGlow = 0;
+          for (var i = 0; i < activeRipples.length; i++) {
+            var rp = activeRipples[i], rx = cx - rp.x, ry = cy - rp.y, dsqR = rx * rx + ry * ry;
+            if (dsqR >= rp.minRSq && dsqR <= rp.maxRSq) {
+              ripGlow = Math.max(ripGlow, (1 - Math.abs(Math.sqrt(dsqR) - rp.r) / ringW) * rp.amp);
+            }
+          }
+
+          if (isWord) {
+            // 3-tier vertical arcade shading (#ffffff top cap -> --hot mid -> --phosphor base) + shockwave boost
+            var wBoost = spot * 1.1 + ripGlow * 1.6 + stormIntensity * 0.9;
+            ctx.fillStyle = (wmRow < 5 || wBoost > 0.85)
+              ? '#ffffff'
+              : (wmRow < 11 || wBoost > 0.35)
+                ? ('rgb(' + hotRgb + ')')
+                : ('rgb(' + midRgb + ')');
+            ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
+            continue;
+          }
+
+          var dither = BAYER[(r & 7) * 8 + (c & 7)] / 64;
+          var mx = Math.floor((((c + shakeCols) + 0.5) / gridCols) * MANOR_W);
+          if (mx < 0) mx = 0; else if (mx >= MANOR_W) mx = MANOR_W - 1;
+          var tile = manorGrid[my * MANOR_W + mx];
+
+          // Ground Fog Dither (rows y >= 45)
+          var fogEnergy = 0;
+          if (my >= 44) {
+            var fn = sampleNoise(c * 0.08 + sec * 0.35, r * 0.12 - sec * 0.06);
+            fogEnergy = fn * ((my - 43) / 10) * 0.68;
+          }
+
+          if (tile === 0) {
+            // Sky & Bayer Plasma
+            var nx = c * 0.07 + sec * 0.16, ny = r * 0.07 - sec * 0.11;
+            var nVal = 0.6 * sampleNoise(nx, ny) + 0.4 * sampleNoise(nx * 0.5 - sec * 0.08, ny * 0.5 + sec * 0.07);
+            var energy = nVal * 0.75 + (0.5 + 0.5 * Math.sin(sec * 1.8 + (r * 37 + c * 11) % 6.283)) * 0.25 + fogEnergy;
+            var fieldVal = energy * 0.44 + spot * 0.85 + ripGlow * 0.95;
+            if (fieldVal > dither * ditherThreshold) {
+              ctx.fillStyle = (spot > 0.38 || ripGlow > 0.4)
+                ? colorSpotHigh
+                : (spot > 0.14 || ripGlow > 0.15)
+                  ? colorSpotMid
+                  : fieldVal > 0.56
+                    ? colorFieldHigh
+                    : colorFieldLow;
+              ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
+            }
+          } else if (tile >= 10 && tile < 20) {
+            // Manor Window Pane
+            var winId = tile - 10;
+            var winPulse = 0.5 + 0.5 * Math.sin(sec * 2.1 + winId * 1.7);
+            if (winId === clownWinIdx) {
+              // Dark velvet interior behind the watching clown
+              ctx.fillStyle = spot > 0.25 ? 'rgba(' + midRgb + ',0.22)' : '#120b22';
+              ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
+            } else {
+              var wLit = spot * 0.9 + ripGlow * 0.8 + (winPulse > 0.82 ? 0.25 : 0.08);
+              ctx.fillStyle = wLit > 0.45 ? colorSpotMid : (wLit > 0.18 ? colorFieldHigh : '#090612');
+              ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
+            }
+          } else {
+            // Solid Haunted Manor Architecture (Brickwork, Shingles, Fence, Trees, Door)
+            var mLit = 0.20 + spot * 0.95 + ripGlow * 0.90 + fogEnergy * 0.45;
+            if (tile === 2 || tile === 4 || tile === 5) {
+              // Rim-lit edges, gargoyles, and window frames
+              ctx.fillStyle = (mLit > 0.65)
+                ? colorSpotHigh
+                : (mLit > 0.32 ? colorSpotMid : manorEdgeCol);
+              ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
+            } else if (tile === 6) {
+              // Manor Front Door
+              ctx.fillStyle = (mLit > 0.55 || knockIntensity > 0.2) ? manorDoorCol : '#1c0b1a';
+              ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
+            } else if (tile === 8 || tile === 9) {
+              // Crooked Iron Fence & Dead Trees
+              ctx.fillStyle = mLit > 0.48 ? colorSpotMid : (mLit > 0.24 ? manorWallLit : '#120d20');
+              ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
+            } else if (tile === 3) {
+              // Gabled Slate Shingles
+              var shinglePattern = ((r + c) & 1) === 0;
+              if (mLit > 0.45 && shinglePattern) {
+                ctx.fillStyle = colorFieldHigh;
+              } else if (mLit > 0.24 + dither * 0.25) {
+                ctx.fillStyle = manorRoofMid;
+              } else {
+                ctx.fillStyle = manorRoofDark;
+              }
+              ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
+            } else {
+              // Manor Brick Wall (tile === 1) or Ground (tile === 7)
+              var brickPattern = ((r & 1) === 0 && (c % 3) === 0);
+              if (fogEnergy > dither * 0.65 && my >= 47) {
+                ctx.fillStyle = colorFieldHigh;
+              } else if (mLit > 0.55) {
+                ctx.fillStyle = brickPattern ? colorSpotMid : manorWallLit;
+              } else if (mLit > 0.26 + dither * 0.22) {
+                ctx.fillStyle = brickPattern ? manorEdgeCol : manorWallMid;
+              } else {
+                ctx.fillStyle = manorWallDark;
+              }
+              ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
+            }
+          }
+        }
+      }
+
+      // --- Render Watching Pixel Clown with Heterochromia Eyes in Active Window ---
+      var cw = WINDOWS[clownWinIdx] || WINDOWS[8];
+      var wColCenter = Math.round(((cw.cx + 0.5) / MANOR_W) * gridCols) + shakeCols;
+      var wRowCenter = Math.round((((cw.y0 + cw.y1) * 0.5) / MANOR_H) * gridRows);
+
+      // Subtle pale jester face silhouette & ruffled collar inside the window
+      ctx.fillStyle = 'rgba(235, 228, 250, 0.16)';
+      for (var dyF = -1; dyF <= 2; dyF++) {
+        for (var dxF = -1; dxF <= 1; dxF++) {
+          ctx.fillRect((wColCenter + dxF) * cellPx, (wRowCenter + dyF) * cellPx, cellPx - 1, cellPx - 1);
+        }
+      }
+      // Ruffled collar pixels below eyes
+      ctx.fillStyle = 'rgba(' + hotRgb + ', 0.42)';
+      ctx.fillRect((wColCenter - 2) * cellPx, (wRowCenter + 2) * cellPx, cellPx - 1, cellPx - 1);
+      ctx.fillRect((wColCenter) * cellPx, (wRowCenter + 2) * cellPx, cellPx - 1, cellPx - 1);
+      ctx.fillRect((wColCenter + 2) * cellPx, (wRowCenter + 2) * cellPx, cellPx - 1, cellPx - 1);
+
+      // Left Eye: Crimson (#ff2d55) + pointer-tracked pupil offset
+      var eyeLX = (wColCenter - 1) * cellPx;
+      var eyeRX = (wColCenter + 1) * cellPx;
+      var eyeY = wRowCenter * cellPx;
+
+      ctx.fillStyle = '#ff2d55';
+      ctx.fillRect(eyeLX, eyeY, cellPx - 1, cellPx - 1);
+      // Right Eye: Violet (#bd93f9)
+      ctx.fillStyle = '#bd93f9';
+      ctx.fillRect(eyeRX, eyeY, cellPx - 1, cellPx - 1);
+
+      // Glowing tracking pupil sub-pixels
+      var pupSize = Math.max(2, Math.floor(cellPx * 0.45));
+      var pupOffX = Math.floor((cellPx - 1 - pupSize) * 0.5) + gazeDx * Math.max(1, Math.floor(cellPx * 0.22));
+      var pupOffY = Math.floor((cellPx - 1 - pupSize) * 0.5) + gazeDy * Math.max(1, Math.floor(cellPx * 0.22));
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(eyeLX + pupOffX, eyeY + pupOffY, pupSize, pupSize);
+      ctx.fillRect(eyeRX + pupOffX, eyeY + pupOffY, pupSize, pupSize);
+
+      // --- Render Stepped Pixel Lightning Bolts ---
+      for (var bIdx = 0; bIdx < bolts.length; bIdx++) {
+        var b = bolts[bIdx];
+        var bAge = (t - b.born) / b.dur;
+        if (bAge >= 1) continue;
+        ctx.fillStyle = bAge < 0.35 ? '#ffffff' : colorSpotHigh;
+        var drawSteppedSegment = function (p1, p2, thick) {
+          var dist = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+          var st = Math.max(2, Math.ceil(dist / (cellPx * 0.75)));
+          for (var s = 0; s <= st; s++) {
+            var f = s / st;
+            var bx = Math.round((p1.x + (p2.x - p1.x) * f) / cellPx) * cellPx;
+            var by = Math.round((p1.y + (p2.y - p1.y) * f) / cellPx) * cellPx;
+            ctx.fillRect(bx, by, cellPx - 1, cellPx - 1);
+            if (thick && bAge < 0.25) {
+              ctx.fillStyle = colorSpotMid;
+              ctx.fillRect(bx + cellPx, by, cellPx - 1, cellPx - 1);
+              ctx.fillStyle = '#ffffff';
+            }
+          }
+        };
+        for (var p = 0; p < b.pts.length - 1; p++) {
+          drawSteppedSegment(b.pts[p], b.pts[p + 1], true);
+        }
+        for (var bp = 0; bp < b.branch.length - 1; bp++) {
+          drawSteppedSegment(b.branch[bp], b.branch[bp + 1], false);
+        }
+      }
+
+      // --- Render Autonomous Will-o'-the-Wisp Orbs ---
+      for (var w = 0; w < meshCount; w++) {
+        var wx = Math.round(meshOrbs[w].x / cellPx) * cellPx;
+        var wy = Math.round(meshOrbs[w].y / cellPx) * cellPx;
+        ctx.save();
+        ctx.strokeStyle = colorSpotHigh;
+        ctx.lineWidth = Math.max(1.5, dpr * 1.4);
+        var wPad = cellPx * 1.5;
+        ctx.strokeRect(wx - wPad, wy - wPad, cellPx + wPad * 2 - 1, cellPx + wPad * 2 - 1);
+        ctx.fillStyle = colorSpotMid;
+        ctx.fillRect(wx - cellPx, wy, cellPx - 1, cellPx - 1);
+        ctx.fillRect(wx + cellPx, wy, cellPx - 1, cellPx - 1);
+        ctx.fillRect(wx, wy - cellPx, cellPx - 1, cellPx - 1);
+        ctx.fillRect(wx, wy + cellPx, cellPx - 1, cellPx - 1);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(wx, wy, cellPx - 1, cellPx - 1);
+        ctx.restore();
+      }
+
+      if (!reducedMotion && isVisible) {
+        rafId = requestAnimationFrame(render);
+      }
+    }
+
+    window.clownhouseRenderSpotlight = function () {
+      wakeRender();
+      if (reducedMotion) render(performance.now());
+    };
+
+    resize();
+    render(performance.now());
+    window.addEventListener('resize', function () { resize(); wakeRender(); }, { passive: true });
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('pointerdown', onPointerDown, { passive: true });
+    window.addEventListener('pointerup', function (e) { if (e && e.pointerType === 'touch') deactivate(); }, { passive: true });
+    ['pointercancel', 'blur', 'pointerleave', 'mouseleave'].forEach(function (ev) {
+      window.addEventListener(ev, deactivate, { passive: true });
+    });
+    document.addEventListener('visibilitychange', function () {
+      isVisible = !document.hidden;
+      if (isVisible) wakeRender();
+      else if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+    });
+  }
+
+  // --- Typewriter Whispers + Interactive [1]-[4] TUI Console Triggers ---
+  function initConsoleAndTypewriter() {
+    var out = document.getElementById('typed');
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var defaultPhrases = is404Page
+      ? [
+          'wrong room, darling',
+          'nothing here but dust and greasepaint',
+          'this door wasn’t on the blueprint',
+          'she was never in this room',
+          'turn around slowly',
+          'the hallway ended twenty steps ago',
+          'step back into the lantern light',
+          'you weren’t supposed to open this'
+        ]
+      : [
+          'check back later',
+          'come back soon, darling',
+          'not yet — the house is still waking',
+          'she’s counting to ten in the belfry',
+          'the music box is winding in the dark',
+          'knock three times and watch the windows',
+          'something stirs behind the mirror room',
+          'she’s still painting her face',
+          'the tent flap is sewn shut',
+          'hush — she can hear your cursor',
+          'wait by the violet lantern',
+          'come back when the gable lights flicker'
+        ];
+
+    var i = 0, pos = 0, del = false, timer = null;
+
+    function tick() {
+      if (!out) return;
+      var s = defaultPhrases[i % defaultPhrases.length];
+      pos += del ? -1 : 1;
+      out.textContent = s.slice(0, pos);
+      if (!del && pos >= s.length) {
+        del = true;
+        timer = setTimeout(tick, 1850);
+        return;
+      }
+      if (del && pos <= 0) {
+        del = false;
+        i = (i + 1) % defaultPhrases.length;
+        timer = setTimeout(tick, 340);
+        return;
+      }
+      timer = setTimeout(tick, del ? 28 : 58);
+    }
+
+    window.clownhousePushWhisper = function (msg) {
+      if (!out || !msg) return;
+      if (timer) clearTimeout(timer);
+      defaultPhrases.splice((i + 1) % defaultPhrases.length, 0, msg);
+      if (defaultPhrases.length > 18) defaultPhrases.pop();
+      i = (i + 1) % defaultPhrases.length;
+      pos = 0;
+      del = false;
+      if (reduced) {
+        out.textContent = msg;
+      } else {
+        tick();
+      }
+    };
+
+    if (out) {
+      if (reduced) {
+        out.textContent = defaultPhrases[0];
+      } else {
+        tick();
+      }
+    }
+
+    // Interactive [1]-[4] triggers
+    var btnKnock = document.getElementById('act-knock');
+    var btnMusic = document.getElementById('act-music');
+    var btnStorm = document.getElementById('act-storm');
+    var btnWaypoints = document.getElementById('act-waypoints');
+    var drawer = document.getElementById('waypoints-drawer');
+
+    function toggleWaypoints() {
+      if (!drawer) return;
+      var isHidden = drawer.hasAttribute('hidden');
+      if (isHidden) {
+        drawer.removeAttribute('hidden');
+      } else {
+        drawer.setAttribute('hidden', '');
+      }
+      var open = !drawer.hasAttribute('hidden');
+      if (btnWaypoints) {
+        btnWaypoints.classList.toggle('active', open);
+        btnWaypoints.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+      var stateEl = document.getElementById('tui-waypoints-state');
+      if (stateEl) {
+        stateEl.textContent = open ? '[ OPEN    ]' : '[ 6 DOORS ]';
+      }
+    }
+
+    if (btnKnock) btnKnock.addEventListener('click', function () {
+      if (window.clownhouseTriggerKnock) window.clownhouseTriggerKnock();
+    });
+    if (btnMusic) btnMusic.addEventListener('click', function () {
+      toggleMusicBox();
+    });
+    if (btnStorm) btnStorm.addEventListener('click', function () {
+      if (window.clownhouseTriggerStorm) window.clownhouseTriggerStorm();
+    });
+    if (btnWaypoints) btnWaypoints.addEventListener('click', function () {
+      toggleWaypoints();
+    });
+
+    // Keyboard shortcuts 1-4
+    document.addEventListener('keydown', function (e) {
+      if (e.defaultPrevented || e.ctrlKey || e.altKey || e.metaKey) return;
+      var act = document.activeElement;
+      var tag = act && act.tagName ? act.tagName.toUpperCase() : '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.key === '1') {
+        e.preventDefault();
+        if (window.clownhouseTriggerKnock) window.clownhouseTriggerKnock();
+      } else if (e.key === '2') {
+        e.preventDefault();
+        toggleMusicBox();
+      } else if (e.key === '3') {
+        e.preventDefault();
+        if (window.clownhouseTriggerStorm) window.clownhouseTriggerStorm();
+      } else if (e.key === '4') {
+        e.preventDefault();
+        toggleWaypoints();
+      } else if (e.key === 'Escape' && drawer && !drawer.hasAttribute('hidden')) {
+        e.preventDefault();
+        toggleWaypoints();
+      }
+    });
+  }
+
+  function start() {
+    initPalette();
+    renderHeaderWordmark();
+    initCanvas();
+    initConsoleAndTypewriter();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
 })();
