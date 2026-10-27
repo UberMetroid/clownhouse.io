@@ -380,14 +380,14 @@
   var MANOR_W = 96, MANOR_H = 54;
   var manorGrid = new Uint8Array(MANOR_W * MANOR_H);
   var WINDOWS = [
-    { id: 0, name: 'WEST PARLOR (2F)', cx: 32, y0: 29, y1: 35, w: 4 },
-    { id: 1, name: 'GALLERY WEST (2F)', cx: 42, y0: 29, y1: 35, w: 4 },
-    { id: 2, name: 'MIRROR ROOM (2F)', cx: 58, y0: 29, y1: 35, w: 4 },
-    { id: 3, name: 'EAST NURSERY (2F)', cx: 68, y0: 29, y1: 35, w: 4 },
-    { id: 4, name: 'FOYER WEST (1F)', cx: 32, y0: 39, y1: 46, w: 4 },
-    { id: 5, name: 'DRAWING ROOM (1F)', cx: 42, y0: 39, y1: 46, w: 4 },
-    { id: 6, name: 'MUSIC ROOM (1F)', cx: 60, y0: 39, y1: 46, w: 4 },
-    { id: 7, name: 'VESTIBULE (1F)', cx: 70, y0: 39, y1: 46, w: 4 },
+    { id: 0, name: 'WEST PARLOR (2F)', cx: 29, y0: 29, y1: 35, w: 4 },
+    { id: 1, name: 'GALLERY WEST (2F)', cx: 39, y0: 29, y1: 35, w: 4 },
+    { id: 2, name: 'MIRROR ROOM (2F)', cx: 59, y0: 29, y1: 35, w: 4 },
+    { id: 3, name: 'EAST NURSERY (2F)', cx: 69, y0: 29, y1: 35, w: 4 },
+    { id: 4, name: 'FOYER WEST (1F)', cx: 29, y0: 39, y1: 46, w: 4 },
+    { id: 5, name: 'DRAWING ROOM (1F)', cx: 39, y0: 39, y1: 46, w: 4 },
+    { id: 6, name: 'MUSIC ROOM (1F)', cx: 59, y0: 39, y1: 46, w: 4 },
+    { id: 7, name: 'VESTIBULE (1F)', cx: 69, y0: 39, y1: 46, w: 4 },
     { id: 8, name: 'BELFRY SPIRE', cx: 15, y0: 20, y1: 29, w: 6 },
     { id: 9, name: 'EAST ANNEX', cx: 84, y0: 36, y1: 46, w: 4 }
   ];
@@ -758,9 +758,9 @@
       meshOrbs[0].mx = w0mx;
       meshOrbs[0].my = w0my;
 
-      // Wisp 1: First floor grand hall & East Annex (FOYER WEST x=32 <-> DRAWING ROOM x=42 <-> MUSIC ROOM x=60 <-> VESTIBULE x=70 <-> EAST ANNEX x=84)
+      // Wisp 1: First floor grand hall & East Annex (FOYER WEST x=29 <-> DRAWING ROOM x=39 <-> MUSIC ROOM x=59 <-> VESTIBULE x=69 <-> EAST ANNEX x=84)
       var w1t = sec * 0.36 + 2.1;
-      var w1mx = 58.5 + 27.5 * Math.sin(w1t);
+      var w1mx = 56.5 + 29.5 * Math.sin(w1t);
       var w1my = 42.2 + 1.8 * Math.sin(w1t * 2.7);
       meshOrbs[1].mx = w1mx;
       meshOrbs[1].my = w1my;
