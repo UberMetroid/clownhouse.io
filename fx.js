@@ -163,23 +163,10 @@
     164.81, 0, 138.59, 146.83, 0, 146.83
   ];
 
-  function updateEqBar(step) {
-    var eqEl = document.getElementById('tui-eq-bar');
-    var stateEl = document.getElementById('tui-music-state');
-    if (!eqEl) return;
-    if (!musicPlaying) {
-      eqEl.textContent = '▁▁▁▁▁▁▁▁';
-      if (stateEl) stateEl.textContent = '[ PAUSED  ]';
-      return;
+  function updateEqBar() {
+    if (window.clownhouseRenderSpotlight) {
+      window.clownhouseRenderSpotlight();
     }
-    var glyphs = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
-    var bar = '';
-    for (var i = 0; i < 8; i++) {
-      var v = Math.floor(Math.abs(Math.sin(step * 0.75 + i * 1.1)) * 7.99);
-      bar += glyphs[v];
-    }
-    eqEl.textContent = bar;
-    if (stateEl) stateEl.textContent = '[ WINDING ]';
   }
 
   function tickMusicBox() {
@@ -226,7 +213,7 @@
         bOsc.stop(now + 0.3);
       }
     }
-    updateEqBar(musicStep);
+    updateEqBar();
     musicStep++;
   }
 
@@ -242,14 +229,14 @@
       tickMusicBox();
       musicTimer = setInterval(tickMusicBox, 260);
       if (window.clownhousePushWhisper) {
-        window.clownhousePushWhisper('the porcelain music box begins to turn...');
+        window.clownhousePushWhisper('the porcelain music box begins to turn in the music room...');
       }
     } else {
       if (musicTimer) {
         clearInterval(musicTimer);
         musicTimer = null;
       }
-      updateEqBar(0);
+      updateEqBar();
       if (window.clownhousePushWhisper) {
         window.clownhousePushWhisper('the music box clicks shut in the dark');
       }
@@ -547,7 +534,7 @@
              (noiseTable[y1 * N + x0] * (1 - sx) + noiseTable[y1 * N + x1] * sx) * sy;
     }
 
-    var TEXT_SEL = 'h1,h2,h3,p,pre,code,label,input,button,a,.spotlight-card,.tui-screen-mock,.footer-dock,.waypoints-drawer';
+    var TEXT_SEL = 'h1,h2,h3,p,pre,code,label,input,button,a,.site-header,.spotlight-card,.tui-screen-mock,.footer-dock';
 
     function isOverTextElement(target) {
       if (!target || target === document.body || target === document.documentElement || target === canvas) return false;
@@ -829,15 +816,32 @@
       if (smoothMouse.strength < 0.005) smoothMouse.strength = 0;
       smoothText += (targetText - smoothText) * 0.18;
 
-      // Update 3 autonomous orbiting Will-o'-the-Wisp orbs around the Haunted Manor
-      var centerX = width * (0.5 + 0.12 * Math.sin(sec * 0.35));
-      var centerY = height * (0.48 + 0.10 * Math.cos(sec * 0.48));
+      // Update 3 autonomous Will-o'-the-Wisp orbs patrolling INSIDE the Haunted Manor rooms & corridors
+      // Wisp 0: Second floor & Belfry Spire corridor (WEST PARLOR <-> GALLERY <-> MIRROR ROOM <-> EAST NURSERY, dipping toward BELFRY)
+      var w0t = sec * 0.42;
+      var w0mx = 48 + 24 * Math.sin(w0t) - 8 * Math.pow(Math.max(0, -Math.sin(w0t)), 2);
+      var w0my = 31.8 + 2.2 * Math.cos(w0t * 2.1) - 4.5 * Math.pow(Math.max(0, -Math.sin(w0t)), 3);
+      meshOrbs[0].mx = w0mx;
+      meshOrbs[0].my = w0my;
+
+      // Wisp 1: First floor grand hall & East Annex (FOYER WEST <-> DRAWING ROOM <-> MUSIC ROOM <-> VESTIBULE <-> EAST ANNEX)
+      var w1t = sec * 0.36 + 2.1;
+      var w1mx = 56 + 26 * Math.sin(w1t);
+      var w1my = 42.2 + 2.0 * Math.sin(w1t * 2.7) - (w1mx > 76 ? 2.2 : 0);
+      meshOrbs[1].mx = w1mx;
+      meshOrbs[1].my = w1my;
+
+      // Wisp 2: Gothic Belfry Spire & Upper Gallery figure-8 patrol (BELFRY SPIRE <-> WEST PARLOR <-> FOYER WEST <-> MIRROR ROOM)
+      var w2t = sec * 0.48 + 4.2;
+      var w2Phase = 0.5 + 0.5 * Math.sin(w2t * 0.65);
+      var w2mx = 15.5 * (1 - w2Phase) + (46 + 18 * Math.cos(w2t)) * w2Phase;
+      var w2my = (24.5 + 4.0 * Math.sin(w2t * 1.3)) * (1 - w2Phase) + (36.5 + 5.8 * Math.sin(w2t * 1.3)) * w2Phase;
+      meshOrbs[2].mx = w2mx;
+      meshOrbs[2].my = w2my;
+
       for (var m = 0; m < meshCount; m++) {
-        var ang = sec * (0.38 + m * 0.09) + (m * 2 * Math.PI / meshCount);
-        var radX = width * (0.24 + 0.06 * Math.sin(sec * 0.7 + m));
-        var radY = height * (0.20 + 0.05 * Math.cos(sec * 0.9 + m));
-        meshOrbs[m].x = centerX + Math.cos(ang) * radX;
-        meshOrbs[m].y = centerY + Math.sin(ang) * radY;
+        meshOrbs[m].x = (meshOrbs[m].mx / MANOR_W) * width;
+        meshOrbs[m].y = (meshOrbs[m].my / MANOR_H) * height;
       }
 
       var allLights = meshOrbs.slice();
@@ -887,7 +891,7 @@
 
       var mouseReach = 225 * (1 - 0.52 * textDim) * dpr;
       var mouseReachSq = mouseReach * mouseReach;
-      var orbReach = 128 * (1 - 0.45 * textDim) * dpr;
+      var orbReach = 115 * (1 - 0.45 * textDim) * dpr;
       var orbReachSq = orbReach * orbReach;
       var ringW = 28 * dpr;
 
@@ -924,7 +928,7 @@
           var wmCol = hasWordRow ? Math.floor((px - wmOriginX) / cellPx) : -1;
           var isWord = hasWordRow && wmCol >= 0 && wmCol < wmWidth && wmRows[wmRow] && wmRows[wmRow].charAt(wmCol) === '1';
 
-          // Compute Spotlight (Pointer Torch + 3 Orbiting Will-o'-the-Wisps + Storm Flash)
+          // Compute Exterior Spotlight (Pointer Torch + Storm Flash) and Interior Wisp Glow
           var spot = stormIntensity * 0.65;
           if (smoothMouse.strength > 0.01) {
             var dxm = cx - smoothMouse.x, dym = cy - smoothMouse.y;
@@ -933,11 +937,13 @@
               spot = Math.max(spot, Math.pow(1 - Math.sqrt(dsqM) / mouseReach, 2) * smoothMouse.strength * (1 - 0.55 * textDim));
             }
           }
+          var wispInside = 0;
           for (var m = 0; m < meshCount; m++) {
             var dxo = cx - meshOrbs[m].x, dyo = cy - meshOrbs[m].y;
             var dsqO = dxo * dxo + dyo * dyo;
             if (dsqO < orbReachSq) {
-              spot += Math.pow(1 - Math.sqrt(dsqO) / orbReach, 2) * 0.55;
+              var wFalloff = Math.pow(1 - Math.sqrt(dsqO) / orbReach, 2);
+              if (wFalloff > wispInside) wispInside = wFalloff;
             }
           }
           if (spot > 1.35) spot = 1.35;
@@ -952,7 +958,7 @@
 
           if (isWord) {
             // 3-tier vertical arcade shading (#ffffff top cap -> --hot mid -> --phosphor base) + shockwave boost
-            var wBoost = spot * 1.1 + ripGlow * 1.6 + stormIntensity * 0.9;
+            var wBoost = spot * 1.1 + wispInside * 0.35 + ripGlow * 1.6 + stormIntensity * 0.9;
             ctx.fillStyle = (wmRow < 5 || wBoost > 0.85)
               ? '#ffffff'
               : (wmRow < 11 || wBoost > 0.35)
@@ -975,7 +981,7 @@
           }
 
           if (tile === 0) {
-            // Sky & Bayer Plasma
+            // Sky & Bayer Plasma (wisps are inside the house, so they do not illuminate the open sky)
             var nx = c * 0.07 + sec * 0.16, ny = r * 0.07 - sec * 0.11;
             var nVal = 0.6 * sampleNoise(nx, ny) + 0.4 * sampleNoise(nx * 0.5 - sec * 0.08, ny * 0.5 + sec * 0.07);
             var energy = nVal * 0.75 + (0.5 + 0.5 * Math.sin(sec * 1.8 + (r * 37 + c * 11) % 6.283)) * 0.25 + fogEnergy;
@@ -991,21 +997,62 @@
               ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
             }
           } else if (tile >= 10 && tile < 20) {
-            // Manor Window Pane
+            // Manor Window Pane — illuminates brightly from within as interior wisps fly past!
             var winId = tile - 10;
             var winPulse = 0.5 + 0.5 * Math.sin(sec * 2.1 + winId * 1.7);
-            if (winId === clownWinIdx) {
-              // Dark velvet interior behind the watching clown
-              ctx.fillStyle = spot > 0.25 ? 'rgba(' + midRgb + ',0.22)' : '#120b22';
+
+            // When Music Box is playing, render animated pixel Equalizer Bar Chart inside the Music Room (winId === 6)
+            // and subtle synchronized harmonic bars in Drawing Room (winId === 5) & Vestibule (winId === 7)
+            if (musicPlaying && (winId === 6 || winId === 5 || winId === 7) && winId !== clownWinIdx) {
+              var mWin = WINDOWS[winId];
+              var mhw = Math.floor(mWin.w / 2);
+              var barIdx = Math.max(0, mx - (mWin.cx - mhw));
+              var totalRows = mWin.y1 - mWin.y0 + 1;
+              var rowFromBottom = mWin.y1 - my; // 0 at bottom sill, 7 at top arch
+              var phaseOff = (winId === 6) ? 0 : (winId === 5 ? 1.9 : 3.7);
+              var ampScale = (winId === 6) ? 1.0 : 0.68;
+              var wave = Math.abs(Math.sin(sec * 6.8 + musicStep * 0.85 + barIdx * 1.35 + phaseOff)) * 0.68 +
+                         Math.abs(Math.cos(sec * 11.2 - barIdx * 1.9 + musicStep * 0.5)) * 0.32;
+              var barHeight = Math.max(1, Math.min(totalRows, Math.round((0.18 + 0.82 * wave * ampScale) * totalRows)));
+              if (rowFromBottom < barHeight) {
+                var isPeak = (rowFromBottom === barHeight - 1);
+                if (winId === 6) {
+                  ctx.fillStyle = isPeak
+                    ? '#ffffff'
+                    : (rowFromBottom >= Math.floor(totalRows * 0.6)
+                      ? ('rgb(' + hotRgb + ')')
+                      : '#50fa7b');
+                } else {
+                  ctx.fillStyle = isPeak ? colorSpotHigh : colorSpotMid;
+                }
+              } else {
+                // Warm backlit music room interior behind the bars
+                ctx.fillStyle = (winId === 6)
+                  ? ('rgba(' + midRgb + ',' + (0.20 + wispInside * 0.35).toFixed(2) + ')')
+                  : '#0b0716';
+              }
+              ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
+            } else if (winId === clownWinIdx) {
+              // Dark velvet interior behind the watching clown, catching interior wisp glow
+              ctx.fillStyle = (spot > 0.25 || wispInside > 0.35)
+                ? 'rgba(' + midRgb + ',' + (0.22 + wispInside * 0.42).toFixed(2) + ')'
+                : '#120b22';
               ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
             } else {
-              var wLit = spot * 0.9 + ripGlow * 0.8 + (winPulse > 0.82 ? 0.25 : 0.08);
-              ctx.fillStyle = wLit > 0.45 ? colorSpotMid : (wLit > 0.18 ? colorFieldHigh : '#090612');
+              var wLit = spot * 0.85 + wispInside * 1.45 + ripGlow * 0.8 + (winPulse > 0.82 ? 0.22 : 0.06);
+              ctx.fillStyle = wLit > 0.82
+                ? colorSpotHigh
+                : (wLit > 0.40
+                  ? colorSpotMid
+                  : (wLit > 0.16 ? colorFieldHigh : '#090612'));
               ctx.fillRect(px, py, cellPx - 1, cellPx - 1);
             }
           } else {
             // Solid Haunted Manor Architecture (Brickwork, Shingles, Fence, Trees, Door)
-            var mLit = 0.20 + spot * 0.95 + ripGlow * 0.90 + fogEnergy * 0.45;
+            // Walls occlude interior wisps; window frames (tile === 5) catch interior wisp spill + Music Room frame glow
+            var musicFrameBoost = (musicPlaying && tile === 5 && mx >= 56 && mx <= 64 && my >= 38 && my <= 47) ? 0.55 : 0;
+            var interiorBleed = (tile === 5) ? (wispInside * 0.88 + musicFrameBoost) : ((tile === 1 || tile === 2) ? (wispInside * 0.10) : 0);
+            var mLit = 0.20 + spot * 0.95 + interiorBleed + ripGlow * 0.90 + fogEnergy * 0.45;
             if (tile === 2 || tile === 4 || tile === 5) {
               // Rim-lit edges, gargoyles, and window frames
               ctx.fillStyle = (mLit > 0.65)
@@ -1116,26 +1163,68 @@
         }
       }
 
-      // --- Render Autonomous Will-o'-the-Wisp Orbs ---
+      // --- Render Interior Will-o'-the-Wisp Orbs (Occluded by Manor Walls, Vivid Through Windows) ---
       for (var w = 0; w < meshCount; w++) {
-        var wx = Math.round(meshOrbs[w].x / cellPx) * cellPx;
-        var wy = Math.round(meshOrbs[w].y / cellPx) * cellPx;
-        ctx.save();
-        ctx.strokeStyle = colorSpotHigh;
-        ctx.lineWidth = Math.max(1.5, dpr * 1.4);
-        var wPad = cellPx * 1.5;
-        ctx.strokeRect(wx - wPad, wy - wPad, cellPx + wPad * 2 - 1, cellPx + wPad * 2 - 1);
-        ctx.fillStyle = colorSpotMid;
-        ctx.fillRect(wx - cellPx, wy, cellPx - 1, cellPx - 1);
-        ctx.fillRect(wx + cellPx, wy, cellPx - 1, cellPx - 1);
-        ctx.fillRect(wx, wy - cellPx, cellPx - 1, cellPx - 1);
-        ctx.fillRect(wx, wy + cellPx, cellPx - 1, cellPx - 1);
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(wx, wy, cellPx - 1, cellPx - 1);
-        ctx.restore();
+        var wCol = Math.round(meshOrbs[w].x / cellPx);
+        var wRow = Math.round(meshOrbs[w].y / cellPx);
+        var wx = wCol * cellPx;
+        var wy = wRow * cellPx;
+
+        // Check how close the wisp is to any manor window pane
+        var bestWinFactor = 0;
+        for (var winIdx = 0; winIdx < WINDOWS.length; winIdx++) {
+          var winObj = WINDOWS[winIdx];
+          var wcy = (winObj.y0 + winObj.y1) * 0.5;
+          var dxW = Math.max(0, Math.abs(meshOrbs[w].mx - winObj.cx) - winObj.w * 0.65);
+          var dyW = Math.max(0, Math.abs(meshOrbs[w].my - wcy) - (winObj.y1 - winObj.y0) * 0.65);
+          var dW = Math.hypot(dxW, dyW);
+          var wf = Math.max(0, 1 - dW / 4.2);
+          if (wf > bestWinFactor) bestWinFactor = wf;
+        }
+
+        // Draw individual wisp cross pixels, brightly visible inside window panes/frames and faint behind walls
+        var wOffsets = [
+          { dc: 0, dr: 0, core: true },
+          { dc: -1, dr: 0, core: false },
+          { dc: 1, dr: 0, core: false },
+          { dc: 0, dr: -1, core: false },
+          { dc: 0, dr: 1, core: false }
+        ];
+        for (var wo = 0; wo < wOffsets.length; wo++) {
+          var pc = wCol + wOffsets[wo].dc;
+          var pr = wRow + wOffsets[wo].dr;
+          var pmx = Math.floor((((pc + shakeCols) + 0.5) / gridCols) * MANOR_W);
+          var pmy = Math.floor(((pr + 0.5) / gridRows) * MANOR_H);
+          if (pmx < 0 || pmx >= MANOR_W || pmy < 0 || pmy >= MANOR_H) continue;
+          var ptile = manorGrid[pmy * MANOR_W + pmx];
+          var inPane = (ptile >= 10 && ptile < 20);
+          var inFrame = (ptile === 5);
+          var inWall = (ptile === 1 || ptile === 2 || ptile === 3 || ptile === 6);
+          if (!inPane && !inFrame && !inWall) continue;
+
+          var pAlpha = inPane
+            ? 0.96
+            : (inFrame
+              ? (0.45 + 0.40 * bestWinFactor)
+              : (0.10 + 0.18 * bestWinFactor));
+          ctx.fillStyle = wOffsets[wo].core
+            ? ('rgba(255,255,255,' + pAlpha.toFixed(2) + ')')
+            : ('rgba(' + hotRgb + ',' + (pAlpha * 0.85).toFixed(2) + ')');
+          ctx.fillRect(pc * cellPx, pr * cellPx, cellPx - 1, cellPx - 1);
+        }
+
+        // Crisp glowing reticle halo when the wisp passes directly behind a window pane
+        if (bestWinFactor > 0.15) {
+          ctx.save();
+          ctx.strokeStyle = 'rgba(' + hotRgb + ',' + ((0.18 + 0.72 * bestWinFactor) * glareCut).toFixed(2) + ')';
+          ctx.lineWidth = Math.max(1.5, dpr * 1.4);
+          var wPad = cellPx * 1.5;
+          ctx.strokeRect(wx - wPad, wy - wPad, cellPx + wPad * 2 - 1, cellPx + wPad * 2 - 1);
+          ctx.restore();
+        }
       }
 
-      var hasActiveEffects = ripples.length > 0 || bolts.length > 0 || t < stormFlashUntil || t < knockUntil;
+      var hasActiveEffects = ripples.length > 0 || bolts.length > 0 || t < stormFlashUntil || t < knockUntil || musicPlaying;
       if (isVisible && (!reducedMotion || hasActiveEffects)) {
         rafId = requestAnimationFrame(render);
       }
@@ -1161,7 +1250,7 @@
     });
   }
 
-  // --- Typewriter Whispers + Interactive [1]-[4] TUI Console Triggers ---
+  // --- Typewriter Whispers + Interactive [1]-[3] Footer Triggers ---
   function initConsoleAndTypewriter() {
     var out = document.getElementById('typed');
     var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1235,31 +1324,10 @@
       }
     }
 
-    // Interactive [1]-[4] triggers
+    // Interactive [1]-[3] triggers
     var btnKnock = document.getElementById('act-knock');
     var btnMusic = document.getElementById('act-music');
     var btnStorm = document.getElementById('act-storm');
-    var btnWaypoints = document.getElementById('act-waypoints');
-    var drawer = document.getElementById('waypoints-drawer');
-
-    function toggleWaypoints() {
-      if (!drawer) return;
-      var isHidden = drawer.hasAttribute('hidden');
-      if (isHidden) {
-        drawer.removeAttribute('hidden');
-      } else {
-        drawer.setAttribute('hidden', '');
-      }
-      var open = !drawer.hasAttribute('hidden');
-      if (btnWaypoints) {
-        btnWaypoints.classList.toggle('active', open);
-        btnWaypoints.setAttribute('aria-expanded', open ? 'true' : 'false');
-      }
-      var stateEl = document.getElementById('tui-waypoints-state');
-      if (stateEl) {
-        stateEl.textContent = open ? '[ OPEN    ]' : '[ 6 DOORS ]';
-      }
-    }
 
     if (btnKnock) btnKnock.addEventListener('click', function () {
       if (window.clownhouseTriggerKnock) window.clownhouseTriggerKnock();
@@ -1270,11 +1338,8 @@
     if (btnStorm) btnStorm.addEventListener('click', function () {
       if (window.clownhouseTriggerStorm) window.clownhouseTriggerStorm();
     });
-    if (btnWaypoints) btnWaypoints.addEventListener('click', function () {
-      toggleWaypoints();
-    });
 
-    // Keyboard shortcuts 1-4
+    // Keyboard shortcuts 1-3
     document.addEventListener('keydown', function (e) {
       if (e.defaultPrevented || e.ctrlKey || e.altKey || e.metaKey) return;
       var act = document.activeElement;
@@ -1289,12 +1354,6 @@
       } else if (e.key === '3') {
         e.preventDefault();
         if (window.clownhouseTriggerStorm) window.clownhouseTriggerStorm();
-      } else if (e.key === '4') {
-        e.preventDefault();
-        toggleWaypoints();
-      } else if (e.key === 'Escape' && drawer && !drawer.hasAttribute('hidden')) {
-        e.preventDefault();
-        toggleWaypoints();
       }
     });
   }

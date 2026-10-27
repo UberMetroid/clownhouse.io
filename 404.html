@@ -54,15 +54,15 @@
       background-color: var(--bg);
       color: var(--text);
       font-family: var(--mono);
-      overflow-x: hidden;
+      overflow: hidden;
     }
     body {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       min-height: 100vh;
-      padding: 16px 16px 64px;
+      padding: 58px 16px 56px;
       position: relative;
     }
 
@@ -80,159 +80,60 @@
       content: "";
       position: fixed;
       inset: 0;
-      background: radial-gradient(ellipse at 50% 52%, transparent 48%, rgba(4, 3, 8, 0.78) 96%);
+      background: radial-gradient(ellipse at 50% 52%, transparent 52%, rgba(4, 3, 8, 0.78) 96%);
       pointer-events: none;
       z-index: 1;
     }
 
-    .stage-wrap {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      max-width: 620px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      pointer-events: none;
-    }
-
-    .wordmark-hero {
-      width: 100%;
-      height: clamp(68px, 11vh, 108px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      pointer-events: none;
-      user-select: none;
-    }
-
-    .spotlight-card {
-      --mouse-x: -999px;
-      --mouse-y: -999px;
-      --spotlight-radius: 340px;
-      position: relative;
-      background: var(--panel);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid var(--border-accent);
-      border-radius: 12px;
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.72), 0 0 36px var(--phosphor-dim);
-      overflow: hidden;
-      pointer-events: auto;
-      width: 100%;
-    }
-    .spotlight-card.spotlight-over-text { --spotlight-radius: 160px; }
-    .spotlight-card::after {
-      content: "";
-      position: absolute;
-      inset: -1px;
-      border-radius: inherit;
-      padding: 1.5px;
-      box-sizing: border-box;
-      background: radial-gradient(
-        var(--spotlight-radius) circle at var(--mouse-x) var(--mouse-y),
-        var(--spotlight-glow) 0%,
-        var(--spotlight-border) 28%,
-        transparent 72%
-      );
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      mask-composite: exclude;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.25s ease;
-      z-index: 2;
-    }
-    .spotlight-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background: radial-gradient(
-        calc(var(--spotlight-radius) * 1.1) circle at var(--mouse-x) var(--mouse-y),
-        var(--spotlight-inner) 0%,
-        transparent 65%
-      );
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.25s ease;
-      z-index: 1;
-    }
-    .spotlight-card.spotlight-active::after,
-    .spotlight-card.spotlight-active::before { opacity: 1; }
-    .spotlight-card.spotlight-over-text.spotlight-active::before { opacity: 0.16; }
-    .spotlight-card > * { position: relative; z-index: 3; }
-
-    .sanctuary-card {
-      padding: 1.25rem 1.35rem;
-    }
-    .sanctuary-card-top-bar {
-      position: absolute;
+    .site-header {
+      position: fixed;
       top: 0;
       left: 0;
       right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--crimson), var(--phosphor), var(--cyan), transparent);
-      z-index: 4;
+      min-height: 50px;
+      background: rgba(8, 6, 15, 0.92);
+      background-image: linear-gradient(rgba(18, 14, 28, 0) 50%, rgba(0, 0, 0, 0.42) 50%);
+      background-size: 100% 4px;
+      border-bottom: 2px solid var(--border-accent);
+      box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.85), 0 8px 24px rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 95;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 1rem;
     }
-
-    @keyframes door-shake {
-      0%, 100% { transform: translate(0, 0); }
-      20% { transform: translate(-4px, 1px); }
-      40% { transform: translate(4px, -1px); }
-      60% { transform: translate(-3px, -1px); }
-      80% { transform: translate(3px, 1px); }
-    }
-    .door-knock-shake {
-      animation: door-shake 0.36s steps(2) 2;
-    }
-
-    .card-brand-header {
+    .site-header-inner {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      padding-bottom: 0.85rem;
-      margin-bottom: 0.85rem;
-      border-bottom: 1px solid var(--border-subtle);
-      flex-wrap: wrap;
+      gap: 1rem;
     }
     .brand-left {
       display: flex;
       align-items: center;
-      gap: 0.8rem;
-      min-width: 0;
+      gap: 0.65rem;
+      flex-shrink: 0;
     }
     .crest-emblem {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      border-radius: 7px;
       border: 1.5px solid var(--phosphor);
-      box-shadow: 0 0 14px var(--phosphor-dim);
+      box-shadow: 0 0 12px var(--phosphor-dim);
       background: #090710;
       flex-shrink: 0;
       display: block;
     }
-    .wordmark-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 0;
-    }
     .header-wordmark {
       display: block;
-      width: 102px;
-      height: 51px;
+      width: 68px;
+      height: 34px;
       image-rendering: pixelated;
-    }
-    .brand-subtitle {
-      font-size: 0.68rem;
-      color: var(--text-secondary);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
     }
     .visually-hidden {
       position: absolute;
@@ -243,75 +144,30 @@
       white-space: nowrap;
     }
 
-    .spotlight-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 4px 11px;
-      border-radius: 9999px;
-      background: var(--phosphor-dim);
-      border: 1px solid var(--border-accent);
-      color: var(--hot);
-      font-family: var(--mono);
-      font-size: 10.5px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .spotlight-badge-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--crimson);
-      box-shadow: 0 0 8px var(--crimson);
-      animation: pulse-dot 2s infinite ease-in-out;
-    }
-    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-    .tui-screen-mock {
-      background: #020304;
-      border: 1px solid #1c182b;
-      border-radius: 8px;
-      padding: 11px 13px;
-      font-family: var(--mono);
-      font-size: 11.5px;
-      color: #d1d5db;
-      line-height: 1.55;
-      box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.95);
-      overflow-x: auto;
-      white-space: pre;
-    }
-    .tui-line-dim { color: #524c69; }
-    .tui-line-accent { color: var(--phosphor); font-weight: 700; }
-    .tui-line-cyan { color: var(--cyan); }
-    .tui-line-hot { color: var(--hot); }
-    .tui-line-green { color: var(--emerald); }
-    .tui-line-crimson { color: var(--crimson); font-weight: 700; }
-
-    .whisper-bar {
-      margin-top: 0.75rem;
-      padding: 0.55rem 0.85rem;
-      background: #040308;
+    .header-whisper {
+      flex: 1;
+      max-width: 540px;
+      padding: 0.35rem 0.75rem;
+      background: rgba(4, 3, 8, 0.85);
       border: 1px solid var(--border);
       border-left: 3px solid var(--crimson);
-      border-radius: 6px;
+      border-radius: 5px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
+      gap: 9px;
+      min-width: 0;
     }
     .whisper-prompt {
       color: var(--muted);
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       user-select: none;
       flex-shrink: 0;
     }
     .line {
       flex: 1;
-      min-height: 1.4em;
-      font-size: 0.86rem;
-      letter-spacing: 0.08em;
+      min-height: 1.35em;
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
       color: var(--emerald);
       text-shadow: 0 0 8px rgba(80, 250, 123, 0.35);
       white-space: nowrap;
@@ -327,11 +183,62 @@
     }
     @keyframes blink { 50% { opacity: 0; } }
 
+    .stage-wrap {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 880px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+      margin-top: clamp(8px, 2.5vh, 28px);
+    }
+    .wordmark-hero {
+      width: 100%;
+      height: clamp(64px, 11vh, 108px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .footer-dock {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      min-height: 48px;
+      background: rgba(8, 6, 15, 0.96);
+      background-image: linear-gradient(rgba(18, 14, 28, 0) 50%, rgba(0, 0, 0, 0.45) 50%);
+      background-size: 100% 4px;
+      border-top: 2px solid var(--border-accent);
+      box-shadow: 0 -2px 0 0 rgba(0, 0, 0, 0.85), 0 -8px 24px rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      z-index: 95;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 1rem;
+    }
+    .footer-dock-inner {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
     .arcade-triggers {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      display: inline-flex;
+      align-items: center;
       gap: 7px;
-      margin-top: 0.75rem;
+      flex-wrap: wrap;
     }
     .arcade-btn, .door-btn {
       font-family: var(--mono);
@@ -343,7 +250,7 @@
       border: 1.5px solid var(--border-accent);
       box-shadow: 2px 2px 0 0 #000;
       border-radius: 4px;
-      padding: 7px 6px;
+      padding: 5px 10px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -374,44 +281,6 @@
       color: #05040a;
     }
 
-    .footer-dock {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 46px;
-      background: rgba(8, 6, 15, 0.96);
-      background-image: linear-gradient(rgba(18, 14, 28, 0) 50%, rgba(0, 0, 0, 0.45) 50%);
-      background-size: 100% 4px;
-      border-top: 2px solid var(--border-accent);
-      box-shadow: 0 -2px 0 0 rgba(0, 0, 0, 0.85), 0 -8px 24px rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(14px);
-      z-index: 95;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 1rem;
-    }
-    .footer-dock-inner {
-      width: 100%;
-      max-width: 1120px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-    }
-    .dock-status {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 10.5px;
-      color: var(--text-secondary);
-      letter-spacing: 0.05em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
     .dock-controls {
       display: flex;
       align-items: center;
@@ -456,53 +325,50 @@
       border-color: #fff;
     }
 
-    @media (max-width: 600px) {
-      .sanctuary-card { padding: 1rem; }
-      .arcade-triggers { grid-template-columns: repeat(2, 1fr); }
-      .tui-screen-mock { font-size: 10px; padding: 9px 10px; }
+    @media (max-width: 680px) {
+      .site-header-inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+      }
+      .header-whisper {
+        max-width: 100%;
+      }
+      body {
+        padding-top: 88px;
+      }
       .dock-swatch-label { display: none; }
+      .arcade-btn, .door-btn { padding: 4px 7px; font-size: 10px; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .line::after, .spotlight-badge-dot { animation: none; }
+      .line::after { animation: none; }
     }
   </style>
 </head>
 <body data-page="404">
   <canvas id="spotlight-canvas" class="spotlight-canvas" aria-hidden="true"></canvas>
 
-  <main class="stage-wrap">
-    <div class="wordmark-hero" id="wordmark-hero" aria-hidden="true"></div>
-    <section class="spotlight-card sanctuary-card" aria-label="404 Wrong Room Console">
-      <div class="sanctuary-card-top-bar" aria-hidden="true"></div>
-
-      <header class="card-brand-header">
-        <div class="brand-left">
-          <img class="crest-emblem" src="favicon.svg" alt="" width="44" height="44">
-          <div class="wordmark-wrap">
-            <canvas id="header-wordmark" class="header-wordmark" width="102" height="51" aria-label="404"></canvas>
-            <h1 class="visually-hidden">404 · CLOWNHOUSE.IO</h1>
-            <div class="brand-subtitle">Uncharted Corridor // Door Not On Blueprint</div>
-          </div>
-        </div>
-        <div class="spotlight-badge">
-          <span class="spotlight-badge-dot" aria-hidden="true"></span>
-          <span id="tui-clown-room">BELFRY SPIRE</span>
-        </div>
-      </header>
-
-      <pre class="tui-screen-mock" aria-label="404 Diagnostic"><code><span class="tui-line-dim">┌──</span> <span class="tui-line-crimson">404 // CORRIDOR SEALED</span> <span class="tui-line-dim">────────────────────────────────────────┐</span>
-<span class="tui-line-dim">│</span>  <span class="tui-line-cyan">Status:</span> ROOM NOT FOUND       <span class="tui-line-cyan">Blueprint:</span> REDACTED   <span class="tui-line-cyan">Eyes:</span> <span class="tui-line-crimson">●</span><span class="tui-line-accent">●</span>     <span class="tui-line-dim">│</span>
-<span class="tui-line-dim">├──────────────────────────────────────────────────────────────────┤</span>
-<span class="tui-line-dim">│</span>  <span class="tui-line-hot">► You wandered past the velvet rope into an empty wing.</span>         <span class="tui-line-dim">│</span>
-<span class="tui-line-dim">│</span>  <span class="tui-line-green" id="tui-music-state">[ PAUSED  ]</span> <span class="tui-line-hot" id="tui-eq-bar">▁▁▁▁▁▁▁▁</span> Follow the lantern back to the front door. <span class="tui-line-dim">│</span>
-<span class="tui-line-dim">└──────────────────────────────────────────────────────────────────┘</span></code></pre>
-
-      <div class="whisper-bar" aria-live="polite">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <div class="brand-left">
+        <img class="crest-emblem" src="favicon.svg" alt="" width="34" height="34">
+        <canvas id="header-wordmark" class="header-wordmark" width="102" height="51" aria-label="404"></canvas>
+        <h1 class="visually-hidden">404 · CLOWNHOUSE.IO</h1>
+      </div>
+      <div class="header-whisper" aria-live="polite">
         <span class="whisper-prompt">404://</span>
         <p class="line" aria-label="wrong room, darling"><span id="typed">wrong room, darling</span></p>
       </div>
+    </div>
+  </header>
 
-      <div class="arcade-triggers">
+  <main class="stage-wrap">
+    <div class="wordmark-hero" id="wordmark-hero" aria-hidden="true"></div>
+  </main>
+
+  <nav class="footer-dock" id="footer-dock" aria-label="Sanctuary Controls and 8-Bit Theme Palette Dock">
+    <div class="footer-dock-inner">
+      <div class="arcade-triggers" role="group" aria-label="Sanctuary Interactive Triggers">
         <a class="door-btn" href="/">&larr; Front Door</a>
         <button type="button" class="arcade-btn" id="act-knock" title="Knock on the sealed door (Key: 1)">
           <span class="arcade-key">[1]</span> Knock
@@ -513,15 +379,6 @@
         <button type="button" class="arcade-btn" id="act-storm" title="Summon lightning bolt (Key: 3)">
           <span class="arcade-key">[3]</span> Storm
         </button>
-      </div>
-    </section>
-  </main>
-
-  <nav class="footer-dock" id="footer-dock" aria-label="8-Bit Theme Palette Dock">
-    <div class="footer-dock-inner">
-      <div class="dock-status">
-        <span class="spotlight-badge-dot" aria-hidden="true"></span>
-        <span>404 // WRONG ROOM, DARLING</span>
       </div>
       <div class="dock-controls">
         <span class="dock-swatch-label" id="dock-swatch-name">VIOLET</span>
