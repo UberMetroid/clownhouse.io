@@ -225,6 +225,9 @@
       btn.setAttribute('aria-pressed', musicPlaying ? 'true' : 'false');
     }
     if (musicPlaying) {
+      if (window.clownhouseEvictClownFromMusicRoom) {
+        window.clownhouseEvictClownFromMusicRoom();
+      }
       ensureAudio();
       tickMusicBox();
       musicTimer = setInterval(tickMusicBox, 260);
@@ -425,8 +428,8 @@
     rect(22, 25, 78, 49, 1);
     rect(22, 25, 22, 49, 2);
     rect(78, 25, 78, 49, 2);
-    // Right annex + gable
-    rect(80, 31, 89, 49, 1);
+    // Right annex + gable (connected to main manor at x=79)
+    rect(79, 31, 89, 49, 1);
     rect(89, 31, 89, 49, 2);
     peak(84, 26, 31, 7, 3, 4);
     // Left Gothic spire + tower body
@@ -534,7 +537,7 @@
              (noiseTable[y1 * N + x0] * (1 - sx) + noiseTable[y1 * N + x1] * sx) * sy;
     }
 
-    var TEXT_SEL = 'h1,h2,h3,p,pre,code,label,input,button,a,.site-header,.spotlight-card,.tui-screen-mock,.footer-dock';
+    var TEXT_SEL = 'h1,h2,h3,p,pre,code,label,input,button,a,.site-header,.footer-dock';
 
     function isOverTextElement(target) {
       if (!target || target === document.body || target === document.documentElement || target === canvas) return false;
@@ -565,26 +568,16 @@
     var clownWinIdx = 8; // Starts watching from the Belfry Spire
     var lastClownJump = 0;
     var rafId = 0, isVisible = true;
-    var spotCards = [];
-
-    function updateRoomBadge() {
-      var el = document.getElementById('tui-clown-room');
-      if (el && WINDOWS[clownWinIdx]) {
-        el.textContent = WINDOWS[clownWinIdx].name;
-      }
-    }
-    updateRoomBadge();
 
     function moveClownToNewRoom(reason) {
       var now = performance.now();
       if (now - lastClownJump < 420) return;
       lastClownJump = now;
       var next = clownWinIdx;
-      while (next === clownWinIdx) {
+      while (next === clownWinIdx || (musicPlaying && next === 6)) {
         next = Math.floor(Math.random() * WINDOWS.length);
       }
       clownWinIdx = next;
-      updateRoomBadge();
       playChimeSound();
       if (window.clownhousePushWhisper) {
         var winName = WINDOWS[clownWinIdx].name.toLowerCase();
@@ -592,6 +585,12 @@
       }
       wakeRender();
     }
+
+    window.clownhouseEvictClownFromMusicRoom = function () {
+      if (clownWinIdx === 6) {
+        moveClownToNewRoom('the music box chime startles her out of the music room!');
+      }
+    };
 
     function spawnLightningBolt(targetX, targetY) {
       var now = performance.now();
@@ -643,12 +642,6 @@
       var doorY = (45.0 / MANOR_H) * height;
       ripples.push({ x: doorX, y: doorY, born: now, maxR: 320 * dpr, dur: 900 });
       if (ripples.length > 6) ripples.shift();
-      var card = document.querySelector('.sanctuary-card');
-      if (card) {
-        card.classList.remove('door-knock-shake');
-        void card.offsetWidth;
-        card.classList.add('door-knock-shake');
-      }
       if (Math.random() < 0.65) {
         moveClownToNewRoom('three knocks echo through the floorboards...');
       } else if (window.clownhousePushWhisper) {
@@ -656,38 +649,6 @@
       }
       wakeRender();
     };
-
-    function refreshSpotCards() {
-      spotCards = Array.prototype.slice.call(document.querySelectorAll('.spotlight-card'));
-    }
-
-    function syncCardsToLights(lightsList, radiusPx, overInteractive) {
-      if (!spotCards.length) refreshSpotCards();
-      for (var i = 0; i < spotCards.length; i++) {
-        var card = spotCards[i];
-        var r = card.getBoundingClientRect();
-        var bestDistSq = Infinity, bestX = -999, bestY = -999;
-        for (var k = 0; k < lightsList.length; k++) {
-          var ox = lightsList[k].x / dpr, oy = lightsList[k].y / dpr;
-          var dx = ox < r.left ? r.left - ox : (ox > r.right ? ox - r.right : 0);
-          var dy = oy < r.top ? r.top - oy : (oy > r.bottom ? oy - r.bottom : 0);
-          var dSq = dx * dx + dy * dy;
-          if (dSq < bestDistSq) {
-            bestDistSq = dSq;
-            bestX = ox;
-            bestY = oy;
-          }
-        }
-        if (bestDistSq < radiusPx * radiusPx) {
-          card.style.setProperty('--mouse-x', Math.round(bestX - r.left) + 'px');
-          card.style.setProperty('--mouse-y', Math.round(bestY - r.top) + 'px');
-          card.classList.add('spotlight-active');
-          card.classList.toggle('spotlight-over-text', Boolean(overInteractive && bestDistSq === 0));
-        } else {
-          card.classList.remove('spotlight-active', 'spotlight-over-text');
-        }
-      }
-    }
 
     function resize() {
       dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -713,7 +674,6 @@
         wmOriginY = -99999;
       }
 
-      refreshSpotCards();
       if (reducedMotion) render(performance.now());
     }
 
@@ -775,12 +735,11 @@
       if (!isOverText) {
         var clickedWin = hitTestWindow(px, py);
         if (clickedWin >= 0) {
-          if (clickedWin === clownWinIdx) {
+          if (clickedWin === clownWinIdx || (musicPlaying && clickedWin === 6)) {
             moveClownToNewRoom('you tapped the glass — she vanished into another room!');
           } else {
             clownWinIdx = clickedWin;
             lastClownJump = performance.now();
-            updateRoomBadge();
             playChimeSound();
             if (window.clownhousePushWhisper) {
               window.clownhousePushWhisper('something peers out from the ' + WINDOWS[clickedWin].name.toLowerCase());
@@ -824,10 +783,10 @@
       meshOrbs[0].mx = w0mx;
       meshOrbs[0].my = w0my;
 
-      // Wisp 1: First floor grand hall & East Annex (FOYER WEST <-> DRAWING ROOM <-> MUSIC ROOM <-> VESTIBULE <-> EAST ANNEX)
+      // Wisp 1: First floor grand hall & East Annex (FOYER WEST x=32 <-> DRAWING ROOM x=42 <-> MUSIC ROOM x=60 <-> VESTIBULE x=70 <-> EAST ANNEX x=84)
       var w1t = sec * 0.36 + 2.1;
-      var w1mx = 56 + 26 * Math.sin(w1t);
-      var w1my = 42.2 + 2.0 * Math.sin(w1t * 2.7) - (w1mx > 76 ? 2.2 : 0);
+      var w1mx = 58.5 + 27.5 * Math.sin(w1t);
+      var w1my = 42.2 + 1.8 * Math.sin(w1t * 2.7) - (w1mx > 75 ? 2.4 * ((w1mx - 75) / 11) : 0);
       meshOrbs[1].mx = w1mx;
       meshOrbs[1].my = w1my;
 
@@ -843,12 +802,6 @@
         meshOrbs[m].x = (meshOrbs[m].mx / MANOR_W) * width;
         meshOrbs[m].y = (meshOrbs[m].my / MANOR_H) * height;
       }
-
-      var allLights = meshOrbs.slice();
-      if (smoothMouse.strength > 0.05) {
-        allLights.push({ x: smoothMouse.x, y: smoothMouse.y });
-      }
-      syncCardsToLights(allLights, 195, isOverText && mouse.active);
 
       ripples = ripples.filter(function (rp) { return (t - rp.born) < rp.dur; });
       bolts = bolts.filter(function (b) { return (t - b.born) < b.dur; });
@@ -1213,10 +1166,17 @@
           ctx.fillRect(pc * cellPx, pr * cellPx, cellPx - 1, cellPx - 1);
         }
 
-        // Crisp glowing reticle halo when the wisp passes directly behind a window pane
-        if (bestWinFactor > 0.15) {
+        var cMx = Math.floor((((wCol + shakeCols) + 0.5) / gridCols) * MANOR_W);
+        var cMy = Math.floor(((wRow + 0.5) / gridRows) * MANOR_H);
+        var wCenterTile = (cMx >= 0 && cMx < MANOR_W && cMy >= 0 && cMy < MANOR_H)
+          ? manorGrid[cMy * MANOR_W + cMx]
+          : 0;
+        var wCenterInWindow = (wCenterTile >= 10 && wCenterTile < 20) || (wCenterTile === 5);
+
+        // Crisp glowing reticle halo only when the wisp center passes behind a window pane or frame
+        if (wCenterInWindow && bestWinFactor > 0.25) {
           ctx.save();
-          ctx.strokeStyle = 'rgba(' + hotRgb + ',' + ((0.18 + 0.72 * bestWinFactor) * glareCut).toFixed(2) + ')';
+          ctx.strokeStyle = 'rgba(' + hotRgb + ',' + ((0.22 + 0.70 * bestWinFactor) * glareCut).toFixed(2) + ')';
           ctx.lineWidth = Math.max(1.5, dpr * 1.4);
           var wPad = cellPx * 1.5;
           ctx.strokeRect(wx - wPad, wy - wPad, cellPx + wPad * 2 - 1, cellPx + wPad * 2 - 1);
